@@ -104,7 +104,7 @@ The application's available languages and all translations can be freely customi
 
 ## Source Code Documentation
 
-The documentation is generated using Javadoc and is located in the `docs` folder. You can access the documentation by clicking on <a href="https://github.com/lukasz-galka-korepetycje/gutek/docs/index.html" target="_blank">docs/index.html</a>.
+The documentation is generated using Javadoc and is located in the `docs` folder. You can access the documentation by running in a browser the file docs/index.html.
 
 ## Database Settings
 
