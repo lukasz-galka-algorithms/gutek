@@ -269,6 +269,9 @@ public class RevisionReverseView extends AppView {
     private <T extends CardBase> JPanel loadButtonsPanel() {
         RevisionAlgorithm<T> algorithm = (RevisionAlgorithm<T>) currentCard.getDeck().getRevisionAlgorithm();
         JPanel panel = algorithm.getReverseRevisionButtonsPanel((T) currentCard);
+        algorithm.setTranslationService(translationService);
+        algorithm.updateSize(frame.getScaledSize(), frame.getScaleFactor());
+        algorithm.updateTranslation();
 
         java.awt.Component[] components = panel.getComponents();
 
