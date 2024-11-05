@@ -93,7 +93,7 @@ public class DeckStatisticsService {
         if (updatedStatistics.isPresent()){
             DeckBaseStatistics stat = updatedStatistics.get();
             int allNewCardsNumber = cardBaseRepository.countByDeckIdDeckAndIsNewCardTrue(stat.getDeck().getIdDeck());
-            return Math.max(Math.min(stat.getNewCardsPerDay() - stat.getRevisedForTheFirstTime()[0], allNewCardsNumber),0);
+            return Math.clamp((long) stat.getNewCardsPerDay() - stat.getRevisedForTheFirstTime()[0],0,allNewCardsNumber);
         }
         return -1;
     }

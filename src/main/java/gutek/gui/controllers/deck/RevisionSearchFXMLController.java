@@ -133,8 +133,8 @@ public class RevisionSearchFXMLController extends FXMLController {
      */
     @Override
     public void initWithParams(Object... params) {
-        if (params != null && params.length > 0 && params[0] instanceof DeckBase) {
-            this.deck = (DeckBase) params[0];
+        if (params != null && params.length > 0 && params[0] instanceof DeckBase deckBase) {
+            this.deck = deckBase;
             menuDeckFXMLController.initWithParams(deck);
         }
         menuBarFXMLController.initWithParams();

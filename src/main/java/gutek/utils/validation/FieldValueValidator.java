@@ -2,6 +2,9 @@ package gutek.utils.validation;
 
 import gutek.entities.algorithms.AlgorithmHiperparameter;
 import gutek.services.TranslationService;
+
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
@@ -10,6 +13,31 @@ import java.util.Arrays;
  * It also handles value conversion for numeric fields.
  */
 public class FieldValueValidator {
+
+    /**
+     * Placeholder for field
+     */
+    private static final String FIELD_PLACEHOLDER = "{field}";
+
+    /**
+     * Placeholder for value
+     */
+    private static final String VALUE_PLACEHOLDER = "{value}";
+
+    /**
+     * Placeholder for allowed values
+     */
+    private static final String ALLOWED_VALUES_PLACEHOLDER = "{allowed_values}";
+
+    /**
+     * Placeholder for type
+     */
+    private static final String TYPE_PLACEHOLDER = "{type}";
+
+    /**
+     * Private constructor for hiding public one
+     */
+    private FieldValueValidator(){}
 
     /**
      * Validates and converts the value of a given field using the field's annotations.
@@ -22,73 +50,21 @@ public class FieldValueValidator {
      * @throws IllegalArgumentException If validation fails.
      */
     public static Object validateAndReturnConverted(Object object, String fieldName, Object value, TranslationService translationService) throws IllegalArgumentException {
-        Class<?> clazz = object.getClass();
-
-        Field field;
-        try {
-            field = clazz.getDeclaredField(fieldName);
-        } catch (NoSuchFieldException e) {
+        PropertyDescriptor propertyDescriptor = getPropertyDescriptor(object.getClass(), fieldName);
+        if (propertyDescriptor == null) {
             return null;
         }
-        field.setAccessible(true);
 
-        if (field.isAnnotationPresent(AlgorithmHiperparameter.class)) {
-            fieldName = translationService.getTranslation(field.getAnnotation(AlgorithmHiperparameter.class).descriptionTranslationKey());
-        }
+        String fieldLabel = getFieldLabel(propertyDescriptor.getReadMethod().getDeclaringClass(), fieldName, translationService);
 
-        if (field.isAnnotationPresent(NotNull.class)) {
-            NotNull notNull = field.getAnnotation(NotNull.class);
-            if (value == null) {
-                throw new IllegalArgumentException(translationService.getTranslation(notNull.messageTranslationKey()).replace("{field}", fieldName));
-            }
-        }
+        validateNotNull(propertyDescriptor, value, fieldLabel, translationService);
+        validateNotEmpty(propertyDescriptor, value, fieldLabel, translationService);
 
-        if (field.isAnnotationPresent(NotEmpty.class)) {
-            NotEmpty notEmpty = field.getAnnotation(NotEmpty.class);
-            if (value == null || value.toString().trim().isEmpty()) {
-                throw new IllegalArgumentException(translationService.getTranslation(notEmpty.messageTranslationKey()).replace("{field}", fieldName));
-            }
-        }
+        Object convertedValue = convertValue(value, propertyDescriptor.getPropertyType(), fieldLabel, translationService);
 
-        Object convertedValue = convertValue(value, field.getType(), fieldName, translationService);
-
-        if (field.isAnnotationPresent(Min.class)) {
-            Min min = field.getAnnotation(Min.class);
-            if (convertedValue instanceof Number) {
-                double numericValue = ((Number) convertedValue).doubleValue();
-                if (numericValue < min.value()) {
-                    throw new IllegalArgumentException(
-                            translationService.getTranslation(min.messageTranslationKey())
-                                    .replace("{field}", fieldName)
-                                    .replace("{value}", String.valueOf(min.value()))
-                    );
-                }
-            }
-        }
-
-        if (field.isAnnotationPresent(Max.class)) {
-            Max max = field.getAnnotation(Max.class);
-            if (convertedValue instanceof Number) {
-                double numericValue = ((Number) convertedValue).doubleValue();
-                if (numericValue > max.value()) {
-                    throw new IllegalArgumentException(
-                            translationService.getTranslation(max.messageTranslationKey())
-                                    .replace("{field}", fieldName)
-                                    .replace("{value}", String.valueOf(max.value()))
-                    );
-                }
-            }
-        }
-
-        if (field.isAnnotationPresent(AllowedValues.class)) {
-            AllowedValues allowedValues = field.getAnnotation(AllowedValues.class);
-            if (convertedValue != null && !Arrays.asList(allowedValues.values()).contains(value.toString())) {
-                throw new IllegalArgumentException(
-                        translationService.getTranslation(allowedValues.messageTranslationKey()).replace("{field}", fieldName)
-                                .replace("{allowed_values}", Arrays.toString(allowedValues.values()))
-                );
-            }
-        }
+        validateMin(propertyDescriptor, convertedValue, fieldLabel, translationService);
+        validateMax(propertyDescriptor, convertedValue, fieldLabel, translationService);
+        validateAllowedValues(propertyDescriptor, convertedValue, fieldLabel, translationService);
 
         return convertedValue;
     }
@@ -117,10 +93,143 @@ public class FieldValueValidator {
                 }
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException(translationService.getTranslation("validation.invalid_value")
-                        .replace("{field}", fieldName)
-                        .replace("{type}", targetType.getName()));
+                        .replace(FIELD_PLACEHOLDER, fieldName)
+                        .replace(TYPE_PLACEHOLDER, targetType.getName()));
             }
         }
         return value;
+    }
+
+    /**
+     * Helper method to retrieve a PropertyDescriptor for a given field name.
+     */
+    private static PropertyDescriptor getPropertyDescriptor(Class<?> clazz, String fieldName) {
+        try {
+            return new PropertyDescriptor(fieldName, clazz);
+        } catch (IntrospectionException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Helper method to retrieve the field by name.
+     */
+    private static Field getField(Class<?> clazz, String fieldName) {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Retrieves the field label, using the translation service if the field has a description key.
+     */
+    private static String getFieldLabel(Class<?> clazz, String fieldName, TranslationService translationService) {
+        Field field = getField(clazz, fieldName);
+        if (field != null && field.isAnnotationPresent(AlgorithmHiperparameter.class)) {
+            String descriptionKey = field.getAnnotation(AlgorithmHiperparameter.class).descriptionTranslationKey();
+            return translationService.getTranslation(descriptionKey);
+        }
+        return fieldName;
+    }
+
+    /**
+     * Validates that the specified value is not null if the field is annotated with {@link NotNull}.
+     *
+     * @param propertyDescriptor  Descriptor for the property being validated.
+     * @param value               The value to validate.
+     * @param fieldLabel          The label of the field, used in error messages.
+     * @param translationService  Service used for obtaining localized error messages.
+     * @throws IllegalArgumentException if the value is null and the field is annotated with {@link NotNull}.
+     */
+    private static void validateNotNull(PropertyDescriptor propertyDescriptor, Object value, String fieldLabel, TranslationService translationService) {
+        Field field = getField(propertyDescriptor.getReadMethod().getDeclaringClass(), propertyDescriptor.getName());
+        if (field != null && field.isAnnotationPresent(NotNull.class) && value == null) {
+            String message = translationService.getTranslation(field.getAnnotation(NotNull.class).messageTranslationKey());
+            throw new IllegalArgumentException(message.replace(FIELD_PLACEHOLDER, fieldLabel));
+        }
+    }
+
+    /**
+     * Validates that the specified value is not empty if the field is annotated with {@link NotEmpty}.
+     *
+     * @param propertyDescriptor  Descriptor for the property being validated.
+     * @param value               The value to validate.
+     * @param fieldLabel          The label of the field, used in error messages.
+     * @param translationService  Service used for obtaining localized error messages.
+     * @throws IllegalArgumentException if the value is empty and the field is annotated with {@link NotEmpty}.
+     */
+    private static void validateNotEmpty(PropertyDescriptor propertyDescriptor, Object value, String fieldLabel, TranslationService translationService) {
+        Field field = getField(propertyDescriptor.getReadMethod().getDeclaringClass(), propertyDescriptor.getName());
+        if (field != null && field.isAnnotationPresent(NotEmpty.class)) {
+            NotEmpty notEmpty = field.getAnnotation(NotEmpty.class);
+            if (value == null || value.toString().trim().isEmpty()) {
+                String message = translationService.getTranslation(notEmpty.messageTranslationKey());
+                throw new IllegalArgumentException(message.replace(FIELD_PLACEHOLDER, fieldLabel));
+            }
+        }
+    }
+
+    /**
+     * Validates that the specified value is above the minimum if the field is annotated with {@link Min}.
+     *
+     * @param propertyDescriptor  Descriptor for the property being validated.
+     * @param value               The value to validate.
+     * @param fieldLabel          The label of the field, used in error messages.
+     * @param translationService  Service used for obtaining localized error messages.
+     * @throws IllegalArgumentException if the value is below the minimum specified by the {@link Min} annotation.
+     */
+    private static void validateMin(PropertyDescriptor propertyDescriptor, Object value, String fieldLabel, TranslationService translationService) {
+        Field field = getField(propertyDescriptor.getReadMethod().getDeclaringClass(), propertyDescriptor.getName());
+        if (field != null && field.isAnnotationPresent(Min.class) && value instanceof Number number) {
+            Min min = field.getAnnotation(Min.class);
+            double numericValue = number.doubleValue();
+            if (numericValue < min.value()) {
+                String message = translationService.getTranslation(min.messageTranslationKey());
+                throw new IllegalArgumentException(message.replace(FIELD_PLACEHOLDER, fieldLabel).replace(VALUE_PLACEHOLDER, String.valueOf(min.value())));
+            }
+        }
+    }
+
+    /**
+     * Validates that the specified value is below the maximum if the field is annotated with {@link Max}.
+     *
+     * @param propertyDescriptor  Descriptor for the property being validated.
+     * @param value               The value to validate.
+     * @param fieldLabel          The label of the field, used in error messages.
+     * @param translationService  Service used for obtaining localized error messages.
+     * @throws IllegalArgumentException if the value is above the maximum specified by the {@link Max} annotation.
+     */
+    private static void validateMax(PropertyDescriptor propertyDescriptor, Object value, String fieldLabel, TranslationService translationService) {
+        Field field = getField(propertyDescriptor.getReadMethod().getDeclaringClass(), propertyDescriptor.getName());
+        if (field != null && field.isAnnotationPresent(Max.class) && value instanceof Number number) {
+            Max max = field.getAnnotation(Max.class);
+            double numericValue = number.doubleValue();
+            if (numericValue > max.value()) {
+                String message = translationService.getTranslation(max.messageTranslationKey());
+                throw new IllegalArgumentException(message.replace(FIELD_PLACEHOLDER, fieldLabel).replace(VALUE_PLACEHOLDER, String.valueOf(max.value())));
+            }
+        }
+    }
+
+    /**
+     * Validates that the specified value is within the allowed values if the field is annotated with {@link AllowedValues}.
+     *
+     * @param propertyDescriptor  Descriptor for the property being validated.
+     * @param value               The value to validate.
+     * @param fieldLabel          The label of the field, used in error messages.
+     * @param translationService  Service used for obtaining localized error messages.
+     * @throws IllegalArgumentException if the value is not within the allowed values specified by the {@link AllowedValues} annotation.
+     */
+    private static void validateAllowedValues(PropertyDescriptor propertyDescriptor, Object value, String fieldLabel, TranslationService translationService) {
+        Field field = getField(propertyDescriptor.getReadMethod().getDeclaringClass(), propertyDescriptor.getName());
+        if (field != null && field.isAnnotationPresent(AllowedValues.class)) {
+            AllowedValues allowedValues = field.getAnnotation(AllowedValues.class);
+            if (value != null && !Arrays.asList(allowedValues.values()).contains(value.toString())) {
+                String message = translationService.getTranslation(allowedValues.messageTranslationKey());
+                throw new IllegalArgumentException(message.replace(FIELD_PLACEHOLDER, fieldLabel).replace(ALLOWED_VALUES_PLACEHOLDER, Arrays.toString(allowedValues.values())));
+            }
+        }
     }
 }

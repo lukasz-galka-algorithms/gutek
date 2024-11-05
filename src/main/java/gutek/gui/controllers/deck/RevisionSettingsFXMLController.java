@@ -7,6 +7,7 @@ import gutek.gui.controllers.FXMLController;
 import gutek.gui.controllers.MainStage;
 import gutek.gui.controllers.menu.MenuBarFXMLController;
 import gutek.gui.controllers.menu.MenuDeckFXMLController;
+import gutek.services.RevisionAlgorithmService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
 import gutek.utils.validation.FieldValueValidator;
@@ -17,7 +18,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.springframework.stereotype.Component;
+
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 import static gutek.utils.AlertMessageUtil.showAlert;
@@ -83,6 +88,11 @@ public class RevisionSettingsFXMLController extends FXMLController {
     private DeckBase deck;
 
     /**
+     * Service responsible for managing algorithm-related operations.
+     */
+    private final RevisionAlgorithmService revisionAlgorithmService;
+
+    /**
      * Constructs a new `RevisionSettingsFXMLController` for managing and adjusting revision algorithm settings.
      *
      * @param stage                 The main stage of the application.
@@ -90,15 +100,18 @@ public class RevisionSettingsFXMLController extends FXMLController {
      * @param translationService    Service for retrieving translations for the UI.
      * @param menuBarFXMLController Controller for the main menu bar.
      * @param menuDeckFXMLController Controller for deck-specific menu actions.
+     * @param revisionAlgorithmService Service for managing algorithm-related operations.
      */
     public RevisionSettingsFXMLController(MainStage stage,
                                           FXMLFileLoader fxmlFileLoader,
                                           TranslationService translationService,
                                           MenuBarFXMLController menuBarFXMLController,
-                                          MenuDeckFXMLController menuDeckFXMLController) {
+                                          MenuDeckFXMLController menuDeckFXMLController,
+                                          RevisionAlgorithmService revisionAlgorithmService) {
         super(stage, fxmlFileLoader, "/fxml/deck/RevisionSettingsView.fxml", translationService);
         this.menuBarFXMLController = menuBarFXMLController;
         this.menuDeckFXMLController = menuDeckFXMLController;
+        this.revisionAlgorithmService = revisionAlgorithmService;
     }
 
     /**
@@ -109,8 +122,8 @@ public class RevisionSettingsFXMLController extends FXMLController {
      */
     @Override
     public void initWithParams(Object... params) {
-        if (params != null && params.length > 0 && params[0] instanceof DeckBase) {
-            this.deck = (DeckBase) params[0];
+        if (params != null && params.length > 0 && params[0] instanceof DeckBase deckBase) {
+            this.deck = deckBase;
             menuDeckFXMLController.initWithParams(deck);
         }
         menuBarFXMLController.initWithParams();
@@ -133,8 +146,6 @@ public class RevisionSettingsFXMLController extends FXMLController {
 
         for (Field field : fields) {
             if (field.isAnnotationPresent(AlgorithmHiperparameter.class)) {
-                field.setAccessible(true);
-
                 AlgorithmHiperparameter annotation = field.getAnnotation(AlgorithmHiperparameter.class);
                 String translationKey = annotation.descriptionTranslationKey();
 
@@ -143,9 +154,14 @@ public class RevisionSettingsFXMLController extends FXMLController {
                 TextField textField = new TextField();
 
                 try {
-                    Object value = field.get(algorithm);
-                    textField.setText(value != null ? value.toString() : "");
-                } catch (IllegalAccessException ignored) {
+                    PropertyDescriptor propertyDescriptor = new PropertyDescriptor(field.getName(), algorithm.getClass());
+                    Method getter = propertyDescriptor.getReadMethod();
+                    if (getter != null) {
+                        Object value = getter.invoke(algorithm);
+                        textField.setText(value != null ? value.toString() : "");
+                    }
+                } catch (Exception ignored) {
+                    //ignore
                 }
 
                 HBox hbox = new HBox(10, label, textField);
@@ -171,9 +187,20 @@ public class RevisionSettingsFXMLController extends FXMLController {
 
             try {
                 Object convertedValue = FieldValueValidator.validateAndReturnConverted(algorithm, hiperparameterName, valueString, translationService);
-                Field field = algorithm.getClass().getDeclaredField(hiperparameterName);
-                field.setAccessible(true);
-                field.set(algorithm, convertedValue);
+
+                PropertyDescriptor pd = null;
+                for (PropertyDescriptor propertyDescriptor : Introspector.getBeanInfo(algorithm.getClass(), Object.class).getPropertyDescriptors()) {
+                    if (propertyDescriptor.getName().equals(hiperparameterName)) {
+                        pd = propertyDescriptor;
+                        break;
+                    }
+                }
+
+                if (pd != null && pd.getWriteMethod() != null) {
+                    pd.getWriteMethod().invoke(algorithm, convertedValue);
+                }
+
+                revisionAlgorithmService.saveAlgorithm(algorithm);
             } catch (Exception e) {
                 showAlert(Alert.AlertType.ERROR, translationService.getTranslation("deck_view.settings.invalid_input") + "\n" + e.getMessage());
                 return;
@@ -200,8 +227,8 @@ public class RevisionSettingsFXMLController extends FXMLController {
         saveButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
 
         for (HBox hbox : settingsContainer.getChildren().stream()
-                .filter(node -> node instanceof HBox)
-                .map(node -> (HBox) node)
+                .filter(HBox.class::isInstance)
+                .map(HBox.class::cast)
                 .toList()) {
             Label label = (Label) hbox.getChildren().get(0);
             label.setAlignment(Pos.CENTER_RIGHT);
@@ -226,8 +253,8 @@ public class RevisionSettingsFXMLController extends FXMLController {
         saveButton.setText(translationService.getTranslation("deck_view.settings.save_button"));
 
         for (HBox hbox : settingsContainer.getChildren().stream()
-                .filter(node -> node instanceof HBox)
-                .map(node -> (HBox) node)
+                .filter(HBox.class::isInstance)
+                .map(HBox.class::cast)
                 .toList()) {
             Label label = (Label) hbox.getChildren().getFirst();
             String translationKey = (String) label.getUserData();

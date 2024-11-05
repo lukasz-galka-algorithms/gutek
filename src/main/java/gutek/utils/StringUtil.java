@@ -4,6 +4,12 @@ package gutek.utils;
  * Utility class for common string manipulation operations.
  */
 public class StringUtil {
+
+    /**
+     * Private constructor for hide the public one
+     */
+    private StringUtil(){}
+
     /**
      * Capitalizes the first letter of the given string and converts the remaining characters to lowercase.
      * <p>

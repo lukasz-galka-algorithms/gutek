@@ -64,7 +64,10 @@ public class TranslationService {
     public void updateLocale(Locale locale) {
         if (locale == null) {
             AppLocaleSetting appLocaleSetting = getOrCreateDefaultAppLocaleSetting();
-            this.locale = new Locale(appLocaleSetting.getLanguage(), appLocaleSetting.getCountry());
+            this.locale = new Locale.Builder()
+                    .setLanguage(appLocaleSetting.getLanguage())
+                    .setRegion(appLocaleSetting.getCountry())
+                    .build();
         } else {
             List<Locale> availableLocales = getAvailableLocales();
             if (availableLocales.contains(locale)) {
@@ -114,45 +117,86 @@ public class TranslationService {
                 if (resourceUrl != null) {
                     String protocol = resourceUrl.getProtocol();
                     if ("file".equals(protocol)) {
-                        File resourceDir = new File(resourceUrl.toURI());
-                        if (resourceDir.exists() && resourceDir.isDirectory()) {
-                            for (File file : resourceDir.listFiles()) {
-                                String fileName = file.getName();
-                                Matcher matcher = LOCALE_PATTERN.matcher(fileName);
-                                if (matcher.matches()) {
-                                    String language = matcher.group(1);
-                                    String country = matcher.group(2);
-                                    availableLocales.add(new Locale(language, country));
-                                }
-                            }
-                        }
+                        availableLocales.addAll(getLocalesFromFileResource(resourceUrl));
                     } else if ("jar".equals(protocol)) {
                         String jarPath = resourceUrl.getPath().substring(5, resourceUrl.getPath().indexOf("!"));
                         if (processedJars.add(jarPath)) {
-                            JarFile jarFile = new JarFile(jarPath);
-                            Enumeration<JarEntry> entries = jarFile.entries();
-
-                            while (entries.hasMoreElements()) {
-                                JarEntry entry = entries.nextElement();
-                                String entryName = entry.getName();
-                                String fileName = entryName.substring(entryName.lastIndexOf('/') + 1);
-                                Matcher matcher = LOCALE_PATTERN.matcher(fileName);
-                                if (matcher.matches()) {
-                                    String language = matcher.group(1);
-                                    String country = matcher.group(2);
-                                    availableLocales.add(new Locale(language, country));
-                                }
-                            }
-                            jarFile.close();
+                            availableLocales.addAll(getLocalesFromJarResource(jarPath));
                         }
                     }
                 }
             }
         } catch (IOException | URISyntaxException ignored) {
+            //ignore
         }
 
-        availableLocales.sort((a, b) -> a.getDisplayLanguage().compareToIgnoreCase(b.getDisplayLanguage()));
+        availableLocales.sort(Comparator.comparing(Locale::getDisplayLanguage, String.CASE_INSENSITIVE_ORDER));
         return availableLocales;
+    }
+
+    /**
+     * Extracts locales from directory-based resources.
+     *
+     * @param resourceUrl The URL of the file directory.
+     * @return A list of Locales found within the directory.
+     * @throws URISyntaxException if the URI syntax is incorrect.
+     */
+    private List<Locale> getLocalesFromFileResource(URL resourceUrl) throws URISyntaxException {
+        List<Locale> locales = new ArrayList<>();
+        File resourceDir = new File(resourceUrl.toURI());
+
+        if (resourceDir.exists() && resourceDir.isDirectory()) {
+            for (File file : Objects.requireNonNull(resourceDir.listFiles())) {
+                Locale extractedlocale = extractLocaleFromFileName(file.getName());
+                if (extractedlocale != null) {
+                    locales.add(extractedlocale);
+                }
+            }
+        }
+        return locales;
+    }
+
+    /**
+     * Extracts locales from JAR-based resources.
+     *
+     * @param jarPath The path to the JAR file.
+     * @return A list of Locales found within the JAR.
+     * @throws IOException if an I/O error occurs.
+     */
+    private List<Locale> getLocalesFromJarResource(String jarPath) throws IOException {
+        List<Locale> locales = new ArrayList<>();
+        try (JarFile jarFile = new JarFile(jarPath)) {
+            Enumeration<JarEntry> entries = jarFile.entries();
+
+            while (entries.hasMoreElements()) {
+                JarEntry entry = entries.nextElement();
+                String fileName = entry.getName().substring(entry.getName().lastIndexOf('/') + 1);
+                Locale extractedlocale = extractLocaleFromFileName(fileName);
+                if (extractedlocale != null) {
+                    locales.add(extractedlocale);
+                }
+            }
+        }
+        return locales;
+    }
+
+    /**
+     * Extracts a Locale from a given file name if it matches the locale pattern.
+     *
+     * @param fileName The file name to extract the locale from.
+     * @return A Locale object if the file name matches the pattern, otherwise null.
+     */
+    private Locale extractLocaleFromFileName(String fileName) {
+        Matcher matcher = LOCALE_PATTERN.matcher(fileName);
+        if (matcher.matches()) {
+            String language = matcher.group(1);
+            String country = matcher.group(2);
+            return new Locale.Builder()
+                    .setLanguage(language)
+                    .setRegion(country)
+                    .build();
+        }
+        return null;
     }
 
     /**
@@ -165,17 +209,5 @@ public class TranslationService {
             AppLocaleSetting newSetting = new AppLocaleSetting(null, "en", "US");
             return repository.save(newSetting);
         });
-    }
-
-    /**
-     * Updates the locale setting in the database to the provided locale.
-     *
-     * @param locale The new locale to be saved.
-     */
-    private void updateLocaleSetting(Locale locale) {
-        AppLocaleSetting setting = getOrCreateDefaultAppLocaleSetting();
-        setting.setLanguage(locale.getLanguage());
-        setting.setCountry(locale.getCountry());
-        repository.save(setting);
     }
 }

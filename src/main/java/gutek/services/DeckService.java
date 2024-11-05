@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Service class responsible for managing decks and cards.
@@ -94,7 +93,7 @@ public class DeckService {
 
         newCards = newCards.stream()
                 .sorted(Comparator.comparing(CardBase::getCreationTime))
-                .collect(Collectors.toList());
+                .toList();
 
         if (newCardsForTodayRevisionNumber >= newCards.size()) {
             return newCards;

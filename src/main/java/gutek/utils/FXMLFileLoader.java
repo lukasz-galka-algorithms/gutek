@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+
 import java.io.IOException;
 
 /**
@@ -34,18 +35,18 @@ public class FXMLFileLoader {
      * @param fxmlPath the path to the FXML file (relative to the resources directory, including ".fxml" extension)
      * @return the loaded {@link Parent} element representing the UI root, or {@code null} if loading fails
      */
-    public Parent loadFXML(String fxmlPath, Object controller){
+    public Parent loadFXML(String fxmlPath, Object controller) {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource(fxmlPath));
-        if(controller == null){
+        if (controller == null) {
             fxmlLoader.setControllerFactory(context::getBean);
-        }else {
+        } else {
             fxmlLoader.setController(controller);
         }
 
         try {
             return fxmlLoader.load();
-        } catch (IOException e) {
-            System.err.println("Error loading FXML: " + fxmlPath);
+        } catch (IOException ignored) {
+            //ignore
         }
         return null;
     }

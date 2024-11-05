@@ -14,7 +14,8 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class CardBase{
 
@@ -43,8 +44,6 @@ public class CardBase{
 
     /** The deck to which the card belongs. */
     @ManyToOne
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     protected DeckBase deck;
 
     /**

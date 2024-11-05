@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
+
 import static gutek.utils.AlertMessageUtil.showAlert;
 
 /**
@@ -189,32 +191,85 @@ public class NewDeckFXMLController extends FXMLController {
         String deckName = nameField.getText();
         String selectedAlgorithmName = algorithmComboBox.getSelectionModel().getSelectedItem();
 
-        RevisionAlgorithm<?> algorithm = revisionAlgorithmService.createAlgorithmInstance(selectedAlgorithmName);
-        if (algorithm != null){
-            algorithm.setTranslationService(translationService);
-            if (deckName.trim().isEmpty()) {
-                showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.deck_name_empty"));
-            }else{
-                FileChooser fileChooser = new FileChooser();
-                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
-                File selectedFile = fileChooser.showOpenDialog(stage.getStage());
+        if (!validateInput(deckName, selectedAlgorithmName)) {
+            return;
+        }
 
-                if (selectedFile != null) {
-                    DeckBase deckBase = deckService.addNewDeck(stage.getLoggedUser(), algorithm, deckName);
-                    try (BufferedReader br = new BufferedReader(new FileReader(selectedFile))) {
-                        long cardsNumber = Long.parseLong(br.readLine());
-                        for (int i = 0; i < cardsNumber; i++) {
-                            CardBase card = algorithm.createNewCard(br.readLine(), br.readLine());
-                            deckService.addNewCardToDeck(card, deckBase);
-                        }
-                        showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.deck_imported"));
-                    } catch (Exception ex) {
-                        showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.import_error"));
-                    }
-                }
-            }
-        }else{
+        RevisionAlgorithm<?> algorithm = revisionAlgorithmService.createAlgorithmInstance(selectedAlgorithmName);
+        if (algorithm == null) {
+            showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.algorithm_invalid"));
+            return;
+        }
+        algorithm.setTranslationService(translationService);
+
+        File selectedFile = chooseImportFile();
+        if (selectedFile == null) {
+            return;
+        }
+
+        DeckBase deckBase = deckService.addNewDeck(stage.getLoggedUser(), algorithm, deckName);
+        boolean importSuccess = importCardsFromFile(selectedFile, algorithm, deckBase);
+
+        if (importSuccess) {
+            showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.deck_imported"));
+        } else {
+            showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.import_error"));
+        }
+    }
+
+    /**
+     * Validates the user input for deck name and selected algorithm.
+     *
+     * @param deckName             The name of the deck.
+     * @param selectedAlgorithmName The name of the selected algorithm.
+     * @return true if input is valid, false otherwise.
+     */
+    private boolean validateInput(String deckName, String selectedAlgorithmName) {
+        if (selectedAlgorithmName == null || selectedAlgorithmName.trim().isEmpty()) {
             showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.algorithm_empty"));
+            return false;
+        }
+        if (deckName.trim().isEmpty()) {
+            showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.deck_name_empty"));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Opens a file chooser dialog to select the CSV file for importing cards.
+     *
+     * @return The selected File object, or null if no file was selected.
+     */
+    private File chooseImportFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+        return fileChooser.showOpenDialog(stage.getStage());
+    }
+
+    /**
+     * Imports cards from the given CSV file into the specified deck.
+     *
+     * @param file      The CSV file containing card data.
+     * @param algorithm The revision algorithm used to create new cards.
+     * @param deck      The deck to which the cards will be added.
+     * @return true if the import was successful, false otherwise.
+     */
+    private boolean importCardsFromFile(File file, RevisionAlgorithm<?> algorithm, DeckBase deck) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            long cardsNumber = Long.parseLong(br.readLine());
+            for (int i = 0; i < cardsNumber; i++) {
+                String front = br.readLine();
+                String back = br.readLine();
+                if (front == null || back == null) {
+                    throw new IOException("Invalid card data at line " + (i * 2 + 2));
+                }
+                CardBase card = algorithm.createNewCard(front, back);
+                deckService.addNewCardToDeck(card, deck);
+            }
+            return true;
+        } catch (Exception ex) {
+            return false;
         }
     }
 }

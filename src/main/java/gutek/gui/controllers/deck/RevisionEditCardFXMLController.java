@@ -123,8 +123,8 @@ public class RevisionEditCardFXMLController extends FXMLController {
      */
     @Override
     public void initWithParams(Object... params) {
-        if (params != null && params.length > 0 && params[0] instanceof CardBase) {
-            this.cardToEdit = (CardBase) params[0];
+        if (params != null && params.length > 0 && params[0] instanceof CardBase cardBase) {
+            this.cardToEdit = cardBase;
             setCardToEdit(cardToEdit);
             menuDeckFXMLController.initWithParams(cardToEdit.getDeck());
         }

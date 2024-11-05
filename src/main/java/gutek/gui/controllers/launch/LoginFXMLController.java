@@ -68,6 +68,7 @@ public class LoginFXMLController extends FXMLController {
     /**
      * Updates the size and layout of the components based on the current window size and scale factor.
      */
+    @Override
     public void updateSize() {
         double scaleFactor = stage.getStageScaleFactor();
         String fontSizeStyle = "-fx-font-size: " + (15 * scaleFactor) + "px;";

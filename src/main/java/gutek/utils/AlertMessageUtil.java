@@ -10,6 +10,11 @@ import javafx.scene.control.Alert;
  */
 public class AlertMessageUtil {
     /**
+     * Private constructor for hide the public one
+     */
+    private AlertMessageUtil(){}
+
+    /**
      * Displays an alert dialog.
      */
     public static void showAlert(Alert.AlertType alertType, String message) {

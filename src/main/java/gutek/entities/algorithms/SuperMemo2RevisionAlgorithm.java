@@ -8,6 +8,9 @@ import jakarta.persistence.*;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
 /**
@@ -17,6 +20,8 @@ import java.time.LocalDate;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Getter
+@Setter
 public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo2> {
 
     /** Initial easiness factor for the normal revision process. */
@@ -89,7 +94,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
 
     /** Translation key for the algorithm's name. */
     @Transient
-    protected static final String algorithmNameKey = "revision_algorithm.supermemo2.algorithm_name";
+    protected static final String ALGORITHM_NAME_KEY = "revision_algorithm.supermemo2.algorithm_name";
 
     /**
      * Default constructor that initializes the buttons for normal and reverse revision.
@@ -144,17 +149,19 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
     @Override
     public void updateSize(double width, double height, double scaleFactor) {
         double buttonFontSize = 12 * scaleFactor;
-        buttonGrade1.setStyle("-fx-font-size: " + buttonFontSize + "px;");
-        buttonGrade2.setStyle("-fx-font-size: " + buttonFontSize + "px;");
-        buttonGrade3.setStyle("-fx-font-size: " + buttonFontSize + "px;");
-        buttonGrade4.setStyle("-fx-font-size: " + buttonFontSize + "px;");
-        buttonGrade5.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        String buttonsStyle = "-fx-font-size: " + buttonFontSize + "px;";
 
-        reverseButtonGrade1.setStyle("-fx-font-size: " + buttonFontSize + "px;");
-        reverseButtonGrade2.setStyle("-fx-font-size: " + buttonFontSize + "px;");
-        reverseButtonGrade3.setStyle("-fx-font-size: " + buttonFontSize + "px;");
-        reverseButtonGrade4.setStyle("-fx-font-size: " + buttonFontSize + "px;");
-        reverseButtonGrade5.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        buttonGrade1.setStyle(buttonsStyle);
+        buttonGrade2.setStyle(buttonsStyle);
+        buttonGrade3.setStyle(buttonsStyle);
+        buttonGrade4.setStyle(buttonsStyle);
+        buttonGrade5.setStyle(buttonsStyle);
+
+        reverseButtonGrade1.setStyle(buttonsStyle);
+        reverseButtonGrade2.setStyle(buttonsStyle);
+        reverseButtonGrade3.setStyle(buttonsStyle);
+        reverseButtonGrade4.setStyle(buttonsStyle);
+        reverseButtonGrade5.setStyle(buttonsStyle);
 
         buttonGrade1.setPrefSize(width / 5, height);
         buttonGrade2.setPrefSize(width / 5, height);
@@ -191,7 +198,6 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      */
     @Override
     public boolean reviseCard(Button clickedButton, CardSuperMemo2 card) {
-        boolean cardRevisionFinished;
         int grade = 0;
 
         if (clickedButton == buttonGrade1) {
@@ -222,7 +228,6 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
             card.setEasinessFactor(newEasinessFactor);
 
             card.setNextRegularRevisionDate(LocalDate.now().plusDays(card.getInterval()));
-            cardRevisionFinished = true;
         } else {
             card.setIncorrectCounter(card.getIncorrectCounter() + 1);
 
@@ -231,10 +236,8 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
             }
 
             card.setNextRegularRevisionDate(LocalDate.now().plusDays(1));
-            cardRevisionFinished = true;
         }
-
-        return cardRevisionFinished;
+        return true;
     }
 
     /**
@@ -259,7 +262,6 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      */
     @Override
     public boolean reverseReviseCard(Button clickedButton, CardSuperMemo2 card) {
-        boolean cardRevisionFinished;
         int grade = 0;
 
         if (clickedButton == buttonGrade1) {
@@ -290,7 +292,6 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
             card.setReverseEasinessFactor(newEasinessFactor);
 
             card.setNextReverseRevisionDate(LocalDate.now().plusDays(card.getReverseInterval()));
-            cardRevisionFinished = true;
         } else {
             card.setReverseIncorrectCounter(card.getReverseIncorrectCounter() + 1);
 
@@ -299,10 +300,8 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
             }
 
             card.setNextReverseRevisionDate(LocalDate.now().plusDays(1));
-            cardRevisionFinished = true;
         }
-
-        return cardRevisionFinished;
+        return true;
     }
 
     /**
@@ -312,7 +311,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      */
     @Override
     public String getAlgorithmName() {
-        return translationService.getTranslation(algorithmNameKey);
+        return translationService.getTranslation(ALGORITHM_NAME_KEY);
     }
 
     /**

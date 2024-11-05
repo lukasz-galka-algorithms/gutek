@@ -17,6 +17,8 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
+import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * Main application stage that manages the display of views and the application menu.
@@ -84,58 +86,85 @@ public class MainStage{
      * @param nextSceneParams Optional parameters for initializing the scene
      */
     public void setScene(MainStageScenes nextScene, Object... nextSceneParams) {
-        FXMLController controller = null;
-        if (nextScene == MainStageScenes.LANGUAGE_SELECTION_SCENE) {
-            controller = applicationContext.getBean(LanguageSelectionFXMLController.class);
-        } else if (nextScene == MainStageScenes.LOGIN_SCENE) {
-            controller = applicationContext.getBean(LoginFXMLController.class);
-        } else if (nextScene == MainStageScenes.DECKS_SCENE) {
-            controller = applicationContext.getBean(DecksFXMLController.class);
-        } else if (nextScene == MainStageScenes.NEW_DECK_SCENE) {
-            controller = applicationContext.getBean(NewDeckFXMLController.class);
-        } else if (nextScene == MainStageScenes.TRASH_SCENE) {
-            controller = applicationContext.getBean(TrashFXMLController.class);
-        } else if (nextScene == MainStageScenes.AUTHORS_SCENE) {
-            controller = applicationContext.getBean(AuthorsFXMLController.class);
-        } else if (nextScene == MainStageScenes.EXIT) {
+        if (nextScene == MainStageScenes.EXIT) {
             shutdown();
-        } else if (nextScene == MainStageScenes.REVISION_ADD_NEW_CARD_SCENE) {
-            controller = applicationContext.getBean(RevisionAddCardFXMLController.class);
-        } else if (nextScene == MainStageScenes.REVISION_SEARCH_SCENE) {
-            controller = applicationContext.getBean(RevisionSearchFXMLController.class);
-        } else if (nextScene == MainStageScenes.REVISION_REVISE_SCENE) {
-            controller = applicationContext.getBean(RevisionFXMLController.class);
-        } else if (nextScene == MainStageScenes.REVISION_SETTINGS_SCENE) {
-            controller = applicationContext.getBean(RevisionSettingsFXMLController.class);
-        } else if (nextScene == MainStageScenes.REVISION_STATISTICS_SCENE) {
-            controller = applicationContext.getBean(RevisionStatisticsFXMLController.class);
-        } else if (nextScene == MainStageScenes.REVISION_EDIT_CARD_SCENE) {
-            controller = applicationContext.getBean(RevisionEditCardFXMLController.class);
-        } else if (nextScene == MainStageScenes.REVISION_REGULAR_SCENE) {
-            controller = applicationContext.getBean(RevisionRegularFXMLController.class);
-        } else if (nextScene == MainStageScenes.REVISION_REVERSE_SCENE) {
-            controller = applicationContext.getBean(RevisionReverseFXMLController.class);
+            return;
         }
+        FXMLController controller = getControllerForScene(nextScene);
 
         if (controller != null) {
-            this.currentController = controller;
-            controller.loadViewFromFXML();
-            controller.initWithParams(nextSceneParams);
-
-            double currentX = this.stage.getX();
-            double currentY = this.stage.getY();
-            if (stage.getScene() != null) {
-                stage.getScene().setRoot(new javafx.scene.Group());
-            }
-            this.stage.setScene(new Scene(controller.root));
-            Platform.runLater(() ->{
-                this.stage.setX(currentX);
-                this.stage.setY(currentY);
-            });
-            controller.updateView();
-            controller.updateSize();
-            controller.updateTranslation();
+            loadController(controller, nextSceneParams);
         }
+    }
+
+    /**
+     * Retrieves the appropriate controller for the given scene.
+     *
+     * @param nextScene The scene for which to get the controller.
+     * @return The corresponding FXMLController, or null if none found.
+     */
+    private FXMLController getControllerForScene(MainStageScenes nextScene) {
+        Map<MainStageScenes, Class<? extends FXMLController>> sceneControllerMap = getSceneControllerMap();
+        Class<? extends FXMLController> controllerClass = sceneControllerMap.get(nextScene);
+
+        if (controllerClass != null) {
+            return applicationContext.getBean(controllerClass);
+        }
+        return null;
+    }
+
+    /**
+     * Initializes the mapping between scenes and their corresponding controller classes.
+     *
+     * @return A map of MainStageScenes to FXMLController classes.
+     */
+    private Map<MainStageScenes, Class<? extends FXMLController>> getSceneControllerMap() {
+        Map<MainStageScenes, Class<? extends FXMLController>> map = new EnumMap<>(MainStageScenes.class);
+        map.put(MainStageScenes.LANGUAGE_SELECTION_SCENE, LanguageSelectionFXMLController.class);
+        map.put(MainStageScenes.LOGIN_SCENE, LoginFXMLController.class);
+        map.put(MainStageScenes.DECKS_SCENE, DecksFXMLController.class);
+        map.put(MainStageScenes.NEW_DECK_SCENE, NewDeckFXMLController.class);
+        map.put(MainStageScenes.TRASH_SCENE, TrashFXMLController.class);
+        map.put(MainStageScenes.AUTHORS_SCENE, AuthorsFXMLController.class);
+        map.put(MainStageScenes.REVISION_ADD_NEW_CARD_SCENE, RevisionAddCardFXMLController.class);
+        map.put(MainStageScenes.REVISION_SEARCH_SCENE, RevisionSearchFXMLController.class);
+        map.put(MainStageScenes.REVISION_REVISE_SCENE, RevisionFXMLController.class);
+        map.put(MainStageScenes.REVISION_SETTINGS_SCENE, RevisionSettingsFXMLController.class);
+        map.put(MainStageScenes.REVISION_STATISTICS_SCENE, RevisionStatisticsFXMLController.class);
+        map.put(MainStageScenes.REVISION_EDIT_CARD_SCENE, RevisionEditCardFXMLController.class);
+        map.put(MainStageScenes.REVISION_REGULAR_SCENE, RevisionRegularFXMLController.class);
+        map.put(MainStageScenes.REVISION_REVERSE_SCENE, RevisionReverseFXMLController.class);
+        return map;
+    }
+
+    /**
+     * Loads the controller, sets up the scene, and updates the view.
+     *
+     * @param controller       The controller to load.
+     * @param nextSceneParams  Optional parameters for initializing the scene.
+     */
+    private void loadController(FXMLController controller, Object... nextSceneParams) {
+        this.currentController = controller;
+        controller.loadViewFromFXML();
+        controller.initWithParams(nextSceneParams);
+
+        double currentX = this.stage.getX();
+        double currentY = this.stage.getY();
+
+        if (stage.getScene() != null) {
+            stage.getScene().setRoot(new javafx.scene.Group());
+        }
+
+        this.stage.setScene(new Scene(controller.root));
+
+        Platform.runLater(() -> {
+            this.stage.setX(currentX);
+            this.stage.setY(currentY);
+        });
+
+        controller.updateView();
+        controller.updateSize();
+        controller.updateTranslation();
     }
 
     /**

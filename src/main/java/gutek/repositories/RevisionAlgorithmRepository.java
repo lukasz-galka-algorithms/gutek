@@ -11,5 +11,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 @Transactional
-public interface RevisionAlgorithmRepository extends JpaRepository<RevisionAlgorithm, Long> {
+public interface RevisionAlgorithmRepository extends JpaRepository<RevisionAlgorithm<?>, Long> {
 }

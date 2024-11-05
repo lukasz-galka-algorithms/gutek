@@ -172,8 +172,8 @@ public class RevisionFXMLController extends FXMLController {
      */
     @Override
     public void initWithParams(Object... params) {
-        if (params != null && params.length > 0 && params[0] instanceof DeckBase) {
-            this.deck = (DeckBase) params[0];
+        if (params != null && params.length > 0 && params[0] instanceof DeckBase deckBase) {
+            this.deck = deckBase;
             if (deck.getDeckBaseStatistics() != null) {
                 newCardsPerDayTextField.setText(deck.getDeckBaseStatistics().getNewCardsPerDay().toString());
             }
@@ -264,6 +264,7 @@ public class RevisionFXMLController extends FXMLController {
             reverseNewCardsLabel.setText(translationService.getTranslation("deck_view.revise.new_cards_reverse") + ": " +
                     deckStatisticsService.getNewCardsForToday(deck.getDeckBaseStatistics().getIdDeckStatistics()));
         } catch (NumberFormatException ignored) {
+            // ignore
         }
     }
 }

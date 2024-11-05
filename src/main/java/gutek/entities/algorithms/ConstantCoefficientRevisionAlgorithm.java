@@ -8,6 +8,9 @@ import jakarta.persistence.*;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
 /**
@@ -20,6 +23,8 @@ import java.time.LocalDate;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Getter
+@Setter
 public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<CardConstantCoefficient>{
     /** Coefficient used in the normal revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.normal_coeff_1")
@@ -103,7 +108,7 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
 
     /** Translation key for the algorithm name. */
     @Transient
-    protected static final String algorithmNameKey = "revision_algorithm.const_coeff.algorithm_name";
+    protected static final String ALGORITHM_NAME_KEY = "revision_algorithm.const_coeff.algorithm_name";
 
     /**
      * Default constructor that initializes the revision buttons.
@@ -153,13 +158,15 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     @Override
     public void updateSize(double width, double height, double scaleFactor){
         double buttonFontSize = 12 * scaleFactor;
-        button1.setStyle("-fx-font-size: " + buttonFontSize + "px;");
-        button2.setStyle("-fx-font-size: " + buttonFontSize + "px;");
-        button3.setStyle("-fx-font-size: " + buttonFontSize + "px;");
-        button4.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        String buttonsStyle = "-fx-font-size: " + buttonFontSize + "px;";
 
-        reverseButton1.setStyle("-fx-font-size: " + buttonFontSize + "px;");
-        reverseButton2.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        button1.setStyle(buttonsStyle);
+        button2.setStyle(buttonsStyle);
+        button3.setStyle(buttonsStyle);
+        button4.setStyle(buttonsStyle);
+
+        reverseButton1.setStyle(buttonsStyle);
+        reverseButton2.setStyle(buttonsStyle);
 
         button1.setPrefSize(width / 4, height);
         button2.setPrefSize(width / 4, height);
@@ -269,7 +276,7 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      */
     @Override
     public String getAlgorithmName() {
-        return translationService.getTranslation(algorithmNameKey);
+        return translationService.getTranslation(ALGORITHM_NAME_KEY);
     }
 
     /**

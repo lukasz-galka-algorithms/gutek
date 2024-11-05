@@ -125,6 +125,7 @@ public class TrashDeckCellFXMLController extends FXMLController {
     /**
      * Updates the text of the labels and buttons based on the current language settings using the translation service.
      */
+    @Override
     public void updateTranslation() {
         deckNameLabel.setText(translationService.getTranslation("trash_decks_view.deck_name"));
         buttonRestore.setText(translationService.getTranslation("trash_decks_view.restore_button"));

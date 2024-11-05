@@ -1,12 +1,15 @@
 package gutek.services;
 
 import gutek.entities.algorithms.RevisionAlgorithm;
+import gutek.entities.cards.CardBase;
+import gutek.repositories.RevisionAlgorithmRepository;
 import org.reflections.Reflections;
 import org.reflections.scanners.Scanners;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.springframework.stereotype.Service;
+
 import java.lang.reflect.Modifier;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,17 +27,23 @@ public class RevisionAlgorithmService {
     private final TranslationService translationService;
 
     /**
+     * Repository used for handling algorithm operations.
+     */
+    private final RevisionAlgorithmRepository revisionAlgorithmRepository;
+
+    /**
      * A set of classes that extend {@link RevisionAlgorithm}.
      */
-    private final Set<Class<? extends RevisionAlgorithm>> algorithmClasses;
+    private final Set<Class<? extends RevisionAlgorithm<? extends CardBase>>> algorithmClasses;
 
     /**
      * Constructor that initializes the service and loads all available revision algorithms.
      *
      * @param translationService Service used for handling translations.
      */
-    public RevisionAlgorithmService(TranslationService translationService) {
+    public RevisionAlgorithmService(TranslationService translationService, RevisionAlgorithmRepository revisionAlgorithmRepository) {
         this.translationService = translationService;
+        this.revisionAlgorithmRepository = revisionAlgorithmRepository;
 
         Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .setUrls(ClasspathHelper.forPackage("gutek"))
@@ -44,6 +53,11 @@ public class RevisionAlgorithmService {
         algorithmClasses = reflections.getSubTypesOf(RevisionAlgorithm.class)
                 .stream()
                 .filter(subType -> !Modifier.isAbstract(subType.getModifiers()))
+                .map(clazz -> {
+                    @SuppressWarnings("unchecked")
+                    Class<? extends RevisionAlgorithm<? extends CardBase>> castedClass = (Class<? extends RevisionAlgorithm<? extends CardBase>>) clazz;
+                    return castedClass;
+                })
                 .collect(Collectors.toSet());
     }
 
@@ -56,7 +70,7 @@ public class RevisionAlgorithmService {
         return algorithmClasses.stream()
                 .map(clazz -> {
                     try {
-                        RevisionAlgorithm<?> algorithmInstance = clazz.getDeclaredConstructor().newInstance();
+                        RevisionAlgorithm<? extends CardBase> algorithmInstance = clazz.getDeclaredConstructor().newInstance();
                         algorithmInstance.setTranslationService(translationService);
                         return algorithmInstance.getAlgorithmName();
                     } catch (Exception e) {
@@ -72,17 +86,29 @@ public class RevisionAlgorithmService {
      * @param algorithmName The name of the algorithm to instantiate.
      * @return An instance of the revision algorithm, or {@code null} if not found.
      */
-    public RevisionAlgorithm<?> createAlgorithmInstance(String algorithmName) {
-        for (Class<? extends RevisionAlgorithm> algorithmClass : algorithmClasses) {
+    public <T extends CardBase> RevisionAlgorithm<T> createAlgorithmInstance(String algorithmName) {
+        for (Class<? extends RevisionAlgorithm<? extends CardBase>> algorithmClass : algorithmClasses) {
             try {
-                RevisionAlgorithm<?> algorithmInstance = algorithmClass.getDeclaredConstructor().newInstance();
+                @SuppressWarnings("unchecked")
+                RevisionAlgorithm<T> algorithmInstance = (RevisionAlgorithm<T>) algorithmClass.getDeclaredConstructor().newInstance();
                 algorithmInstance.setTranslationService(translationService);
                 if (algorithmInstance.getAlgorithmName().equals(algorithmName)) {
                     return algorithmInstance;
                 }
-            } catch (Exception ignored) {
+            } catch (Exception e) {
+                // ignore
             }
         }
         return null;
+    }
+
+    /**
+     * Saves a given revision algorithm to the database.
+     *
+     * @param algorithm The algorithm to save.
+     * @return The saved algorithm with an assigned ID.
+     */
+    public <T extends RevisionAlgorithm<?>> T saveAlgorithm(T algorithm) {
+        return revisionAlgorithmRepository.save(algorithm);
     }
 }

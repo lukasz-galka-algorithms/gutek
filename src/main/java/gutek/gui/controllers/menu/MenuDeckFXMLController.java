@@ -66,8 +66,8 @@ public class MenuDeckFXMLController extends FXMLController {
      */
     @Override
     public void initWithParams(Object... params) {
-        if (params != null && params.length > 0 && params[0] instanceof DeckBase) {
-            this.deck = (DeckBase) params[0];
+        if (params != null && params.length > 0 && params[0] instanceof DeckBase deckBase) {
+            this.deck = deckBase;
         }
         initializeMenuActions();
     }
@@ -95,6 +95,7 @@ public class MenuDeckFXMLController extends FXMLController {
     /**
      * Updates the text of the buttons based on the current language settings using the translation service.
      */
+    @Override
     public void updateTranslation() {
         addCardButton.setText(translationService.getTranslation("deck_view.menu.add_card"));
         browseDeckButton.setText(translationService.getTranslation("deck_view.menu.browse"));

@@ -23,6 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -141,11 +142,6 @@ public class RevisionReverseFXMLController extends FXMLController {
     private CardBase currentCard;
 
     /**
-     * The deck containing the cards to be revised.
-     */
-    private DeckBase deck;
-
-    /**
      * Constructs a new `RevisionReverseFXMLController` to facilitate reverse revision of cards.
      *
      * @param stage                 The main stage of the application.
@@ -184,11 +180,10 @@ public class RevisionReverseFXMLController extends FXMLController {
      */
     @Override
     public void initWithParams(Object... params) {
-        if (params != null && params.length > 0 && params[0] instanceof DeckBase) {
-            this.deck = (DeckBase) params[0];
-            this.oldCardsList = deckService.getReverseRevisionCards(deck);
-            this.newCardsList = deckService.getNewCardsForTodayRevision(deck, deckStatisticsService.getNewCardsForToday(deck.getDeckBaseStatistics().getIdDeckStatistics()));
-            menuDeckFXMLController.initWithParams(deck);
+        if (params != null && params.length > 0 && params[0] instanceof DeckBase deckBase) {
+            this.oldCardsList = new ArrayList<>(deckService.getReverseRevisionCards(deckBase));
+            this.newCardsList = new ArrayList<>(deckService.getNewCardsForTodayRevision(deckBase, deckStatisticsService.getNewCardsForToday(deckBase.getDeckBaseStatistics().getIdDeckStatistics())));
+            menuDeckFXMLController.initWithParams(deckBase);
         }
         menuBarFXMLController.initWithParams();
 

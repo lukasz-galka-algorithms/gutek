@@ -5,10 +5,8 @@ import gutek.services.TranslationService;
 import jakarta.persistence.*;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
-import lombok.Data;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Abstract class representing a revision algorithm for cards.
@@ -22,7 +20,8 @@ import java.util.Map;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Data
+@Getter
+@Setter
 public abstract class RevisionAlgorithm<T extends CardBase>{
 
     /** Unique identifier for the revision algorithm. */
@@ -37,7 +36,7 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
     /**
      * Default constructor that initializes default hyperparameters for the algorithm.
      */
-    public RevisionAlgorithm() {
+    protected RevisionAlgorithm() {
         initializeDefaultHiperparameters();
     }
 
@@ -105,52 +104,4 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
      * @return {@code true} if the reverse revision process is complete, {@code false} otherwise
      */
     public abstract boolean reverseReviseCard(Button clickedButton, T card);
-
-    /**
-     * Retrieves the hyperparameters of the algorithm.
-     * This method uses reflection to gather the fields annotated with {@link AlgorithmHiperparameter}
-     * and returns them as a map of field names to their current values.
-     *
-     * @return a map of hyperparameter names and their corresponding values
-     */
-    public Map<String, Object> getAlgorithmHiperparameters() {
-        Map<String, Object> hiperparameters = new HashMap<>();
-
-        Field[] fields = this.getClass().getDeclaredFields();
-
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(AlgorithmHiperparameter.class)) {
-                field.setAccessible(true);
-                try {
-                    hiperparameters.put(field.getName(), field.get(this));
-                } catch (IllegalAccessException ignored) {
-                }
-            }
-        }
-
-        return hiperparameters;
-    }
-
-    /**
-     * Sets the hyperparameters of the algorithm.
-     * This method uses reflection to update the fields annotated with {@link AlgorithmHiperparameter}
-     * based on the values provided in the given map.
-     *
-     * @param hiperparameters a map of hyperparameter names and their corresponding values
-     */
-    public void setAlgorithmHiperparameters(Map<String, Object> hiperparameters){
-        Field[] fields = this.getClass().getDeclaredFields();
-
-        for (Field field : fields) {
-            if (field.isAnnotationPresent(AlgorithmHiperparameter.class)) {
-                field.setAccessible(true);
-                if (hiperparameters.containsKey(field.getName())) {
-                    try {
-                        field.set(this, hiperparameters.get(field.getName()));
-                    } catch (IllegalAccessException ignored) {
-                    }
-                }
-            }
-        }
-    }
 }
