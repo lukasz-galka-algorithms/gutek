@@ -10,7 +10,6 @@ import static gutek.services.ChartService.MAX_RANGE;
 
 /**
  * Represents statistical data related to the usage and performance of a deck in a spaced repetition system.
- *
  * This class stores information about the number of new cards reviewed per day, various types of revisions,
  * and the deck associated with these statistics. The arrays track the number of revisions over a set period of time.
  */

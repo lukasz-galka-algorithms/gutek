@@ -362,8 +362,7 @@ public class RevisionReverseFXMLController extends FXMLController {
         updateTranslation();
 
         panel.getChildren().forEach(node -> {
-            if (node instanceof Button) {
-                Button button = (Button) node;
+            if (node instanceof Button button) {
                 button.setOnAction(e -> {
                     cardRevisionService.reviseReverse(currentCard, algorithmButtonContainer.getChildren().indexOf(button));
                     if (currentCard.isNewCard()) {

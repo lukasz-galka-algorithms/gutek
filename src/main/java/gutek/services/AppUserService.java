@@ -41,14 +41,13 @@ public class AppUserService {
      *
      * @param username the username of the new user.
      * @param password the raw password of the new user.
-     * @return the saved {@link AppUser} entity.
      */
-    public AppUser registerUser(String username, String password) {
+    public void registerUser(String username, String password) {
         String encodedPassword = passwordEncoder.encode(password);
         AppUser user = new AppUser();
         user.setUsername(username);
         user.setPassword(encodedPassword);
-        return appUserRepository.save(user);
+        appUserRepository.save(user);
     }
 
     /**

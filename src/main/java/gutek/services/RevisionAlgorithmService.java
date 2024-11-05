@@ -60,7 +60,6 @@ public class RevisionAlgorithmService {
                         algorithmInstance.setTranslationService(translationService);
                         return algorithmInstance.getAlgorithmName();
                     } catch (Exception e) {
-                        e.printStackTrace();
                         return clazz.getSimpleName();
                     }
                 })
@@ -81,8 +80,7 @@ public class RevisionAlgorithmService {
                 if (algorithmInstance.getAlgorithmName().equals(algorithmName)) {
                     return algorithmInstance;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception ignored) {
             }
         }
         return null;

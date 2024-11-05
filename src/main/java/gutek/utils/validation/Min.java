@@ -21,7 +21,6 @@ public @interface Min {
 
     /**
      * The key for the translation message to be used when the value is below the minimum.
-     *
      * The default message key is "validation.min".
      *
      * @return the message translation key.

@@ -2,7 +2,6 @@ package gutek.services;
 
 import gutek.entities.decks.DeckBaseStatistics;
 import gutek.repositories.CardBaseRepository;
-import gutek.repositories.DeckBaseRepository;
 import gutek.repositories.DeckBaseStatisticsRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,11 +20,6 @@ public class DeckStatisticsService {
      * Repository for accessing cards.
      */
     private final CardBaseRepository cardBaseRepository;
-
-    /**
-     * Repository for accessing deck information.
-     */
-    private final DeckBaseRepository deckBaseRepository;
 
     /**
      * Repository for accessing deck statistics.
@@ -113,10 +107,7 @@ public class DeckStatisticsService {
     public int[] getReviseForTheFirstTimeCounts(Long idDeckStatistics){
         updateStatisticsForToday(idDeckStatistics);
         Optional<DeckBaseStatistics> updatedStatistics = deckBaseStatisticsRepository.findById(idDeckStatistics);
-        if (updatedStatistics.isPresent()){
-            return updatedStatistics.get().getRevisedForTheFirstTime();
-        }
-        return null;
+        return updatedStatistics.map(DeckBaseStatistics::getRevisedForTheFirstTime).orElse(null);
     }
 
     /**
@@ -128,10 +119,7 @@ public class DeckStatisticsService {
     public int[] getRegularRevisionCounts(Long idDeckStatistics){
         updateStatisticsForToday(idDeckStatistics);
         Optional<DeckBaseStatistics> updatedStatistics = deckBaseStatisticsRepository.findById(idDeckStatistics);
-        if (updatedStatistics.isPresent()){
-            return updatedStatistics.get().getRegularRevision();
-        }
-        return null;
+        return updatedStatistics.map(DeckBaseStatistics::getRegularRevision).orElse(null);
     }
 
     /**
@@ -143,10 +131,7 @@ public class DeckStatisticsService {
     public int[] getReverseRevisionCounts(Long idDeckStatistics){
         updateStatisticsForToday(idDeckStatistics);
         Optional<DeckBaseStatistics> updatedStatistics = deckBaseStatisticsRepository.findById(idDeckStatistics);
-        if (updatedStatistics.isPresent()){
-            return updatedStatistics.get().getReverseRevision();
-        }
-        return null;
+        return updatedStatistics.map(DeckBaseStatistics::getReverseRevision).orElse(null);
     }
 
     /**

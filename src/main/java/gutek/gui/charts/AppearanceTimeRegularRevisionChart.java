@@ -11,7 +11,6 @@ import java.util.List;
 
 /**
  * A chart component that displays the number of cards scheduled for regular revision over a specified range of days.
- *
  * This class generates a bar chart showing when cards will appear for regular revision within a specified period.
  * It extends {@link StatisticsChart}, which provides basic functionality for handling chart titles and translations.
  */
@@ -82,7 +81,7 @@ public class AppearanceTimeRegularRevisionChart extends StatisticsChart {
                 if (revisionDate.isBefore(today)) {
                     cardsPerDay[0]++;
                 } else {
-                    int daysUntilRevision = (int) today.until(revisionDate).getDays();
+                    int daysUntilRevision = today.until(revisionDate).getDays();
                     if (daysUntilRevision >= 0 && daysUntilRevision < range) {
                         cardsPerDay[daysUntilRevision]++;
                     }

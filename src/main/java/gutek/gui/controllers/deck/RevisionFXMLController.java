@@ -94,7 +94,7 @@ public class RevisionFXMLController extends FXMLController {
     /**
      * Listener for changes in the "new cards per day" field to update the value in the deck statistics.
      */
-    private ChangeListener<String> newCardsPerDayListener;
+    private final ChangeListener<String> newCardsPerDayListener;
 
     /**
      * Controller for managing the menu bar.

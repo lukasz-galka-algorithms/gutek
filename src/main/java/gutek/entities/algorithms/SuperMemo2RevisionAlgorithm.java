@@ -12,7 +12,6 @@ import java.time.LocalDate;
 
 /**
  * A revision algorithm based on the SuperMemo2 method for spaced repetition.
- *
  * This class defines both normal and reverse revision processes, using the SuperMemo2 algorithm
  * to calculate intervals and adjust the easiness factor based on user performance.
  */
@@ -36,23 +35,23 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
 
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private Button buttonGrade1;
+    private final Button buttonGrade1;
 
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private Button buttonGrade2;
+    private final Button buttonGrade2;
 
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private Button buttonGrade3;
+    private final Button buttonGrade3;
 
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private Button buttonGrade4;
+    private final Button buttonGrade4;
 
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private Button buttonGrade5;
+    private final Button buttonGrade5;
 
     /** Initial easiness factor for the reverse revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.supermemo2.reverse_easiness_factor")
@@ -70,23 +69,23 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
 
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private Button reverseButtonGrade1;
+    private final Button reverseButtonGrade1;
 
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private Button reverseButtonGrade2;
+    private final Button reverseButtonGrade2;
 
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private Button reverseButtonGrade3;
+    private final Button reverseButtonGrade3;
 
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private Button reverseButtonGrade4;
+    private final Button reverseButtonGrade4;
 
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private Button reverseButtonGrade5;
+    private final Button reverseButtonGrade5;
 
     /** Translation key for the algorithm's name. */
     @Transient
@@ -192,7 +191,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      */
     @Override
     public boolean reviseCard(Button clickedButton, CardSuperMemo2 card) {
-        boolean cardRevisionFinished = false;
+        boolean cardRevisionFinished;
         int grade = 0;
 
         if (clickedButton == buttonGrade1) {
@@ -260,7 +259,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      */
     @Override
     public boolean reverseReviseCard(Button clickedButton, CardSuperMemo2 card) {
-        boolean cardRevisionFinished = false;
+        boolean cardRevisionFinished;
         int grade = 0;
 
         if (clickedButton == buttonGrade1) {

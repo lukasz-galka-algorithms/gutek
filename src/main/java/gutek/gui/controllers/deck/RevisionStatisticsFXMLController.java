@@ -172,7 +172,7 @@ public class RevisionStatisticsFXMLController extends FXMLController {
         double chartHeight = 300 * scaleFactor;
         chartContainer.setPrefSize(chartWidth, chartHeight);
 
-        if (!chartContainer.getChildren().isEmpty() && chartContainer.getChildren().get(0) instanceof Chart chart) {
+        if (!chartContainer.getChildren().isEmpty() && chartContainer.getChildren().getFirst() instanceof Chart chart) {
             chart.setPrefWidth(chartWidth);
             chart.setPrefHeight(chartHeight);
         }

@@ -88,12 +88,8 @@ public class CardCellFXMLController extends FXMLController {
      */
     @FXML
     public void initialize() {
-        parentController.getScaleFactorProperty().addListener((obs, oldVal, newVal) -> {
-            updateSize();
-        });
-        parentController.getCurrentLocaleProperty().addListener((obs, oldVal, newVal) -> {
-            updateTranslation();
-        });
+        parentController.getScaleFactorProperty().addListener((obs, oldVal, newVal) -> updateSize());
+        parentController.getCurrentLocaleProperty().addListener((obs, oldVal, newVal) -> updateTranslation());
 
         editButton.setOnAction(e -> handleEdit());
         deleteButton.setOnAction(e -> handleDelete());

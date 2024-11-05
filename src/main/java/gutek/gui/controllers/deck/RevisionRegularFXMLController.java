@@ -345,8 +345,7 @@ public class RevisionRegularFXMLController extends FXMLController {
         algorithm.setTranslationService(translationService);
 
         panel.getChildren().forEach(node -> {
-            if (node instanceof Button) {
-                Button button = (Button) node;
+            if (node instanceof Button button) {
                 button.setOnAction(e -> {
                     cardRevisionService.reviseRegular(currentCard, algorithmButtonContainer.getChildren().indexOf(button));
                     if (currentCard.isNewCard()) {

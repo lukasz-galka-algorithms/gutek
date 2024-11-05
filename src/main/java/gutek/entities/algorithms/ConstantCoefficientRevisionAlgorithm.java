@@ -13,10 +13,8 @@ import java.time.LocalDate;
 /**
  * Represents a revision algorithm that uses constant coefficients to adjust
  * the revision time and track the number of incorrect answers.
- *
  * This class is annotated as a JPA entity and uses the {@link InheritanceType#TABLE_PER_CLASS}
  * strategy for inheritance. It handles both normal and reverse revision processes.
- *
  * The coefficients are used to calculate the next revision time based on the current
  * base revision time and the number of incorrect answers.
  */
@@ -60,19 +58,19 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
 
     /** UI component for the first button in the normal revision process. */
     @Transient
-    private Button button1;
+    private final Button button1;
 
     /** UI component for the second button in the normal revision process. */
     @Transient
-    private Button button2;
+    private final Button button2;
 
     /** UI component for the third button in the normal revision process. */
     @Transient
-    private Button button3;
+    private final Button button3;
 
     /** UI component for the fourth button in the normal revision process. */
     @Transient
-    private Button button4;
+    private final Button button4;
 
     /** Coefficient used in the reverse revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.reverse_coeff_1")
@@ -97,11 +95,11 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
 
     /** UI component for the first button in the reverse revision process. */
     @Transient
-    private Button reverseButton1;
+    private final Button reverseButton1;
 
     /** UI component for the second button in the reverse revision process. */
     @Transient
-    private Button reverseButton2;
+    private final Button reverseButton2;
 
     /** Translation key for the algorithm name. */
     @Transient

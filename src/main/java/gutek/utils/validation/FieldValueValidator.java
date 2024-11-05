@@ -24,7 +24,7 @@ public class FieldValueValidator {
     public static Object validateAndReturnConverted(Object object, String fieldName, Object value, TranslationService translationService) throws IllegalArgumentException {
         Class<?> clazz = object.getClass();
 
-        Field field = null;
+        Field field;
         try {
             field = clazz.getDeclaredField(fieldName);
         } catch (NoSuchFieldException e) {

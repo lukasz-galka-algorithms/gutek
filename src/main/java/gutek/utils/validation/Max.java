@@ -21,7 +21,6 @@ public @interface Max {
 
     /**
      * The key for the translation message to be used when the value exceeds the maximum.
-     *
      * The default message key is "validation.max".
      *
      * @return the message translation key.

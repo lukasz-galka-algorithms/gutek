@@ -11,7 +11,6 @@ import java.util.List;
 
 /**
  * A chart component that displays the number of new cards added per day over a specified range.
- *
  * This class uses the JavaFX library to create a bar chart, showing the distribution of newly
  * added cards for a specific deck over a given period. It extends {@link StatisticsChart}, which
  * provides basic functionality for handling chart translations and titles.

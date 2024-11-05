@@ -195,7 +195,6 @@ public class RevisionAddCardFXMLController extends FXMLController {
                 showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.deck_imported"));
             } catch (Exception ex) {
                 showAlert(Alert.AlertType.ERROR, translationService.getTranslation("new_deck_view.import_error"));
-                ex.printStackTrace();
             }
         }
     }

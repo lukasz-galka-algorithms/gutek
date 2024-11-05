@@ -17,17 +17,4 @@ public class NumberTextField extends TextField {
             }
         });
     }
-
-    /**
-     * Returns the integer value from the text field, or zero if the field is empty.
-     *
-     * @return the integer value of the field's text, or zero if the field is empty
-     */
-    public int getInteger() {
-        String text = getText();
-        if (text.isEmpty()) {
-            return 0;
-        }
-        return Integer.parseInt(text);
-    }
 }

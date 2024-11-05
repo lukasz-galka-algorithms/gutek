@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
  * The `MenuDeckFXMLController` class represents a menu for deck-related actions,
  * including adding cards, browsing the deck, revising cards, viewing settings,
  * viewing statistics, and closing the menu.
- *
  * This controller dynamically updates the button labels and sizes based on the
  * current language and screen size settings.
  */

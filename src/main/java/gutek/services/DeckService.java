@@ -220,23 +220,18 @@ public class DeckService {
      *
      * @param cardBase The card to be added.
      * @param deck     The deck to which the card will be added.
-     * @return true if the card was added successfully, false if it already exists.
      */
-    public boolean addNewCardToDeck(CardBase cardBase, DeckBase deck){
+    public void addNewCardToDeck(CardBase cardBase, DeckBase deck){
         Optional<DeckBase> deckBase = deckBaseRepository.findById(deck.getIdDeck());
         if(deckBase.isPresent()){
             Optional<CardBase> cardBaseOptional = cardBaseRepository.findByFrontAndDeck(cardBase.getFront(), deckBase.get());
-            if(!cardBaseOptional.isPresent()){
+            if(cardBaseOptional.isEmpty()){
                 deckBase.get().getCards().add(cardBase);
                 deckBaseRepository.save(deckBase.get());
                 cardBase.setDeck(deckBase.get());
                 cardBaseRepository.save(cardBase);
-                return true;
-            }else {
-                return false;
             }
         }
-        return false;
     }
 
     /**

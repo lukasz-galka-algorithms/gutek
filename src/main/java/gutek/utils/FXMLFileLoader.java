@@ -46,7 +46,6 @@ public class FXMLFileLoader {
             return fxmlLoader.load();
         } catch (IOException e) {
             System.err.println("Error loading FXML: " + fxmlPath);
-            e.printStackTrace();
         }
         return null;
     }

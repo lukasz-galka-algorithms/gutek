@@ -145,8 +145,7 @@ public class RevisionSettingsFXMLController extends FXMLController {
                 try {
                     Object value = field.get(algorithm);
                     textField.setText(value != null ? value.toString() : "");
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                } catch (IllegalAccessException ignored) {
                 }
 
                 HBox hbox = new HBox(10, label, textField);
@@ -230,7 +229,7 @@ public class RevisionSettingsFXMLController extends FXMLController {
                 .filter(node -> node instanceof HBox)
                 .map(node -> (HBox) node)
                 .toList()) {
-            Label label = (Label) hbox.getChildren().get(0);
+            Label label = (Label) hbox.getChildren().getFirst();
             String translationKey = (String) label.getUserData();
             label.setText(translationService.getTranslation(translationKey));
         }

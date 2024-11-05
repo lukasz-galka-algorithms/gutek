@@ -12,11 +12,9 @@ import java.util.Map;
 
 /**
  * Abstract class representing a revision algorithm for cards.
- *
  * This class defines the common structure for various revision algorithms and
  * includes methods for managing hyperparameters and interacting with the UI.
  * The class is parameterized by a type {@code T} that extends {@link CardBase}.
- *
  * The revision algorithm is defined as a JPA entity with inheritance strategy
  * {@link InheritanceType#TABLE_PER_CLASS}.
  *
@@ -110,7 +108,6 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
 
     /**
      * Retrieves the hyperparameters of the algorithm.
-     *
      * This method uses reflection to gather the fields annotated with {@link AlgorithmHiperparameter}
      * and returns them as a map of field names to their current values.
      *
@@ -126,8 +123,7 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
                 field.setAccessible(true);
                 try {
                     hiperparameters.put(field.getName(), field.get(this));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                } catch (IllegalAccessException ignored) {
                 }
             }
         }
@@ -137,7 +133,6 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
 
     /**
      * Sets the hyperparameters of the algorithm.
-     *
      * This method uses reflection to update the fields annotated with {@link AlgorithmHiperparameter}
      * based on the values provided in the given map.
      *
@@ -152,8 +147,7 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
                 if (hiperparameters.containsKey(field.getName())) {
                     try {
                         field.set(this, hiperparameters.get(field.getName()));
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
+                    } catch (IllegalAccessException ignored) {
                     }
                 }
             }

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * A chart component that displays the number of cards revised for the first time over a specified range of days.
- *
  * This class generates a bar chart showing the distribution of cards revised for the first time
  * within a specified time range. It extends {@link StatisticsChart}, which provides basic chart functionalities.
  */

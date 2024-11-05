@@ -84,7 +84,7 @@ public class AppearanceTimeReverseRevisionChart extends StatisticsChart {
                 if (revisionDate.isBefore(today)) {
                     cardsPerDay[0]++;
                 } else {
-                    int daysUntilRevision = (int) today.until(revisionDate).getDays();
+                    int daysUntilRevision = today.until(revisionDate).getDays();
                     if (daysUntilRevision >= 0 && daysUntilRevision < range) {
                         cardsPerDay[daysUntilRevision]++;
                     }

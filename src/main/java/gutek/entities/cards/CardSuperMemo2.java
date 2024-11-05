@@ -4,7 +4,6 @@ import gutek.entities.decks.DeckBase;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -45,7 +44,6 @@ public class CardSuperMemo2 extends CardBase {
 
     /**
      * Constructs a new card with the given front, back, easiness factors, and associated deck.
-     *
      * This constructor initializes the card's easiness factors and sets the default values
      * for both regular and reverse revision processes.
      *

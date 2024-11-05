@@ -12,7 +12,6 @@ import java.util.List;
 
 /**
  * Represents a deck of cards used in a spaced repetition system.
- *
  * This class stores information about the deck, including its name, whether it is deleted,
  * the list of associated cards, the revision algorithm applied to the deck, and statistics
  * about the deck's usage.
