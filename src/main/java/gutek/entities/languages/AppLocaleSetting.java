@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * Represents the locale settings for the application, including language and country information.
- *
  * This class stores the language and country codes used to determine the locale settings for a user.
  * It can be used to configure internationalization preferences.
  */

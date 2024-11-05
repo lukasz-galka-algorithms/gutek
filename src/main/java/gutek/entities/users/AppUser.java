@@ -9,7 +9,6 @@ import java.util.List;
 
 /**
  * Represents a user of the application.
- *
  * This class stores information about the user, including their username, password, and the list of decks they own.
  * The relationship between users and decks is one-to-many, meaning each user can own multiple decks.
  */

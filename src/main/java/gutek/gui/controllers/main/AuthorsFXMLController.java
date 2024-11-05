@@ -3,7 +3,6 @@ package gutek.gui.controllers.main;
 import gutek.gui.controllers.FXMLController;
 import gutek.gui.controllers.MainStage;
 import gutek.gui.controllers.menu.MenuBarFXMLController;
-import gutek.services.DeckService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
 import javafx.fxml.FXML;

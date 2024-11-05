@@ -6,14 +6,13 @@ import lombok.*;
 
 /**
  * Represents a card that uses constant coefficients for calculating revision times.
- *
  * This class extends {@link CardBase} and adds functionality for tracking revision
  * times and incorrect answer counts for both regular and reverse revision processes.
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Data
 @NoArgsConstructor
+@Getter
 public class CardConstantCoefficient extends CardBase {
 
     /** The base time used for calculating the next regular revision. */
@@ -30,7 +29,6 @@ public class CardConstantCoefficient extends CardBase {
 
     /**
      * Constructs a new card with the given front and back content, and associated deck.
-     *
      * This constructor also initializes the default revision times and resets the
      * incorrect counters for both regular and reverse revisions.
      *
@@ -46,7 +44,6 @@ public class CardConstantCoefficient extends CardBase {
 
     /**
      * Resets the revision parameters to their default values for regular revision.
-     *
      * This sets the base revision time to 1.0 and resets the incorrect counter to 0.
      */
     public void setRevisionDefault(){
@@ -56,7 +53,6 @@ public class CardConstantCoefficient extends CardBase {
 
     /**
      * Resets the revision parameters to their default values for reverse revision.
-     *
      * This sets the base reverse revision time to 1.0 and resets the reverse incorrect counter to 0.
      */
     public void setReverseRevisionDefault(){

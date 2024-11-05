@@ -7,7 +7,6 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 
 /**
  * Configuration class for message resources.
- *
  * This class provides a bean definition for {@link MessageSource}, which is used for internationalization
  * in Spring applications. It configures a {@link ResourceBundleMessageSource} that loads messages
  * from property files (e.g., `messages.properties`), and it sets the default character encoding to UTF-8.
@@ -17,7 +16,6 @@ public class MessageConfig {
 
     /**
      * Defines the {@link MessageSource} bean.
-     *
      * This bean loads message resources from files with the base name "messages" and sets the default
      * character encoding to "UTF-8". The base name refers to property files such as `messages.properties`,
      * `messages_en_US.properties`, etc., which contain key-value pairs for internationalized messages.

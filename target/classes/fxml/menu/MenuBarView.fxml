@@ -6,25 +6,19 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 
 <MenuBar xmlns:fx="http://javafx.com/fxml">
-    <menus>
-        <Menu fx:id="fileMenu">
-            <items>
-                <MenuItem fx:id="decksMenuItem"/>
-                <MenuItem fx:id="newMenuItem"/>
-                <MenuItem fx:id="trashMenuItem"/>
-                <SeparatorMenuItem />
-                <MenuItem fx:id="authorsMenuItem"/>
-                <SeparatorMenuItem />
-                <MenuItem fx:id="exitMenuItem"/>
-            </items>
-        </Menu>
-        <Menu fx:id="languageMenu">
+    <Menu fx:id="fileMenu">
+        <MenuItem fx:id="decksMenuItem"/>
+        <MenuItem fx:id="newMenuItem"/>
+        <MenuItem fx:id="trashMenuItem"/>
+        <SeparatorMenuItem/>
+        <MenuItem fx:id="authorsMenuItem"/>
+        <SeparatorMenuItem/>
+        <MenuItem fx:id="exitMenuItem"/>
+    </Menu>
+    <Menu fx:id="languageMenu">
 
-        </Menu>
-        <Menu fx:id="logoutMenu">
-            <items>
-                <MenuItem fx:id="logoutMenuItem"/>
-            </items>
-        </Menu>
-    </menus>
+    </Menu>
+    <Menu fx:id="logoutMenu">
+        <MenuItem fx:id="logoutMenuItem"/>
+    </Menu>
 </MenuBar>

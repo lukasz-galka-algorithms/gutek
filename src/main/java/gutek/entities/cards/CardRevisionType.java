@@ -2,7 +2,6 @@ package gutek.entities.cards;
 
 /**
  * Enum representing the types of revision that can be applied to a card.
- *
  * This enum defines two types of revisions:
  * <ul>
  *   <li>{@code REGULAR_REVISION} - A standard forward revision process.</li>

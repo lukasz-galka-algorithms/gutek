@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 /**
  * Represents the base class for a card in a revision system.
- *
  * This class defines common fields and methods for different types of cards,
  * including fields for storing the front and back of the card, revision dates,
  * and the deck to which the card belongs.
@@ -50,11 +49,9 @@ public class CardBase{
 
     /**
      * Constructs a new card with the given front, back, and associated deck.
-     *
      * This constructor initializes the card with the current date as the next
      * regular and reverse revision dates, and sets the creation time to the
      * current time. The card is also marked as new.
-     *
      * @param front the front content of the card
      * @param back the back content of the card
      * @param deck the deck to which the card belongs

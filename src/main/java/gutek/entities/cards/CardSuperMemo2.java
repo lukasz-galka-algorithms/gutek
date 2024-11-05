@@ -5,18 +5,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
  * Represents a card that uses the SuperMemo2 algorithm for spaced repetition.
- *
  * This class extends {@link CardBase} and adds fields for managing repetition count,
  * intervals, easiness factors, and incorrect answer counts for both regular and reverse revision processes.
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Data
 @NoArgsConstructor
+@Getter
 public class CardSuperMemo2 extends CardBase {
 
     /** Number of repetitions in the regular revision process. */

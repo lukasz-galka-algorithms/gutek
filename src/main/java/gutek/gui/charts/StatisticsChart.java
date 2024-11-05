@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 
 /**
  * An abstract class representing a statistics chart for decks.
- *
  * This class provides the structure for creating different types of charts,
  * such as charts for tracking card revisions or other statistics related to a deck.
  * It requires implementing classes to define how the chart is generated and to provide a chart title.

@@ -9,7 +9,6 @@ import java.time.LocalDate;
 
 /**
  * Represents a record of a card revision event.
- *
  * This class stores information about a single revision of a card, including
  * the date of the revision, the index of the button pressed during the revision,
  * and the type of revision (normal or reverse). Each revision is associated with

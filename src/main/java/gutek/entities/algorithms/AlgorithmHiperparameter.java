@@ -7,7 +7,6 @@ import java.lang.annotation.Retention;
 
 /**
  * Custom annotation used to mark fields as algorithm hyperparameters.
- *
  * This annotation can be applied to fields in classes to indicate that they represent
  * hyperparameters for an algorithm. The annotation includes an optional description
  * in the form of a translation key, which can be used for internationalization.
@@ -17,7 +16,6 @@ import java.lang.annotation.Retention;
 public @interface AlgorithmHiperparameter {
     /**
      * Specifies the translation key for the description of the hyperparameter.
-     *
      * This key can be used to retrieve a localized description of the hyperparameter
      * from a resource bundle for internationalization purposes.
      *
