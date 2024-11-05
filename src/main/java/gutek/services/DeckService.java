@@ -21,30 +21,37 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class DeckService {
+
     /**
      * Repository for accessing deck information.
      */
     private final DeckBaseRepository deckBaseRepository;
+
     /**
      * Repository for accessing user information.
      */
     private final AppUserRepository appUserRepository;
+
     /**
      * Repository for accessing card information.
      */
     private final CardBaseRepository cardBaseRepository;
+
     /**
      * Repository for accessing card revision history.
      */
     private final CardBaseRevisionRepository cardBaseRevisionRepository;
+
     /**
      * Repository for accessing revision algorithm information.
      */
     private final RevisionAlgorithmRepository revisionAlgorithmRepository;
+
     /**
      * Repository for accessing deck statistics.
      */
     private final DeckBaseStatisticsRepository deckBaseStatisticsRepository;
+
     /**
      * Retrieves all cards from the specified deck.
      *
@@ -52,8 +59,9 @@ public class DeckService {
      * @return List of all cards in the deck.
      */
     public List<CardBase> getAllCards(DeckBase deck) {
-        return deckBaseRepository.findById(deck.getIdDeck()).get().getCards();
+        return cardBaseRepository.findByDeck(deck);
     }
+
     /**
      * Retrieves cards that are due for regular revision from the specified deck.
      *
@@ -61,11 +69,9 @@ public class DeckService {
      * @return List of cards due for regular revision.
      */
     public List<CardBase> getRegularRevisionCards(DeckBase deck) {
-        return deckBaseRepository.findById(deck.getIdDeck()).get().getCards().stream()
-                .filter(card -> !card.isNewCard())
-                .filter(card -> !card.getNextRegularRevisionDate().isAfter(LocalDate.now()))
-                .collect(Collectors.toList());
+        return cardBaseRepository.findByDeckIdDeckAndIsNewCardFalseAndNextRegularRevisionDateLessThanEqual(deck.getIdDeck(), LocalDate.now());
     }
+
     /**
      * Retrieves cards that are due for reverse revision from the specified deck.
      *
@@ -73,11 +79,9 @@ public class DeckService {
      * @return List of cards due for reverse revision.
      */
     public List<CardBase> getReverseRevisionCards(DeckBase deck) {
-        return deckBaseRepository.findById(deck.getIdDeck()).get().getCards().stream()
-                .filter(card -> !card.isNewCard())
-                .filter(card -> !card.getNextReverseRevisionDate().isAfter(LocalDate.now()))
-                .collect(Collectors.toList());
+        return cardBaseRepository.findByDeckIdDeckAndIsNewCardFalseAndNextReverseRevisionDateLessThanEqual(deck.getIdDeck(), LocalDate.now());
     }
+
     /**
      * Retrieves new cards for today's revision, up to the specified limit.
      *
@@ -98,6 +102,7 @@ public class DeckService {
 
         return newCards.subList(0, newCardsForTodayRevisionNumber);
     }
+
     /**
      * Retrieves all new cards from the specified deck.
      *
@@ -105,10 +110,9 @@ public class DeckService {
      * @return List of new cards in the deck.
      */
     public List<CardBase> getAllNewCards(DeckBase deck) {
-        return deckBaseRepository.findById(deck.getIdDeck()).get().getCards().stream()
-                .filter(CardBase::isNewCard)
-                .collect(Collectors.toList());
+        return cardBaseRepository.findByDeckIdDeckAndIsNewCardTrue(deck.getIdDeck());
     }
+
     /**
      * Permanently removes the specified deck and all its associated cards.
      *
@@ -128,6 +132,7 @@ public class DeckService {
         RevisionAlgorithm<?> revisionAlgorithm = deck.getRevisionAlgorithm();
         revisionAlgorithmRepository.delete(revisionAlgorithm);
     }
+
     /**
      * Restores a deleted deck.
      *
@@ -137,6 +142,7 @@ public class DeckService {
         deck.setIsDeleted(false);
         deckBaseRepository.save(deck);
     }
+
     /**
      * Marks a deck as deleted.
      *
@@ -146,6 +152,7 @@ public class DeckService {
         deck.setIsDeleted(true);
         deckBaseRepository.save(deck);
     }
+
     /**
      * Saves or updates the specified deck.
      *
@@ -154,6 +161,7 @@ public class DeckService {
     public void saveDeck(DeckBase deck){
         deckBaseRepository.save(deck);
     }
+
     /**
      * Adds a new deck for the specified user, using the given revision algorithm and deck name.
      *
@@ -176,6 +184,7 @@ public class DeckService {
         appUserRepository.save(currentUser);
         return newDeck;
     }
+
     /**
      * Retrieves a list of decks belonging to the specified user.
      *
@@ -185,6 +194,27 @@ public class DeckService {
     public List<DeckBase> findDecksByUser(AppUser user){
         return deckBaseRepository.findByUser(user);
     }
+
+    /**
+     * Retrieves a list of non-deleted decks belonging to the specified user.
+     *
+     * @param user The user whose decks are to be retrieved.
+     * @return List of non-deleted decks belonging to the user.
+     */
+    public List<DeckBase> findDecksByUserNotDeleted(AppUser user){
+        return deckBaseRepository.findByUserAndIsDeletedFalse(user);
+    }
+
+    /**
+     * Retrieves a list of deleted decks belonging to the specified user.
+     *
+     * @param user The user whose decks are to be retrieved.
+     * @return List of deleted decks belonging to the user.
+     */
+    public List<DeckBase> findDecksByUserDeleted(AppUser user){
+        return deckBaseRepository.findByUserAndIsDeletedTrue(user);
+    }
+
     /**
      * Adds a new card to the specified deck if it doesn't already exist.
      *
@@ -207,5 +237,45 @@ public class DeckService {
             }
         }
         return false;
+    }
+
+    /**
+     * Gets the total count of cards in the specified deck.
+     *
+     * @param deck The deck for which to count cards.
+     * @return The total number of cards in the deck.
+     */
+    public int getAllCardsCount(DeckBase deck) {
+        return cardBaseRepository.countByDeckIdDeck(deck.getIdDeck());
+    }
+
+    /**
+     * Gets the count of new cards in the specified deck.
+     *
+     * @param deck The deck for which to count new cards.
+     * @return The number of new cards in the deck.
+     */
+    public int getNewCardsCount(DeckBase deck) {
+        return cardBaseRepository.countByDeckIdDeckAndIsNewCardTrue(deck.getIdDeck());
+    }
+
+    /**
+     * Gets the count of cards due for regular revision in the specified deck.
+     *
+     * @param deck The deck for which to count regular revision cards.
+     * @return The number of cards due for regular revision in the deck.
+     */
+    public int getRegularRevisionCardsCount(DeckBase deck) {
+        return cardBaseRepository.countByDeckIdDeckAndIsNewCardFalseAndNextRegularRevisionDateLessThanEqual(deck.getIdDeck(),LocalDate.now());
+    }
+
+    /**
+     * Gets the count of cards due for reverse revision in the specified deck.
+     *
+     * @param deck The deck for which to count reverse revision cards.
+     * @return The number of cards due for reverse revision in the deck.
+     */
+    public int getReverseRevisionCardsCount(DeckBase deck) {
+        return cardBaseRepository.countByDeckIdDeckAndIsNewCardFalseAndNextReverseRevisionDateLessThanEqual(deck.getIdDeck(),LocalDate.now());
     }
 }

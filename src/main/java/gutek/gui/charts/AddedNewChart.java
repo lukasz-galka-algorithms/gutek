@@ -4,31 +4,24 @@ import gutek.entities.cards.CardBase;
 import gutek.entities.decks.DeckBase;
 import gutek.services.DeckService;
 import gutek.services.TranslationService;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.data.category.DefaultCategoryDataset;
+import javafx.scene.chart.*;
 import org.springframework.stereotype.Component;
-
-import java.awt.*;
 import java.time.LocalDate;
 import java.util.List;
 
 /**
  * A chart component that displays the number of new cards added per day over a specified range.
  *
- * This class uses the JFreeChart library to create a bar chart, showing the distribution of newly
+ * This class uses the JavaFX library to create a bar chart, showing the distribution of newly
  * added cards for a specific deck over a given period. It extends {@link StatisticsChart}, which
  * provides basic functionality for handling chart translations and titles.
  */
 @Component
-public class AddedNewChart extends StatisticsChart{
+public class AddedNewChart extends StatisticsChart {
+
     /** Service for retrieving deck and card data. */
     private final DeckService deckService;
+
     /**
      * Constructs a new chart for displaying the number of newly added cards per day.
      *
@@ -39,48 +32,35 @@ public class AddedNewChart extends StatisticsChart{
         super(translationService);
         this.deckService = deckService;
     }
+
     /**
      * Creates a bar chart showing the number of new cards added per day over a specified range of days.
      *
      * @param range the number of days to display in the chart
      * @param deck the deck for which the chart is generated
-     * @return a {@link JFreeChart} object representing the chart
+     * @return a {@link Chart} object representing the chart
      */
     @Override
-    public JFreeChart getChart(int range, DeckBase deck) {
-        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    public Chart getChart(int range, DeckBase deck) {
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setLabel(translationService.getTranslation("deck_view.statistics.day"));
 
-        int[] addedNewCardsPerDay = countAddedNewCardsPerDay(range,deck);
-        String rowKey = translationService.getTranslation("deck_view.statistics.cards_number");
-        for (int i = addedNewCardsPerDay.length - 1 ; i >=0 ; i--) {
-            dataset.addValue(addedNewCardsPerDay[i], rowKey, String.valueOf(-i));
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel(translationService.getTranslation("deck_view.statistics.cards_number"));
+
+        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+        barChart.setTitle(getChartTitle());
+        int[] addedNewCardsPerDay = countAddedNewCardsPerDay(range, deck);
+        XYChart.Series<String, Number> dataSeries = new XYChart.Series<>();
+        dataSeries.setName(translationService.getTranslation("deck_view.statistics.cards_number"));
+
+        for (int i = addedNewCardsPerDay.length - 1; i >= 0; i--) {
+            dataSeries.getData().add(new XYChart.Data<>(String.valueOf(-i), addedNewCardsPerDay[i]));
         }
-
-        JFreeChart chart = ChartFactory.createBarChart(
-                getChartTitle(),
-                translationService.getTranslation("deck_view.statistics.day"),
-                translationService.getTranslation("deck_view.statistics.cards_number"),
-                dataset, PlotOrientation.VERTICAL,
-                false, true, false);
-
-        CategoryPlot plot = chart.getCategoryPlot();
-        BarRenderer renderer = (BarRenderer) plot.getRenderer();
-        renderer.setShadowVisible(false);
-        CategoryAxis domainAxis = plot.getDomainAxis();
-        int step = Math.max(1, range / 30);
-
-        domainAxis.setTickLabelFont(new Font("Serif", Font.PLAIN, 10));
-        domainAxis.setCategoryLabelPositions(CategoryLabelPositions.UP_45);
-        domainAxis.setTickLabelsVisible(true);
-
-        for (int i = 0; i < dataset.getColumnCount(); i++) {
-            if (i % step != 0) {
-                domainAxis.setTickLabelPaint(dataset.getColumnKey(i), new Color(0, 0, 0, 0));
-            }
-        }
-
-        return chart;
+        barChart.getData().add(dataSeries);
+        return barChart;
     }
+
     /**
      * Counts the number of new cards added each day over the given range for the specified deck.
      *
@@ -105,6 +85,7 @@ public class AddedNewChart extends StatisticsChart{
         }
         return cardsPerDay;
     }
+
     /**
      * Retrieves the title for the chart.
      *

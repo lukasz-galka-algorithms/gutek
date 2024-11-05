@@ -5,9 +5,9 @@ import gutek.utils.validation.Min;
 import gutek.utils.validation.NotEmpty;
 import gutek.utils.validation.NotNull;
 import jakarta.persistence.*;
-
-import javax.swing.*;
-import java.awt.*;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import java.time.LocalDate;
 
 /**
@@ -29,24 +29,28 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     @NotEmpty
     @Min(value = 0.001)
     private Double coefficient1;
+
     /** Coefficient used in the normal revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.normal_coeff_2")
     @NotNull
     @NotEmpty
     @Min(value = 0.001)
     private Double coefficient2;
+
     /** Coefficient used in the normal revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.normal_coeff_3")
     @NotNull
     @NotEmpty
     @Min(value = 0.001)
     private Double coefficient3;
+
     /** Coefficient used in the normal revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.normal_coeff_4")
     @NotNull
     @NotEmpty
     @Min(value = 0.001)
     private Double coefficient4;
+
     /** Threshold for the number of incorrect answers before resetting the card's revision status. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.normal_incorrect")
     @NotNull
@@ -56,16 +60,19 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
 
     /** UI component for the first button in the normal revision process. */
     @Transient
-    private JButton button1;
+    private Button button1;
+
     /** UI component for the second button in the normal revision process. */
     @Transient
-    private JButton button2;
+    private Button button2;
+
     /** UI component for the third button in the normal revision process. */
     @Transient
-    private JButton button3;
+    private Button button3;
+
     /** UI component for the fourth button in the normal revision process. */
     @Transient
-    private JButton button4;
+    private Button button4;
 
     /** Coefficient used in the reverse revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.reverse_coeff_1")
@@ -73,12 +80,14 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     @NotEmpty
     @Min(value = 0.001)
     private Double reverseCoefficient1;
+
     /** Coefficient used in the reverse revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.reverse_coeff_2")
     @NotNull
     @NotEmpty
     @Min(value = 0.001)
     private Double reverseCoefficient2;
+
     /** Threshold for the number of incorrect answers before resetting the card's reverse revision status. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.reverse_incorrect")
     @NotNull
@@ -86,16 +95,13 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     @Min(value = 1)
     private Integer reverseIncorrectAnswerThreshold;
 
-//    @AlgorithmHiperparameter(descriptionTranslationKey = "empty_translation")
-//    @AllowedValues(values = {"wart1", "wart2", "wart3"})
-//    private String someValue;
-
     /** UI component for the first button in the reverse revision process. */
     @Transient
-    private JButton reverseButton1;
+    private Button reverseButton1;
+
     /** UI component for the second button in the reverse revision process. */
     @Transient
-    private JButton reverseButton2;
+    private Button reverseButton2;
 
     /** Translation key for the algorithm name. */
     @Transient
@@ -106,14 +112,13 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      */
     public ConstantCoefficientRevisionAlgorithm() {
         super();
-        this.button1 = new JButton("");
-        this.button2 = new JButton("");
-        this.button3 = new JButton("");
-        this.button4 = new JButton("");
+        this.button1 = new Button();
+        this.button2 = new Button();
+        this.button3 = new Button();
+        this.button4 = new Button();
 
-        this.reverseButton1 = new JButton("");
-        this.reverseButton2 = new JButton("");
-
+        this.reverseButton1 = new Button();
+        this.reverseButton2 = new Button();
     }
 
     /**
@@ -145,37 +150,39 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     }
 
     /**
-     * Updates the size of the buttons based on the given dimensions and scale factor.
-     *
-     * @param dimensionScaled the scaled dimensions for the buttons
-     * @param scaleFactor the factor by which to scale the button size
+     * Updates the button size and style.
      */
     @Override
-    public void updateSize(Dimension dimensionScaled, double scaleFactor){
-        Font scaledFont = new Font("Serif", Font.BOLD, (int) (12 * scaleFactor));
+    public void updateSize(double width, double height, double scaleFactor){
+        double buttonFontSize = 12 * scaleFactor;
+        button1.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        button2.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        button3.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        button4.setStyle("-fx-font-size: " + buttonFontSize + "px;");
 
-        button1.setFont(scaledFont);
-        button2.setFont(scaledFont);
-        button3.setFont(scaledFont);
-        button4.setFont(scaledFont);
-        reverseButton1.setFont(scaledFont);
-        reverseButton2.setFont(scaledFont);
+        reverseButton1.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        reverseButton2.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+
+        button1.setPrefSize(width / 4, height);
+        button2.setPrefSize(width / 4, height);
+        button3.setPrefSize(width / 4, height);
+        button4.setPrefSize(width / 4, height);
+
+        reverseButton1.setPrefSize(width / 2, height);
+        reverseButton2.setPrefSize(width / 2, height);
     }
 
     /**
      * Returns a panel containing the normal revision buttons.
      *
      * @param card the card being revised
-     * @return a JPanel containing the revision buttons
+     * @return a panel containing the revision buttons
      */
     @Override
-    public JPanel getRevisionButtonsPanel(CardConstantCoefficient card) {
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 4));
-        buttonPanel.add(button1);
-        buttonPanel.add(button2);
-        buttonPanel.add(button3);
-        buttonPanel.add(button4);
-        return buttonPanel;
+    public Pane getRevisionButtonsPane(CardConstantCoefficient card) {
+        HBox buttonBox = new HBox(4);
+        buttonBox.getChildren().addAll(button1, button2, button3, button4);
+        return buttonBox;
     }
 
     /**
@@ -186,7 +193,7 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * @return true if the revision process for the card is finished, false otherwise
      */
     @Override
-    public boolean reviseCard(JButton clickedButton, CardConstantCoefficient card) {
+    public boolean reviseCard(Button clickedButton, CardConstantCoefficient card) {
         boolean cardRevisionFinished = false;
         double baseRevisionTime = card.getBaseRevisionTime();
         int incorrectCounter = card.getIncorrectCounter();
@@ -220,14 +227,13 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * Returns a panel containing the reverse revision buttons.
      *
      * @param card the card being revised
-     * @return a JPanel containing the reverse revision buttons
+     * @return a panel containing the reverse revision buttons
      */
     @Override
-    public JPanel getReverseRevisionButtonsPanel(CardConstantCoefficient card) {
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 2));
-        buttonPanel.add(reverseButton1);
-        buttonPanel.add(reverseButton2);
-        return buttonPanel;
+    public Pane getReverseRevisionButtonsPane(CardConstantCoefficient card) {
+        HBox buttonBox = new HBox(2);
+        buttonBox.getChildren().addAll(reverseButton1, reverseButton2);
+        return buttonBox;
     }
 
     /**
@@ -238,7 +244,7 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * @return true if the revision process for the card is finished, false otherwise
      */
     @Override
-    public boolean reversReviseCard(JButton clickedButton, CardConstantCoefficient card) {
+    public boolean reverseReviseCard(Button clickedButton, CardConstantCoefficient card) {
         boolean cardRevisionFinished = false;
         double baseReverseRevisionTime = card.getBaseReverseRevisionTime();
         int reverseIncorrectCounter = card.getReverseIncorrectCounter();

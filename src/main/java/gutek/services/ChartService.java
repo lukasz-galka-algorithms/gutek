@@ -2,9 +2,8 @@ package gutek.services;
 
 import gutek.entities.decks.DeckBase;
 import gutek.gui.charts.StatisticsChart;
-import org.jfree.chart.JFreeChart;
+import javafx.scene.chart.Chart;
 import org.springframework.stereotype.Service;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,16 +12,19 @@ import java.util.List;
  */
 @Service
 public class ChartService {
+
     /**
      * Array of available time ranges for generating charts, in days.
      */
     private static final Integer[] AVAILABLE_RANGES = new Integer[]{
             31, 91, 181, 361, 721, 1081
     };
+
     /**
      * Maximum time range available for chart generation.
      */
     public static final Integer MAX_RANGE = Arrays.stream(AVAILABLE_RANGES).max(Integer::compareTo).orElse(0);
+
     /**
      * Array of translation keys corresponding to available time ranges for chart selection.
      */
@@ -34,14 +36,17 @@ public class ChartService {
             "deck_view.statistics.available_ranges_5",
             "deck_view.statistics.available_ranges_6"
     };
+
     /**
      * Service responsible for providing translations for different locales.
      */
     private final TranslationService translationService;
+
     /**
      * List of available chart types provided by the application.
      */
     private final List<StatisticsChart> availableCharts;
+
     /**
      * Constructor for ChartService.
      *
@@ -53,17 +58,19 @@ public class ChartService {
         this.translationService = translationService;
         this.availableCharts = availableCharts;
     }
+
     /**
      * Retrieves the selected chart based on the provided type index and time range index.
      *
      * @param typeIndex  The index of the chart type.
      * @param rangeIndex The index of the time range.
      * @param deck       The deck for which the chart is generated.
-     * @return The generated {@link JFreeChart} for the specified parameters.
+     * @return The generated {@link Chart} for the specified parameters.
      */
-    public JFreeChart getSelectedChart(int typeIndex, int rangeIndex, DeckBase deck){
+    public Chart getSelectedChart(int typeIndex, int rangeIndex, DeckBase deck){
         return availableCharts.get(typeIndex).getChart(AVAILABLE_RANGES[rangeIndex], deck);
     }
+
     /**
      * Provides the titles of available charts for display.
      *
@@ -74,6 +81,7 @@ public class ChartService {
                 .map(StatisticsChart::getChartTitle)
                 .toArray(String[]::new);
     }
+
     /**
      * Retrieves the available time ranges for chart selection, translated into the current locale.
      *

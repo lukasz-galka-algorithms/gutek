@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="rootPane" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="gutek.gui.controllers.deck.RevisionStatisticsFXMLController">
+
+    <top>
+        <VBox fx:id="menuContainer"/>
+    </top>
+
+    <center>
+        <VBox spacing="10">
+            <HBox alignment="CENTER" spacing="20">
+                <Label fx:id="chartTypeLabel" alignment="CENTER_RIGHT"/>
+                <ComboBox fx:id="chartTypeComboBox"/>
+                <Label fx:id="chartRangeLabel" alignment="CENTER_RIGHT"/>
+                <ComboBox fx:id="timeRangeComboBox"/>
+            </HBox>
+            <Pane fx:id="chartContainer"/>
+        </VBox>
+    </center>
+
+</BorderPane>

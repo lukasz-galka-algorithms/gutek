@@ -14,10 +14,12 @@ import java.util.Optional;
  */
 @Service
 public class AppUserService {
+
     /**
      * Repository for interacting with the {@link AppUser} entities in the database.
      */
     private final AppUserRepository appUserRepository;
+
     /**
      * Password encoder for securely storing and verifying user passwords.
      */
@@ -33,6 +35,7 @@ public class AppUserService {
         this.appUserRepository = appUserRepository;
         this.passwordEncoder = new BCryptPasswordEncoder();
     }
+
     /**
      * Registers a new user by encoding the provided password and saving the user to the repository.
      *
@@ -47,6 +50,7 @@ public class AppUserService {
         user.setPassword(encodedPassword);
         return appUserRepository.save(user);
     }
+
     /**
      * Logs in a user by validating the provided username and password.
      *
@@ -62,6 +66,7 @@ public class AppUserService {
         }
         return false;
     }
+
     /**
      * Finds a user by their username.
      *
@@ -71,6 +76,7 @@ public class AppUserService {
     public Optional<AppUser> findUserByUsername(String username) {
         return appUserRepository.findByUsername(username);
     }
+
     /**
      * Checks if the provided raw password matches the encoded password of the user.
      *

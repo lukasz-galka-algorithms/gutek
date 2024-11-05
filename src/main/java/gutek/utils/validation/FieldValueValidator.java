@@ -1,7 +1,7 @@
 package gutek.utils.validation;
 
+import gutek.entities.algorithms.AlgorithmHiperparameter;
 import gutek.services.TranslationService;
-
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
@@ -10,6 +10,7 @@ import java.util.Arrays;
  * It also handles value conversion for numeric fields.
  */
 public class FieldValueValidator {
+
     /**
      * Validates and converts the value of a given field using the field's annotations.
      *
@@ -18,10 +19,9 @@ public class FieldValueValidator {
      * @param value              The value to validate and convert.
      * @param translationService The translation service used for localized error messages.
      * @return The converted value, if validation passes.
-     * @throws IllegalAccessException   If the field is not accessible.
      * @throws IllegalArgumentException If validation fails.
      */
-    public static Object validateAndReturnConverted(Object object, String fieldName, Object value, TranslationService translationService) throws IllegalAccessException, IllegalArgumentException {
+    public static Object validateAndReturnConverted(Object object, String fieldName, Object value, TranslationService translationService) throws IllegalArgumentException {
         Class<?> clazz = object.getClass();
 
         Field field = null;
@@ -31,6 +31,10 @@ public class FieldValueValidator {
             return null;
         }
         field.setAccessible(true);
+
+        if (field.isAnnotationPresent(AlgorithmHiperparameter.class)) {
+            fieldName = translationService.getTranslation(field.getAnnotation(AlgorithmHiperparameter.class).descriptionTranslationKey());
+        }
 
         if (field.isAnnotationPresent(NotNull.class)) {
             NotNull notNull = field.getAnnotation(NotNull.class);
@@ -54,7 +58,9 @@ public class FieldValueValidator {
                 double numericValue = ((Number) convertedValue).doubleValue();
                 if (numericValue < min.value()) {
                     throw new IllegalArgumentException(
-                            translationService.getTranslation(min.messageTranslationKey()).replace("{value}", String.valueOf(min.value()))
+                            translationService.getTranslation(min.messageTranslationKey())
+                                    .replace("{field}", fieldName)
+                                    .replace("{value}", String.valueOf(min.value()))
                     );
                 }
             }
@@ -66,7 +72,9 @@ public class FieldValueValidator {
                 double numericValue = ((Number) convertedValue).doubleValue();
                 if (numericValue > max.value()) {
                     throw new IllegalArgumentException(
-                            translationService.getTranslation(max.messageTranslationKey()).replace("{value}", String.valueOf(max.value()))
+                            translationService.getTranslation(max.messageTranslationKey())
+                                    .replace("{field}", fieldName)
+                                    .replace("{value}", String.valueOf(max.value()))
                     );
                 }
             }
@@ -84,6 +92,7 @@ public class FieldValueValidator {
 
         return convertedValue;
     }
+
     /**
      * Converts the value to the target type of the field.
      *
@@ -95,9 +104,7 @@ public class FieldValueValidator {
      * @throws IllegalArgumentException If the value cannot be converted.
      */
     private static Object convertValue(Object value, Class<?> targetType, String fieldName, TranslationService translationService) {
-        if (value instanceof String) {
-            String stringValue = (String) value;
-
+        if (value instanceof String stringValue) {
             try {
                 if (targetType == Integer.class || targetType == int.class) {
                     return Integer.parseInt(stringValue);

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox xmlns:fx="http://javafx.com/fxml">
+    <Button fx:id="addCardButton" />
+    <Button fx:id="browseDeckButton" />
+    <Button fx:id="revisionButton" />
+    <Button fx:id="settingsButton" />
+    <Button fx:id="statsButton" />
+    <Button fx:id="closeButton" />
+</HBox>

@@ -7,7 +7,6 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.springframework.stereotype.Service;
-
 import java.lang.reflect.Modifier;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,10 +17,12 @@ import java.util.stream.Collectors;
  */
 @Service
 public class RevisionAlgorithmService {
+
     /**
      * Service used for handling translations.
      */
     private final TranslationService translationService;
+
     /**
      * A set of classes that extend {@link RevisionAlgorithm}.
      */
@@ -45,6 +46,7 @@ public class RevisionAlgorithmService {
                 .filter(subType -> !Modifier.isAbstract(subType.getModifiers()))
                 .collect(Collectors.toSet());
     }
+
     /**
      * Retrieves the names of all available revision algorithms.
      *
@@ -64,6 +66,7 @@ public class RevisionAlgorithmService {
                 })
                 .collect(Collectors.toSet());
     }
+
     /**
      * Creates an instance of a revision algorithm by its name.
      *

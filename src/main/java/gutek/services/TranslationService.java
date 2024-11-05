@@ -4,7 +4,6 @@ import gutek.entities.languages.AppLocaleSetting;
 import gutek.repositories.AppLocaleSettingRepository;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
-
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -19,22 +18,27 @@ import java.util.regex.Pattern;
  */
 @Service
 public class TranslationService {
+
     /**
      * Base name for message resource files.
      */
     private static final String BASE_NAME = "messages";
+
     /**
      * Pattern used to match locale files in the format 'messages_<language>_<country>.properties'.
      */
     private static final Pattern LOCALE_PATTERN = Pattern.compile(BASE_NAME + "_([a-z]{2})_([A-Z]{2})\\.properties");
+
     /**
      * Repository for handling persistence of locale settings.
      */
     private final AppLocaleSettingRepository repository;
+
     /**
      * Message source for retrieving localized messages.
      */
     private final MessageSource messageSource;
+
     /**
      * The current locale used for translations.
      */

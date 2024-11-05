@@ -18,6 +18,7 @@ public @interface Max {
      * @return the maximum allowed value.
      */
     double value();
+
     /**
      * The key for the translation message to be used when the value exceeds the maximum.
      *

@@ -1,6 +1,7 @@
 package gutek.repositories;
 
 import gutek.entities.algorithms.RevisionAlgorithm;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,5 +10,6 @@ import org.springframework.stereotype.Repository;
  * Extends {@link JpaRepository} to provide standard CRUD operations for revision algorithms.
  */
 @Repository
+@Transactional
 public interface RevisionAlgorithmRepository extends JpaRepository<RevisionAlgorithm, Long> {
 }

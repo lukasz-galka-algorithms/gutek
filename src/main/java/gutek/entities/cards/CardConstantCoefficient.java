@@ -15,14 +15,19 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 public class CardConstantCoefficient extends CardBase {
+
     /** The base time used for calculating the next regular revision. */
     protected double baseRevisionTime;
+
     /** The base time used for calculating the next reverse revision. */
     protected double baseReverseRevisionTime;
+
     /** The number of incorrect answers during regular revision. */
     protected int incorrectCounter;
+
     /** The number of incorrect answers during reverse revision. */
     protected int reverseIncorrectCounter;
+
     /**
      * Constructs a new card with the given front and back content, and associated deck.
      *
@@ -38,6 +43,7 @@ public class CardConstantCoefficient extends CardBase {
         setRevisionDefault();
         setReverseRevisionDefault();
     }
+
     /**
      * Resets the revision parameters to their default values for regular revision.
      *
@@ -47,6 +53,7 @@ public class CardConstantCoefficient extends CardBase {
         baseRevisionTime = 1.0;
         incorrectCounter = 0;
     }
+
     /**
      * Resets the revision parameters to their default values for reverse revision.
      *
@@ -56,6 +63,7 @@ public class CardConstantCoefficient extends CardBase {
         baseReverseRevisionTime = 1.0;
         reverseIncorrectCounter = 0;
     }
+
     /**
      * Sets the incorrect counter for regular revision, ensuring it is non-negative.
      *
@@ -64,6 +72,7 @@ public class CardConstantCoefficient extends CardBase {
     public void setIncorrectCounter(int incorrectCounter) {
         this.incorrectCounter = Math.max(incorrectCounter, 0);
     }
+
     /**
      * Sets the incorrect counter for reverse revision, ensuring it is non-negative.
      *
@@ -72,6 +81,7 @@ public class CardConstantCoefficient extends CardBase {
     public void setReverseIncorrectCounter(int reverseIncorrectCounter) {
         this.reverseIncorrectCounter = Math.max(reverseIncorrectCounter, 0);
     }
+
     /**
      * Sets the base revision time for regular revision, ensuring it is positive.
      *
@@ -80,6 +90,7 @@ public class CardConstantCoefficient extends CardBase {
     public void setBaseRevisionTime(double baseRevisionTime) {
         this.baseRevisionTime = Math.max(baseRevisionTime, 0.01);
     }
+
     /**
      * Sets the base revision time for reverse revision, ensuring it is positive.
      *

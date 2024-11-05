@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="rootPane" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="gutek.gui.controllers.deck.RevisionRegularFXMLController">
+
+    <top>
+        <VBox fx:id="menuContainer" />
+    </top>
+
+    <center>
+        <VBox spacing="10" alignment="CENTER">
+            <Label fx:id="wordLabel" alignment="CENTER" wrapText="true" />
+            <Label fx:id="translationLabel" alignment="CENTER" wrapText="true" />
+
+            <HBox fx:id="buttonContainer" alignment="CENTER" spacing="10" />
+        </VBox>
+    </center>
+</BorderPane>

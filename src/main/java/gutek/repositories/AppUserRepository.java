@@ -1,9 +1,9 @@
 package gutek.repositories;
 
 import gutek.entities.users.AppUser;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
 
 /**
@@ -11,6 +11,7 @@ import java.util.Optional;
  * Extends {@link JpaRepository} to provide standard CRUD operations.
  */
 @Repository
+@Transactional
 public interface AppUserRepository extends JpaRepository<AppUser, Long> {
     /**
      * Finds an {@link AppUser} entity by its username.

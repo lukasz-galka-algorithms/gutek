@@ -3,14 +3,13 @@ package gutek.config;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.context.support.ResourceBundleMessageSource;
 
 /**
  * Configuration class for message resources.
  *
  * This class provides a bean definition for {@link MessageSource}, which is used for internationalization
- * (i18n) in Spring applications. It configures a {@link ResourceBundleMessageSource} that loads messages
+ * in Spring applications. It configures a {@link ResourceBundleMessageSource} that loads messages
  * from property files (e.g., `messages.properties`), and it sets the default character encoding to UTF-8.
  */
 @Configuration
@@ -33,13 +32,4 @@ public class MessageConfig {
         messageSource.setDefaultEncoding("UTF-8");
         return messageSource;
     }
-//    @Bean(name="messageSource")
-//    public ReloadableResourceBundleMessageSource messageSource() {
-//        ReloadableResourceBundleMessageSource resource = new ReloadableResourceBundleMessageSource();
-//        resource.setBasename("classpath:/messages");
-//        resource.setDefaultEncoding("UTF-8");
-//        resource.setUseCodeAsDefaultMessage(true);
-//        resource.setFallbackToSystemLocale(false);
-//        return resource;
-//    }
 }

@@ -17,14 +17,17 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class CardRevisionService {
+
     /**
      * Repository for managing {@link CardBaseRevision} entities in the database.
      */
     private final CardBaseRevisionRepository cardBaseRevisionRepository;
+
     /**
      * Repository for managing {@link CardBase} entities in the database.
      */
     private final CardBaseRepository cardBaseRepository;
+
     /**
      * Saves a regular revision for the given card and stores the pressed button index.
      *
@@ -42,6 +45,7 @@ public class CardRevisionService {
             cardBaseRevisionRepository.save(revision);
         }
     }
+
     /**
      * Saves a reverse revision for the given card and stores the pressed button index.
      *

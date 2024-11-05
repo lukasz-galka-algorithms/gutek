@@ -5,7 +5,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
 import java.time.LocalDate;
 
 /**
@@ -20,6 +19,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 public class CardBaseRevision {
+
     /** Unique identifier for the card revision event. */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -27,11 +27,14 @@ public class CardBaseRevision {
 
     /** The date when the revision took place. */
     protected LocalDate revisionDate;
+
     /** The index of the button pressed during the revision. */
     protected Integer pressedButtonIndex;
+
     /** The type of revision (e.g., normal or reverse). */
     @Enumerated(EnumType.STRING)
     protected CardRevisionType cardRevisionType;
+
     /** The card that was revised during this revision event. */
     @ManyToOne
     @ToString.Exclude

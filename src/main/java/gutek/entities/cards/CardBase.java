@@ -3,7 +3,6 @@ package gutek.entities.cards;
 import gutek.entities.decks.DeckBase;
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -19,6 +18,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class CardBase{
+
     /** Unique identifier for the card. */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -26,23 +26,28 @@ public class CardBase{
 
     /** The front content of the card (e.g., question or prompt). */
     protected String front;
+
     /** The back content of the card (e.g., answer or definition). */
     protected String back;
 
     /** The next scheduled date for a regular revision of the card. */
     protected LocalDate nextRegularRevisionDate;
+
     /** The next scheduled date for a reverse revision of the card. */
     protected LocalDate nextReverseRevisionDate;
+
     /** The timestamp when the card was created. */
     protected LocalDateTime creationTime;
 
     /** Indicates whether the card is new and has not yet been revised. */
     protected boolean isNewCard;
+
     /** The deck to which the card belongs. */
     @ManyToOne
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     protected DeckBase deck;
+
     /**
      * Constructs a new card with the given front, back, and associated deck.
      *

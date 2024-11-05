@@ -1,15 +1,13 @@
 package gutek.services;
 
-import gutek.entities.cards.CardBase;
 import gutek.entities.decks.DeckBaseStatistics;
+import gutek.repositories.CardBaseRepository;
 import gutek.repositories.DeckBaseRepository;
 import gutek.repositories.DeckBaseStatisticsRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.util.Optional;
-
 import static gutek.services.ChartService.MAX_RANGE;
 
 /**
@@ -18,14 +16,22 @@ import static gutek.services.ChartService.MAX_RANGE;
 @Service
 @AllArgsConstructor
 public class DeckStatisticsService {
+
+    /**
+     * Repository for accessing cards.
+     */
+    private final CardBaseRepository cardBaseRepository;
+
     /**
      * Repository for accessing deck information.
      */
     private final DeckBaseRepository deckBaseRepository;
+
     /**
      * Repository for accessing deck statistics.
      */
     private final DeckBaseStatisticsRepository deckBaseStatisticsRepository;
+
     /**
      * Updates the statistics for the given deck if they are not up-to-date.
      *
@@ -34,15 +40,17 @@ public class DeckStatisticsService {
     private void updateStatisticsForToday(Long idDeckStatistics){
         Optional<DeckBaseStatistics> updatedStatistics = deckBaseStatisticsRepository.findById(idDeckStatistics);
         if (updatedStatistics.isPresent()){
+            DeckBaseStatistics stat = updatedStatistics.get();
             LocalDate today = LocalDate.now();
-            long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(updatedStatistics.get().getTodayIndicator(), today);
+            long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(stat.getTodayIndicator(), today);
             if (daysBetween > 0) {
-                shiftStatistics(updatedStatistics.get(), (int) daysBetween);
-                updatedStatistics.get().setTodayIndicator(LocalDate.now());
-                deckBaseStatisticsRepository.save(updatedStatistics.get());
+                shiftStatistics(stat, (int) daysBetween);
+                stat.setTodayIndicator(LocalDate.now());
+                deckBaseStatisticsRepository.save(stat);
             }
         }
     }
+
     /**
      * Shifts the statistics by the given number of days.
      *
@@ -78,6 +86,7 @@ public class DeckStatisticsService {
         statistics.setRegularRevision(regularRevision);
         statistics.setReverseRevision(reverseRevision);
     }
+
     /**
      * Returns the number of new cards that can be revised today for the given deck.
      *
@@ -88,13 +97,13 @@ public class DeckStatisticsService {
         updateStatisticsForToday(idDeckStatistics);
         Optional<DeckBaseStatistics> updatedStatistics = deckBaseStatisticsRepository.findById(idDeckStatistics);
         if (updatedStatistics.isPresent()){
-            int allNewCardsNumber = deckBaseRepository.findById(updatedStatistics.get().getDeck().getIdDeck()).get().getCards().stream()
-                    .filter(CardBase::isNewCard)
-                    .toList().size();
-            return Math.max(Math.min(updatedStatistics.get().getNewCardsPerDay() - updatedStatistics.get().getRevisedForTheFirstTime()[0], allNewCardsNumber),0);
+            DeckBaseStatistics stat = updatedStatistics.get();
+            int allNewCardsNumber = cardBaseRepository.countByDeckIdDeckAndIsNewCardTrue(stat.getDeck().getIdDeck());
+            return Math.max(Math.min(stat.getNewCardsPerDay() - stat.getRevisedForTheFirstTime()[0], allNewCardsNumber),0);
         }
         return -1;
     }
+
     /**
      * Returns the counts of cards that were revised for the first time.
      *
@@ -109,6 +118,7 @@ public class DeckStatisticsService {
         }
         return null;
     }
+
     /**
      * Returns the counts of cards that underwent regular revision.
      *
@@ -123,6 +133,7 @@ public class DeckStatisticsService {
         }
         return null;
     }
+
     /**
      * Returns the counts of cards that underwent reverse revision.
      *
@@ -137,6 +148,7 @@ public class DeckStatisticsService {
         }
         return null;
     }
+
     /**
      * Increments the count of new cards revised today.
      *
@@ -146,10 +158,12 @@ public class DeckStatisticsService {
         updateStatisticsForToday(idDeckStatistics);
         Optional<DeckBaseStatistics> updatedStatistics = deckBaseStatisticsRepository.findById(idDeckStatistics);
         if (updatedStatistics.isPresent()){
-            updatedStatistics.get().getRevisedForTheFirstTime()[0]++;
-            saveDeckStatistics(updatedStatistics.get());
+            DeckBaseStatistics stat = updatedStatistics.get();
+            stat.getRevisedForTheFirstTime()[0]++;
+            saveDeckStatistics(stat);
         }
     }
+
     /**
      * Increments the count of regular revision for today.
      *
@@ -159,10 +173,12 @@ public class DeckStatisticsService {
         updateStatisticsForToday(idDeckStatistics);
         Optional<DeckBaseStatistics> updatedStatistics = deckBaseStatisticsRepository.findById(idDeckStatistics);
         if (updatedStatistics.isPresent()){
-            updatedStatistics.get().getRegularRevision()[0]++;
-            saveDeckStatistics(updatedStatistics.get());
+            DeckBaseStatistics stat = updatedStatistics.get();
+            stat.getRegularRevision()[0]++;
+            saveDeckStatistics(stat);
         }
     }
+
     /**
      * Increments the count of reverse revision for today.
      *
@@ -172,10 +188,12 @@ public class DeckStatisticsService {
         updateStatisticsForToday(idDeckStatistics);
         Optional<DeckBaseStatistics> updatedStatistics = deckBaseStatisticsRepository.findById(idDeckStatistics);
         if (updatedStatistics.isPresent()){
-            updatedStatistics.get().getReverseRevision()[0]++;
-            saveDeckStatistics(updatedStatistics.get());
+            DeckBaseStatistics stat = updatedStatistics.get();
+            stat.getReverseRevision()[0]++;
+            saveDeckStatistics(stat);
         }
     }
+
     /**
      * Saves or updates the given deck statistics.
      *
@@ -183,5 +201,15 @@ public class DeckStatisticsService {
      */
     public void saveDeckStatistics(DeckBaseStatistics deckStatistics){
         deckBaseStatisticsRepository.save(deckStatistics);
+    }
+
+    /**
+     * Loads the statistics for the specified deck by its ID.
+     *
+     * @param deckStatisticsId The ID of the deck statistics to retrieve.
+     * @return An {@link Optional} containing the {@link DeckBaseStatistics} if found, or an empty Optional if not found.
+     */
+    public Optional<DeckBaseStatistics> loadDeckStatistics(Long deckStatisticsId){
+        return deckBaseStatisticsRepository.findById(deckStatisticsId);
     }
 }

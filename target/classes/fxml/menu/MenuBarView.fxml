@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+
+<MenuBar xmlns:fx="http://javafx.com/fxml">
+    <menus>
+        <Menu fx:id="fileMenu">
+            <items>
+                <MenuItem fx:id="decksMenuItem"/>
+                <MenuItem fx:id="newMenuItem"/>
+                <MenuItem fx:id="trashMenuItem"/>
+                <SeparatorMenuItem />
+                <MenuItem fx:id="authorsMenuItem"/>
+                <SeparatorMenuItem />
+                <MenuItem fx:id="exitMenuItem"/>
+            </items>
+        </Menu>
+        <Menu fx:id="languageMenu">
+
+        </Menu>
+        <Menu fx:id="logoutMenu">
+            <items>
+                <MenuItem fx:id="logoutMenuItem"/>
+            </items>
+        </Menu>
+    </menus>
+</MenuBar>

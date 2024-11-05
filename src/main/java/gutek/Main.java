@@ -1,45 +1,68 @@
 package gutek;
 
-import gutek.gui.MainFrame;
-import lombok.AllArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
+import gutek.gui.controllers.MainStageScenes;
+import gutek.gui.controllers.MainStage;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.stage.Stage;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import javax.swing.*;
-
-import static gutek.gui.MainFrameViews.LANGUAGE_SELECTION_VIEW;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * The main entry point of the application.
- * It starts the Spring Boot application and launches the GUI.
+ * Main class of the application.
+ * It starts the Spring Boot application and launches the JavaFX GUI.
  */
 @SpringBootApplication
-@AllArgsConstructor
-public class Main implements CommandLineRunner {
+public class Main extends Application{
     /**
-     * The main frame of the application, which controls the user interface views.
+     * Spring application context for managing the lifecycle and dependencies of beans within the application.
      */
-    private final MainFrame mainFrame;
+    private ConfigurableApplicationContext applicationContext;
+
     /**
      * The main method, serving as the entry point of the application.
      *
      * @param args command line arguments passed to the application
      */
     public static void main(String[] args) {
-        System.setProperty("java.awt.headless", "false");
-        SpringApplication.run(Main.class, args);
+        Application.launch(Main.class, args);
     }
+
     /**
-     * This method is called after the Spring Boot application has started.
-     * It initializes the graphical user interface by displaying the language selection view.
-     *
-     * @param args command line arguments passed to the application
+     * Initialization method.
+     * Called before the start() method.
      */
     @Override
-    public void run(String... args) {
-        SwingUtilities.invokeLater(() -> {
-            mainFrame.setView(LANGUAGE_SELECTION_VIEW);
-        });
+    public void init() {
+        applicationContext = new SpringApplicationBuilder(Main.class).run();
+    }
+
+    /**
+     * The start method, called after the application has been initialized.
+     * Sets up the main stage and displays the user interface.
+     *
+     * @param stage the main window of the application (Stage)
+     */
+    @Override
+    public void start(Stage stage) {
+        MainStage mainStage = applicationContext.getBean(MainStage.class);
+        mainStage.initStage(stage);
+        mainStage.setScene(MainStageScenes.LANGUAGE_SELECTION_SCENE);
+        stage.show();
+    }
+
+    /**
+     * The stop method, called when the application is closing.
+     * Closes the Spring Boot application context.
+     *
+     */
+    @Override
+    public void stop() {
+        if (applicationContext != null) {
+            SpringApplication.exit(applicationContext);
+        }
+        Platform.exit();
     }
 }

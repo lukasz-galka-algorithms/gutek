@@ -18,6 +18,7 @@ public @interface Min {
      * @return the minimum allowed value.
      */
     double value();
+
     /**
      * The key for the translation message to be used when the value is below the minimum.
      *

@@ -10,8 +10,10 @@ package gutek.entities.cards;
  * </ul>
  */
 public enum CardRevisionType {
+
     /** Represents a standard forward revision process. */
     REGULAR_REVISION,
+
     /** Represents a reverse revision process. */
     REVERSE_REVISION
 }

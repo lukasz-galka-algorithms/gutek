@@ -18,22 +18,31 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class CardSuperMemo2 extends CardBase {
+
     /** Number of repetitions in the regular revision process. */
     protected int repetition;
+
     /** Number of repetitions in the reverse revision process. */
     protected int reverseRepetition;
+
     /** Interval (in days) for the next regular revision. */
     protected int interval;
+
     /** Interval (in days) for the next reverse revision. */
     protected int reverseInterval;
+
     /** Easiness factor for the regular revision process. */
     protected double easinessFactor;
+
     /** Easiness factor for the reverse revision process. */
     protected double reverseEasinessFactor;
+
     /** Number of incorrect answers in the regular revision process. */
     protected int incorrectCounter;
+
     /** Number of incorrect answers in the reverse revision process. */
     protected int reverseIncorrectCounter;
+
     /**
      * Constructs a new card with the given front, back, easiness factors, and associated deck.
      *
@@ -53,6 +62,7 @@ public class CardSuperMemo2 extends CardBase {
         setRevisionDefault(easinessFactor);
         setReverseRevisionDefault(reverseEasinessFactor);
     }
+
     /**
      * Resets the revision parameters to their default values for the regular revision process.
      *
@@ -64,6 +74,7 @@ public class CardSuperMemo2 extends CardBase {
         this.incorrectCounter = 0;
         this.easinessFactor = easinessFactor;
     }
+
     /**
      * Resets the revision parameters to their default values for the reverse revision process.
      *
@@ -75,6 +86,7 @@ public class CardSuperMemo2 extends CardBase {
         this.reverseIncorrectCounter = 0;
         this.reverseEasinessFactor = reverseEasinessFactor;
     }
+
     /**
      * Sets the repetition count for the regular revision process, ensuring it is non-negative.
      *
@@ -83,6 +95,7 @@ public class CardSuperMemo2 extends CardBase {
     public void setRepetition(int repetition) {
         this.repetition = Math.max(repetition, 0);
     }
+
     /**
      * Sets the repetition count for the reverse revision process, ensuring it is non-negative.
      *
@@ -91,6 +104,7 @@ public class CardSuperMemo2 extends CardBase {
     public void setReverseRepetition(int reverseRepetition) {
         this.reverseRepetition = Math.max(reverseRepetition, 0);
     }
+
     /**
      * Sets the incorrect answer count for the reverse revision process, ensuring it is non-negative.
      *
@@ -99,6 +113,7 @@ public class CardSuperMemo2 extends CardBase {
     public void setReverseIncorrectCounter(int reverseIncorrectCounter) {
         this.reverseIncorrectCounter = Math.max(reverseIncorrectCounter, 0);
     }
+
     /**
      * Sets the incorrect answer count for the regular revision process, ensuring it is non-negative.
      *
@@ -107,6 +122,7 @@ public class CardSuperMemo2 extends CardBase {
     public void setIncorrectCounter(int incorrectCounter) {
         this.incorrectCounter = Math.max(incorrectCounter, 0);
     }
+
     /**
      * Sets the interval (in days) for the next regular revision, ensuring it is at least 1 day.
      *
@@ -115,6 +131,7 @@ public class CardSuperMemo2 extends CardBase {
     public void setInterval(int interval) {
         this.interval = Math.max(interval, 1);
     }
+
     /**
      * Sets the interval (in days) for the next reverse revision, ensuring it is at least 1 day.
      *
@@ -123,6 +140,7 @@ public class CardSuperMemo2 extends CardBase {
     public void setReverseInterval(int reverseInterval) {
         this.reverseInterval = Math.max(reverseInterval, 1);
     }
+
     /**
      * Sets the easiness factor for the regular revision process, ensuring it is at least 1.3.
      *
@@ -131,6 +149,7 @@ public class CardSuperMemo2 extends CardBase {
     public void setEasinessFactor(double easinessFactor) {
         this.easinessFactor = Math.max(easinessFactor, 1.3);
     }
+
     /**
      * Sets the easiness factor for the reverse revision process, ensuring it is at least 1.3.
      *

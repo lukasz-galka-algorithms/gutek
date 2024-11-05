@@ -16,16 +16,20 @@ import java.util.List;
 @Entity
 @Data
 public class AppUser {
+
     /** Unique identifier for the user. */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long idUser;
+
     /** The unique username of the user. */
     @Column(unique = true, nullable = false)
     private String username;
+
     /** The password of the user. */
     @Column(nullable = false)
     private String password;
+
     /** The list of decks owned by the user. */
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private List<DeckBase> decks = new ArrayList<>();

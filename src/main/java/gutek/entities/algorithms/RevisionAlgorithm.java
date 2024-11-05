@@ -3,13 +3,11 @@ package gutek.entities.algorithms;
 import gutek.entities.cards.CardBase;
 import gutek.services.TranslationService;
 import jakarta.persistence.*;
+import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import lombok.Data;
-
-import javax.swing.*;
-import java.awt.*;
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,6 +26,7 @@ import java.util.Map;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
 public abstract class RevisionAlgorithm<T extends CardBase>{
+
     /** Unique identifier for the revision algorithm. */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -50,6 +49,7 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
      * @return the name of the algorithm
      */
     public abstract String getAlgorithmName();
+
     /**
      * Creates a new card instance with the given front and back content.
      *
@@ -58,28 +58,30 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
      * @return a new card instance of type {@code T}
      */
     public abstract T createNewCard(String front, String back);
+
     /**
      * Initializes the default hyperparameters for the algorithm.
      */
     public abstract void initializeDefaultHiperparameters();
+
     /**
-     * Updates the size of the UI components based on the given dimensions and scale factor.
-     *
-     * @param dimensionScaled the scaled dimensions for the UI components
-     * @param scaleFactor the factor by which to scale the components
+     * Updates the size for the UI components.
      */
-    public abstract void updateSize(Dimension dimensionScaled, double scaleFactor);
+    public abstract void updateSize(double width, double height, double scaleFactor);
+
     /**
      * Updates the translations for the UI components.
      */
     public abstract void updateTranslation();
+
     /**
      * Returns a panel containing the buttons for the normal revision process.
      *
      * @param card the card being revised
      * @return a panel containing the revision buttons
      */
-    public abstract JPanel getRevisionButtonsPanel(T card);
+    public abstract Pane getRevisionButtonsPane(T card);
+
     /**
      * Handles the revision logic when a button is clicked during the normal revision process.
      *
@@ -87,14 +89,16 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
      * @param card the card being revised
      * @return {@code true} if the revision process is complete, {@code false} otherwise
      */
-    public abstract boolean reviseCard(JButton clickedButton, T card);
+    public abstract boolean reviseCard(Button clickedButton, T card);
+
     /**
      * Returns a panel containing the buttons for the reverse revision process.
      *
      * @param card the card being revised
      * @return a panel containing the reverse revision buttons
      */
-    public abstract JPanel getReverseRevisionButtonsPanel(T card);
+    public abstract Pane getReverseRevisionButtonsPane(T card);
+
     /**
      * Handles the revision logic when a button is clicked during the reverse revision process.
      *
@@ -102,7 +106,7 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
      * @param card the card being revised
      * @return {@code true} if the reverse revision process is complete, {@code false} otherwise
      */
-    public abstract boolean reversReviseCard(JButton clickedButton, T card);
+    public abstract boolean reverseReviseCard(Button clickedButton, T card);
 
     /**
      * Retrieves the hyperparameters of the algorithm.
@@ -130,6 +134,7 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
 
         return hiperparameters;
     }
+
     /**
      * Sets the hyperparameters of the algorithm.
      *

@@ -5,9 +5,9 @@ import gutek.utils.validation.Min;
 import gutek.utils.validation.NotEmpty;
 import gutek.utils.validation.NotNull;
 import jakarta.persistence.*;
-
-import javax.swing.*;
-import java.awt.*;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import java.time.LocalDate;
 
 /**
@@ -36,19 +36,23 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
 
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private JButton buttonGrade1;
+    private Button buttonGrade1;
+
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private JButton buttonGrade2;
+    private Button buttonGrade2;
+
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private JButton buttonGrade3;
+    private Button buttonGrade3;
+
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private JButton buttonGrade4;
+    private Button buttonGrade4;
+
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private JButton buttonGrade5;
+    private Button buttonGrade5;
 
     /** Initial easiness factor for the reverse revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.supermemo2.reverse_easiness_factor")
@@ -66,19 +70,23 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
 
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private JButton reverseButtonGrade1;
+    private Button reverseButtonGrade1;
+
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private JButton reverseButtonGrade2;
+    private Button reverseButtonGrade2;
+
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private JButton reverseButtonGrade3;
+    private Button reverseButtonGrade3;
+
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private JButton reverseButtonGrade4;
+    private Button reverseButtonGrade4;
+
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private JButton reverseButtonGrade5;
+    private Button reverseButtonGrade5;
 
     /** Translation key for the algorithm's name. */
     @Transient
@@ -89,18 +97,19 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      */
     public SuperMemo2RevisionAlgorithm() {
         super();
-        this.buttonGrade1 = new JButton("");
-        this.buttonGrade2 = new JButton("");
-        this.buttonGrade3 = new JButton("");
-        this.buttonGrade4 = new JButton("");
-        this.buttonGrade5 = new JButton("");
+        this.buttonGrade1 = new Button();
+        this.buttonGrade2 = new Button();
+        this.buttonGrade3 = new Button();
+        this.buttonGrade4 = new Button();
+        this.buttonGrade5 = new Button();
 
-        this.reverseButtonGrade1 = new JButton("");
-        this.reverseButtonGrade2 = new JButton("");
-        this.reverseButtonGrade3 = new JButton("");
-        this.reverseButtonGrade4 = new JButton("");
-        this.reverseButtonGrade5 = new JButton("");
+        this.reverseButtonGrade1 = new Button();
+        this.reverseButtonGrade2 = new Button();
+        this.reverseButtonGrade3 = new Button();
+        this.reverseButtonGrade4 = new Button();
+        this.reverseButtonGrade5 = new Button();
     }
+
     /**
      * Initializes default values for the algorithm's hyperparameters.
      */
@@ -111,6 +120,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
         this.reverseInitialEasinessFactor = 2.5;
         this.reverseIncorrectAnswerThreshold = 3;
     }
+
     /**
      * Updates the text for the UI components based on the current translations.
      */
@@ -128,27 +138,38 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
         reverseButtonGrade4.setText(translationService.getTranslation("revision_algorithm.supermemo2.reverse_button_4"));
         reverseButtonGrade5.setText(translationService.getTranslation("revision_algorithm.supermemo2.reverse_button_5"));
     }
+
     /**
-     * Updates the font size of the UI components based on the given dimensions and scale factor.
-     *
-     * @param dimensionScaled the scaled dimensions for the UI components
-     * @param scaleFactor the factor by which to scale the font
+     * Updates the size and style for the UI components.
      */
     @Override
-    public void updateSize(Dimension dimensionScaled, double scaleFactor) {
-        Font scaledFont = new Font("Serif", Font.BOLD, (int) (12 * scaleFactor));
-        buttonGrade1.setFont(scaledFont);
-        buttonGrade2.setFont(scaledFont);
-        buttonGrade3.setFont(scaledFont);
-        buttonGrade4.setFont(scaledFont);
-        buttonGrade5.setFont(scaledFont);
+    public void updateSize(double width, double height, double scaleFactor) {
+        double buttonFontSize = 12 * scaleFactor;
+        buttonGrade1.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        buttonGrade2.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        buttonGrade3.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        buttonGrade4.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        buttonGrade5.setStyle("-fx-font-size: " + buttonFontSize + "px;");
 
-        reverseButtonGrade1.setFont(scaledFont);
-        reverseButtonGrade2.setFont(scaledFont);
-        reverseButtonGrade3.setFont(scaledFont);
-        reverseButtonGrade4.setFont(scaledFont);
-        reverseButtonGrade5.setFont(scaledFont);
+        reverseButtonGrade1.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        reverseButtonGrade2.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        reverseButtonGrade3.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        reverseButtonGrade4.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+        reverseButtonGrade5.setStyle("-fx-font-size: " + buttonFontSize + "px;");
+
+        buttonGrade1.setPrefSize(width / 5, height);
+        buttonGrade2.setPrefSize(width / 5, height);
+        buttonGrade3.setPrefSize(width / 5, height);
+        buttonGrade4.setPrefSize(width / 5, height);
+        buttonGrade5.setPrefSize(width / 5, height);
+
+        reverseButtonGrade1.setPrefSize(width / 5, height);
+        reverseButtonGrade2.setPrefSize(width / 5, height);
+        reverseButtonGrade3.setPrefSize(width / 5, height);
+        reverseButtonGrade4.setPrefSize(width / 5, height);
+        reverseButtonGrade5.setPrefSize(width / 5, height);
     }
+
     /**
      * Returns a panel containing the buttons for the normal revision process.
      *
@@ -156,15 +177,12 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      * @return a panel with the grade buttons for the normal revision
      */
     @Override
-    public JPanel getRevisionButtonsPanel(CardSuperMemo2 card) {
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
-        buttonPanel.add(buttonGrade1);
-        buttonPanel.add(buttonGrade2);
-        buttonPanel.add(buttonGrade3);
-        buttonPanel.add(buttonGrade4);
-        buttonPanel.add(buttonGrade5);
-        return buttonPanel;
+    public Pane getRevisionButtonsPane(CardSuperMemo2 card) {
+        HBox buttonBox = new HBox(5);
+        buttonBox.getChildren().addAll(buttonGrade1, buttonGrade2, buttonGrade3, buttonGrade4, buttonGrade5);
+        return buttonBox;
     }
+
     /**
      * Handles the logic for the normal revision process based on the clicked button.
      *
@@ -173,7 +191,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      * @return true if the revision process is complete, false otherwise
      */
     @Override
-    public boolean reviseCard(JButton clickedButton, CardSuperMemo2 card) {
+    public boolean reviseCard(Button clickedButton, CardSuperMemo2 card) {
         boolean cardRevisionFinished = false;
         int grade = 0;
 
@@ -219,6 +237,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
 
         return cardRevisionFinished;
     }
+
     /**
      * Returns a panel containing the buttons for the reverse revision process.
      *
@@ -226,15 +245,12 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      * @return a panel with the grade buttons for the reverse revision
      */
     @Override
-    public JPanel getReverseRevisionButtonsPanel(CardSuperMemo2 card) {
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
-        buttonPanel.add(reverseButtonGrade1);
-        buttonPanel.add(reverseButtonGrade2);
-        buttonPanel.add(reverseButtonGrade3);
-        buttonPanel.add(reverseButtonGrade4);
-        buttonPanel.add(reverseButtonGrade5);
-        return buttonPanel;
+    public Pane getReverseRevisionButtonsPane(CardSuperMemo2 card) {
+        HBox buttonBox = new HBox(5);
+        buttonBox.getChildren().addAll(reverseButtonGrade1, reverseButtonGrade2, reverseButtonGrade3, reverseButtonGrade4, reverseButtonGrade5);
+        return buttonBox;
     }
+
     /**
      * Handles the logic for the reverse revision process based on the clicked button.
      *
@@ -243,7 +259,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      * @return true if the reverse revision process is complete, false otherwise
      */
     @Override
-    public boolean reversReviseCard(JButton clickedButton, CardSuperMemo2 card) {
+    public boolean reverseReviseCard(Button clickedButton, CardSuperMemo2 card) {
         boolean cardRevisionFinished = false;
         int grade = 0;
 
@@ -289,6 +305,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
 
         return cardRevisionFinished;
     }
+
     /**
      * Returns the name of the algorithm based on the current translation.
      *
@@ -298,6 +315,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
     public String getAlgorithmName() {
         return translationService.getTranslation(algorithmNameKey);
     }
+
     /**
      * Creates a new card for the SuperMemo2 algorithm with the given front and back content.
      *

@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDate;
 
 import static gutek.services.ChartService.MAX_RANGE;
@@ -20,23 +19,30 @@ import static gutek.services.ChartService.MAX_RANGE;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeckBaseStatistics {
+
     /** Unique identifier for the deck statistics. */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long idDeckStatistics;
+
     /** The number of new cards reviewed per day. */
     private Integer newCardsPerDay = 0;
+
     /** Indicator of the current date used for tracking daily progress. */
     private LocalDate todayIndicator = LocalDate.now();
+
     /** The deck to which these statistics apply. */
     @OneToOne(fetch = FetchType.EAGER)
     private DeckBase deck;
+
     /** Array tracking the number of cards revised for the first time over time. */
     @Lob
     private int[] revisedForTheFirstTime = new int[MAX_RANGE];
+
     /** Array tracking the number of regular revisions over time. */
     @Lob
     private int[] regularRevision = new int[MAX_RANGE];
+
     /** Array tracking the number of reverse revisions over time. */
     @Lob
     private int[] reverseRevision = new int[MAX_RANGE];

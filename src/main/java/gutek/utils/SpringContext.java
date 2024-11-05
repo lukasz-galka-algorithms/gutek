@@ -13,10 +13,12 @@ import org.springframework.stereotype.Component;
 @Component
 @AllArgsConstructor
 public class SpringContext implements ApplicationContextAware {
+
     /**
      * The Spring application context, which provides access to all Spring-managed beans.
      */
     private ApplicationContext context;
+
     /**
      * This method is called by the Spring container to inject the {@link ApplicationContext}
      * into this bean.
@@ -27,6 +29,7 @@ public class SpringContext implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext ctx) {
         context = ctx;
     }
+
     /**
      * Retrieves a Spring-managed bean of the specified class type from the application context.
      *

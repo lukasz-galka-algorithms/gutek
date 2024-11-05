@@ -7,7 +7,6 @@ import gutek.repositories.CardBaseRevisionRepository;
 import gutek.repositories.DeckBaseRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -17,18 +16,22 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 public class CardService {
+
     /**
      * Repository for managing {@link CardBase} entities.
      */
     private final CardBaseRepository cardBaseRepository;
+
     /**
      * Repository for managing {@link DeckBase} entities.
      */
     private final DeckBaseRepository deckBaseRepository;
+
     /**
      * Repository for managing {@link gutek.entities.cards.CardBaseRevision} entities.
      */
     private final CardBaseRevisionRepository cardBaseRevisionRepository;
+
     /**
      * Removes a card from its deck and deletes its related revisions.
      *
@@ -47,6 +50,7 @@ public class CardService {
             }
         }
     }
+
     /**
      * Adds a new card to the specified deck with the provided front and back text.
      *
@@ -64,6 +68,7 @@ public class CardService {
             deckBaseRepository.save(currentDeck.get());
         }
     }
+
     /**
      * Saves the provided card to the database.
      *
@@ -72,6 +77,7 @@ public class CardService {
     public void saveCard(CardBase cardToEdit){
         cardBaseRepository.save(cardToEdit);
     }
+
     /**
      * Finds cards belonging to a specific deck that match the given search criteria.
      *
@@ -91,6 +97,7 @@ public class CardService {
             return cardBaseRepository.findByFrontContainingAndBackContainingAndDeck(phraseInFront, phraseInBack, deck);
         }
     }
+
     /**
      * Finds a card by its front text and the deck it belongs to.
      *

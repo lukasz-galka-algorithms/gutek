@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="rootPane" xmlns:fx="http://javafx.com/fxml" fx:controller="gutek.gui.controllers.main.NewDeckFXMLController">
+    <center>
+        <VBox alignment="CENTER" spacing="20">
+            <HBox alignment="CENTER" spacing="10">
+                <Label fx:id="nameLabel" text="Deck Name:" />
+                <TextField fx:id="nameField" />
+            </HBox>
+            <HBox alignment="CENTER" spacing="10">
+                <Label fx:id="algorithmLabel" text="Algorithm:" />
+                <ComboBox fx:id="algorithmComboBox" />
+            </HBox>
+            <HBox alignment="CENTER" spacing="10">
+                <Button fx:id="addButton" text="Add Deck" />
+                <Button fx:id="importButton" text="Import Deck" />
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

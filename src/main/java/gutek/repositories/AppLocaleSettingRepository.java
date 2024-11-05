@@ -1,9 +1,9 @@
 package gutek.repositories;
 
 import gutek.entities.languages.AppLocaleSetting;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
 
 /**
@@ -11,6 +11,7 @@ import java.util.Optional;
  * Extends {@link JpaRepository} to provide standard CRUD operations.
  */
 @Repository
+@Transactional
 public interface AppLocaleSettingRepository extends JpaRepository<AppLocaleSetting,Long> {
     /**
      * Finds the first {@link AppLocaleSetting} entity ordered by its ID in ascending order.

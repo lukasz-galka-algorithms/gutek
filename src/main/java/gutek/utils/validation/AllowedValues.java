@@ -12,12 +12,14 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AllowedValues {
+
     /**
      * Specifies the allowed values for the annotated field.
      *
      * @return Array of allowed string values.
      */
     String[] values();
+
     /**
      * Specifies the translation key for the error message when the value is not allowed.
      *
