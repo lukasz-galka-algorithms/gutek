@@ -1,11 +1,13 @@
 package gutek.entities.algorithms;
 
 import gutek.entities.cards.CardConstantCoefficient;
+import gutek.utils.ImageUtil;
 import gutek.utils.validation.Min;
 import gutek.utils.validation.NotEmpty;
 import gutek.utils.validation.NotNull;
 import jakarta.persistence.*;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import lombok.Getter;
@@ -63,19 +65,43 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
 
     /** UI component for the first button in the normal revision process. */
     @Transient
-    private final Button button1;
+    private Button button1;
+
+    /**
+     * Icon for the "button1".
+     */
+    @Transient
+    private ImageView button1Icon;
 
     /** UI component for the second button in the normal revision process. */
     @Transient
-    private final Button button2;
+    private Button button2;
+
+    /**
+     * Icon for the "button2".
+     */
+    @Transient
+    private ImageView button2Icon;
 
     /** UI component for the third button in the normal revision process. */
     @Transient
-    private final Button button3;
+    private Button button3;
+
+    /**
+     * Icon for the "button3".
+     */
+    @Transient
+    private ImageView button3Icon;
 
     /** UI component for the fourth button in the normal revision process. */
     @Transient
-    private final Button button4;
+    private Button button4;
+
+    /**
+     * Icon for the "button4".
+     */
+    @Transient
+    private ImageView button4Icon;
 
     /** Coefficient used in the reverse revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.reverse_coeff_1")
@@ -100,11 +126,23 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
 
     /** UI component for the first button in the reverse revision process. */
     @Transient
-    private final Button reverseButton1;
+    private Button reverseButton1;
+
+    /**
+     * Icon for the "reverseButton1".
+     */
+    @Transient
+    private ImageView reverseButton1Icon;
 
     /** UI component for the second button in the reverse revision process. */
     @Transient
-    private final Button reverseButton2;
+    private Button reverseButton2;
+
+    /**
+     * Icon for the "reverseButton2".
+     */
+    @Transient
+    private ImageView reverseButton2Icon;
 
     /** Translation key for the algorithm name. */
     @Transient
@@ -115,13 +153,6 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      */
     public ConstantCoefficientRevisionAlgorithm() {
         super();
-        this.button1 = new Button();
-        this.button2 = new Button();
-        this.button3 = new Button();
-        this.button4 = new Button();
-
-        this.reverseButton1 = new Button();
-        this.reverseButton2 = new Button();
     }
 
     /**
@@ -137,6 +168,22 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
         this.reverseCoefficient1 = 0.25;
         this.reverseCoefficient2 = 1.5;
         this.reverseIncorrectAnswerThreshold = 5;
+    }
+
+    /**
+     * Initializes the GUI components.
+     */
+    @Override
+    public void initializeGUI(){
+        this.button1 = new Button();
+        this.button2 = new Button();
+        this.button3 = new Button();
+        this.button4 = new Button();
+
+        this.reverseButton1 = new Button();
+        this.reverseButton2 = new Button();
+
+        initializeIcons();
     }
 
     /**
@@ -159,14 +206,15 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     public void updateSize(double width, double height, double scaleFactor){
         double buttonFontSize = 12 * scaleFactor;
         String buttonsStyle = "-fx-font-size: " + buttonFontSize + "px;";
+        String buttonRadiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
 
-        button1.setStyle(buttonsStyle);
-        button2.setStyle(buttonsStyle);
-        button3.setStyle(buttonsStyle);
-        button4.setStyle(buttonsStyle);
+        button1.setStyle(buttonsStyle + buttonRadiusStyle);
+        button2.setStyle(buttonsStyle + buttonRadiusStyle);
+        button3.setStyle(buttonsStyle + buttonRadiusStyle);
+        button4.setStyle(buttonsStyle + buttonRadiusStyle);
 
-        reverseButton1.setStyle(buttonsStyle);
-        reverseButton2.setStyle(buttonsStyle);
+        reverseButton1.setStyle(buttonsStyle + buttonRadiusStyle);
+        reverseButton2.setStyle(buttonsStyle + buttonRadiusStyle);
 
         button1.setPrefSize(width / 4, height);
         button2.setPrefSize(width / 4, height);
@@ -175,6 +223,8 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
 
         reverseButton1.setPrefSize(width / 2, height);
         reverseButton2.setPrefSize(width / 2, height);
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -289,5 +339,37 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     @Override
     public CardConstantCoefficient createNewCard(String front, String back) {
         return new CardConstantCoefficient(front, back, null);
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        button1Icon = ImageUtil.createImageView("/images/icons/repeat.png");
+        button1.setGraphic(button1Icon);
+        button2Icon = ImageUtil.createImageView("/images/icons/weak.png");
+        button2.setGraphic(button2Icon);
+        button3Icon = ImageUtil.createImageView("/images/icons/good.png");
+        button3.setGraphic(button3Icon);
+        button4Icon = ImageUtil.createImageView("/images/icons/excellent.png");
+        button4.setGraphic(button4Icon);
+        reverseButton1Icon = ImageUtil.createImageView("/images/icons/repeat.png");
+        reverseButton1.setGraphic(reverseButton1Icon);
+        reverseButton2Icon = ImageUtil.createImageView("/images/icons/excellent.png");
+        reverseButton2.setGraphic(reverseButton2Icon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(button1Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(button2Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(button3Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(button4Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(reverseButton1Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(reverseButton2Icon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

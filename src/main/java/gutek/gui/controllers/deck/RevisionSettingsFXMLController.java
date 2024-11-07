@@ -10,13 +10,17 @@ import gutek.gui.controllers.menu.MenuDeckFXMLController;
 import gutek.services.RevisionAlgorithmService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import gutek.utils.validation.FieldValueValidator;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import org.springframework.stereotype.Component;
 
 import java.beans.Introspector;
@@ -25,7 +29,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import static gutek.utils.AlertMessageUtil.showAlert;
+
+import static gutek.utils.AlertMessageUtil.*;
 
 /**
  * Controller for managing the settings of a deck's revision algorithm.
@@ -67,6 +72,11 @@ public class RevisionSettingsFXMLController extends FXMLController {
     private Button saveButton;
 
     /**
+     * Icon for the "saveButton".
+     */
+    private ImageView saveButtonIcon;
+
+    /**
      * Controller for the main menu bar of the application.
      */
     private final MenuBarFXMLController menuBarFXMLController;
@@ -95,11 +105,11 @@ public class RevisionSettingsFXMLController extends FXMLController {
     /**
      * Constructs a new `RevisionSettingsFXMLController` for managing and adjusting revision algorithm settings.
      *
-     * @param stage                 The main stage of the application.
-     * @param fxmlFileLoader        Utility for loading FXML files associated with this scene.
-     * @param translationService    Service for retrieving translations for the UI.
-     * @param menuBarFXMLController Controller for the main menu bar.
-     * @param menuDeckFXMLController Controller for deck-specific menu actions.
+     * @param stage                    The main stage of the application.
+     * @param fxmlFileLoader           Utility for loading FXML files associated with this scene.
+     * @param translationService       Service for retrieving translations for the UI.
+     * @param menuBarFXMLController    Controller for the main menu bar.
+     * @param menuDeckFXMLController   Controller for deck-specific menu actions.
      * @param revisionAlgorithmService Service for managing algorithm-related operations.
      */
     public RevisionSettingsFXMLController(MainStage stage,
@@ -131,6 +141,8 @@ public class RevisionSettingsFXMLController extends FXMLController {
         menuContainer.getChildren().setAll(menuBarFXMLController.getRoot(), menuDeckFXMLController.getRoot());
 
         saveButton.setOnAction(e -> saveSettings());
+
+        initializeIcons();
     }
 
     /**
@@ -202,12 +214,11 @@ public class RevisionSettingsFXMLController extends FXMLController {
 
                 revisionAlgorithmService.saveAlgorithm(algorithm);
             } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, translationService.getTranslation("deck_view.settings.invalid_input") + "\n" + e.getMessage());
+                showErrorAlert(translationService.getTranslation("deck_view.settings.invalid_input") + "\n" + e.getMessage(), translationService, stage);
                 return;
             }
         }
-
-        showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("deck_view.settings.save_success"));
+        showInfoAlert(translationService.getTranslation("deck_view.settings.save_success"), translationService, stage);
     }
 
     /**
@@ -222,8 +233,9 @@ public class RevisionSettingsFXMLController extends FXMLController {
         double scaleFactor = stage.getStageScaleFactor();
 
         String fontSizeStyle = "-fx-font-size: " + (12 * scaleFactor) + "px;";
+        String radiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
 
-        saveButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;");
+        saveButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;" + radiusStyle);
         saveButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
 
         for (HBox hbox : settingsContainer.getChildren().stream()
@@ -235,11 +247,18 @@ public class RevisionSettingsFXMLController extends FXMLController {
             TextField textField = (TextField) hbox.getChildren().get(1);
 
             label.setStyle(fontSizeStyle);
-            textField.setStyle(fontSizeStyle);
+            textField.setStyle(fontSizeStyle + radiusStyle);
+            DropShadow dropShadow = new DropShadow();
+            dropShadow.setOffsetX(3.0);
+            dropShadow.setOffsetY(3.0);
+            dropShadow.setColor(Color.BLACK);
+            textField.setEffect(dropShadow);
 
             label.setPrefSize(400 * scaleFactor, 40 * scaleFactor);
             textField.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
         }
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -266,10 +285,27 @@ public class RevisionSettingsFXMLController extends FXMLController {
      * Updates the view by loading the settings and initializing the view components.
      */
     @Override
-    public void updateView(){
+    public void updateView() {
         menuBarFXMLController.updateView();
         menuDeckFXMLController.updateView();
 
         loadSettings();
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        saveButtonIcon = ImageUtil.createImageView("/images/icons/save.png");
+        saveButton.setGraphic(saveButtonIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(saveButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

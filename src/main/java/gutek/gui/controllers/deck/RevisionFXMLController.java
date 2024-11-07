@@ -12,10 +12,12 @@ import gutek.services.DeckStatisticsService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
 import gutek.gui.controls.NumberTextField;
+import gutek.utils.ImageUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.springframework.stereotype.Component;
@@ -62,10 +64,20 @@ public class RevisionFXMLController extends FXMLController {
     private Button regularRevisionButton;
 
     /**
+     * Icon for the "regularRevisionButton".
+     */
+    private ImageView regularRevisionButtonIcon;
+
+    /**
      * Button to start a reverse revision session.
      */
     @FXML
     private Button reverseRevisionButton;
+
+    /**
+     * Icon for the "reverseRevisionButton".
+     */
+    private ImageView reverseRevisionButtonIcon;
 
     /**
      * Label displaying the count of new cards available for regular revision.
@@ -188,6 +200,8 @@ public class RevisionFXMLController extends FXMLController {
 
         newCardsPerDayTextField.textProperty().removeListener(newCardsPerDayListener);
         newCardsPerDayTextField.textProperty().addListener(newCardsPerDayListener);
+
+        initializeIcons();
     }
 
     /**
@@ -201,6 +215,7 @@ public class RevisionFXMLController extends FXMLController {
 
         double scaleFactor = stage.getStageScaleFactor();
         String fontSizeStyle = "-fx-font-size: " + (12 * scaleFactor) + "px;";
+        String radiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
         double labelWidth = 150 * scaleFactor;
         double labelHeight = 30 * scaleFactor;
 
@@ -209,9 +224,9 @@ public class RevisionFXMLController extends FXMLController {
         regularOldCardsLabel.setStyle(fontSizeStyle);
         reverseNewCardsLabel.setStyle(fontSizeStyle);
         reverseOldCardsLabel.setStyle(fontSizeStyle);
-        newCardsPerDayTextField.setStyle(fontSizeStyle);
-        regularRevisionButton.setStyle(fontSizeStyle);
-        reverseRevisionButton.setStyle(fontSizeStyle);
+        newCardsPerDayTextField.setStyle(fontSizeStyle + radiusStyle);
+        regularRevisionButton.setStyle(fontSizeStyle + radiusStyle);
+        reverseRevisionButton.setStyle(fontSizeStyle + radiusStyle);
 
         newCardsPerDayTextField.setPrefSize(150 * scaleFactor, 30 * scaleFactor);
         regularRevisionButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
@@ -221,6 +236,8 @@ public class RevisionFXMLController extends FXMLController {
         regularOldCardsLabel.setPrefSize(labelWidth, labelHeight);
         reverseNewCardsLabel.setPrefSize(labelWidth, labelHeight);
         reverseOldCardsLabel.setPrefSize(labelWidth, labelHeight);
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -266,5 +283,25 @@ public class RevisionFXMLController extends FXMLController {
         } catch (NumberFormatException ignored) {
             // ignore
         }
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        regularRevisionButtonIcon = ImageUtil.createImageView("/images/icons/revision.png");
+        regularRevisionButton.setGraphic(regularRevisionButtonIcon);
+        reverseRevisionButtonIcon = ImageUtil.createImageView("/images/icons/revision.png");
+        reverseRevisionButton.setGraphic(reverseRevisionButtonIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(regularRevisionButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(reverseRevisionButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

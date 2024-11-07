@@ -5,10 +5,12 @@ import gutek.gui.controllers.MainStage;
 import gutek.gui.controllers.MainStageScenes;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import gutek.utils.StringUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.ImageView;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Locale;
@@ -57,6 +59,47 @@ public class MenuBarFXMLController extends FXMLController {
     private MenuItem logoutMenuItem;
 
     /**
+     * Icon for the main file menu. Displays an icon associated with the "File" menu in the menu bar.
+     */
+    private ImageView fileMenuIcon;
+
+    /**
+     * Icon for the "Decks" menu item. Represents an icon for navigating to the decks view.
+     */
+    private ImageView decksIcon;
+
+    /**
+     * Icon for the "New" menu item. Used to navigate to the view for creating a new deck.
+     */
+    private ImageView newIcon;
+
+    /**
+     * Icon for the "Trash" menu item. Used to open the view where deleted decks can be managed.
+     */
+    private ImageView trashIcon;
+
+    /**
+     * Icon for the "Authors" menu item. Represents an icon for navigating to the authors view.
+     */
+    private ImageView authorsIcon;
+
+    /**
+     * Icon for the "Exit" menu item. Used to represent the exit action in the file menu.
+     */
+    private ImageView exitIcon;
+
+    /**
+     * Icon for the "Logout" menu. Displays an icon for the session management menu.
+     */
+    private ImageView logoutMenuIcon;
+
+    /**
+     * Icon for the "Logout" menu item. Represents an icon for logging out of the application.
+     */
+    private ImageView logoutIcon;
+
+
+    /**
      * Constructs the `MenuBarFXMLController` and loads the menu bar view from FXML.
      *
      * @param stage              The main stage of the application.
@@ -76,6 +119,7 @@ public class MenuBarFXMLController extends FXMLController {
     @Override
     public void initWithParams(Object... params) {
         initializeMenuActions();
+        initializeMenuIcons();
     }
 
     /**
@@ -100,15 +144,21 @@ public class MenuBarFXMLController extends FXMLController {
     public void updateView() {
         List<Locale> availableLocales = translationService.getAvailableLocales();
         languageMenu.getItems().clear();
+
         for (Locale locale : availableLocales) {
             String name = StringUtil.capitalizeFirstLetter(locale.getDisplayLanguage(locale));
             MenuItem langItem = new MenuItem(name);
+
+            ImageView flagIcon = createFlagIcon(locale);
+            langItem.setGraphic(flagIcon);
+
             langItem.setOnAction(e -> {
                 translationService.updateLocale(locale);
                 stage.updateTranslation();
                 if (stage.getCurrentController() != null) {
                     stage.getCurrentController().updateTranslation();
                 }
+                updateSize();
             });
             languageMenu.getItems().add(langItem);
         }
@@ -148,6 +198,9 @@ public class MenuBarFXMLController extends FXMLController {
         authorsMenuItem.setStyle(fontSizeStyle);
         exitMenuItem.setStyle(fontSizeStyle);
         logoutMenuItem.setStyle(fontSizeStyle);
+
+        updateLanguageMenuIcons(scaleFactor);
+        updateFileMenuIcons(scaleFactor);
     }
 
     /**
@@ -158,5 +211,80 @@ public class MenuBarFXMLController extends FXMLController {
         if (this.root == null) {
             this.root = fxmlFileLoader.loadFXML(fxmlFilePath, this);
         }
+    }
+
+    /**
+     * Creates an ImageView containing the flag icon for the specified Locale.
+     * This method uses the IconUtil class to generate an icon based on the country code
+     * from the given Locale. The flag icon is loaded from the resources folder.
+     *
+     * @param locale the Locale object representing the language and country.
+     * @return an ImageView containing the flag icon, or an empty ImageView if the icon is not found.
+     */
+    private ImageView createFlagIcon(Locale locale) {
+        String countryCode = locale.getCountry();
+        return ImageUtil.createImageView("/images/flags/" + countryCode + ".png");
+    }
+
+    /**
+     * Updates the flag icons in the language menu to reflect the current application locale
+     * and scales them according to the provided scale factor.
+     * This method sets the flag icon for the main language menu item to reflect the
+     * currently selected language. It also iterates through each language menu item,
+     * scaling its icon based on the current scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each flag icon.
+     */
+    private void updateLanguageMenuIcons(double scaleFactor) {
+        Locale currentLocale = translationService.getCurrentLocale();
+        ImageView currentFlagIcon = createFlagIcon(currentLocale);
+        ImageUtil.setImageViewSize(currentFlagIcon,20 * scaleFactor, 15 * scaleFactor);
+        languageMenu.setGraphic(currentFlagIcon);
+
+        for (MenuItem langItem : languageMenu.getItems()) {
+            if (langItem.getGraphic() instanceof ImageView flagIcon) {
+                ImageUtil.setImageViewSize(flagIcon,20 * scaleFactor, 15 * scaleFactor);
+            }
+        }
+    }
+
+    /**
+     * Initializes the icons for menu without languages menu.
+     * This method sets the initial icons for the menu items and stores them
+     * so they can be resized later.
+     */
+    private void initializeMenuIcons() {
+        fileMenuIcon = ImageUtil.createImageView("/images/icons/home.png");
+        fileMenu.setGraphic(fileMenuIcon);
+        decksIcon = ImageUtil.createImageView("/images/icons/browse.png");
+        decksMenuItem.setGraphic(decksIcon);
+        newIcon = ImageUtil.createImageView("/images/icons/new.png");
+        newMenuItem.setGraphic(newIcon);
+        trashIcon = ImageUtil.createImageView("/images/icons/trash.png");
+        trashMenuItem.setGraphic(trashIcon);
+        authorsIcon = ImageUtil.createImageView("/images/icons/author.png");
+        authorsMenuItem.setGraphic(authorsIcon);
+        exitIcon = ImageUtil.createImageView("/images/icons/exit.png");
+        exitMenuItem.setGraphic(exitIcon);
+        logoutMenuIcon = ImageUtil.createImageView("/images/icons/session.png");
+        logoutMenu.setGraphic(logoutMenuIcon);
+        logoutIcon = ImageUtil.createImageView("/images/icons/logout.png");
+        logoutMenuItem.setGraphic(logoutIcon);
+    }
+
+    /**
+     * Updates the size of each icon in the menu according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon in fileMenu.
+     */
+    private void updateFileMenuIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(fileMenuIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(decksIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(newIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(trashIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(authorsIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(exitIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(logoutMenuIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(logoutIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

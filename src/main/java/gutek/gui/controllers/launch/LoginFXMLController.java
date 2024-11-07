@@ -6,11 +6,13 @@ import gutek.gui.controllers.MainStageScenes;
 import gutek.services.AppUserService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import org.springframework.stereotype.Component;
 
-import static gutek.utils.AlertMessageUtil.showAlert;
+import static gutek.utils.AlertMessageUtil.showWarningAlert;
 
 /**
  * Controller for the login view, handling user authentication and registration.
@@ -49,6 +51,21 @@ public class LoginFXMLController extends FXMLController {
     @FXML
     private Button backButton;
 
+    /**
+     * Icon for the "registerButton".
+     */
+    private ImageView registerButtonIcon;
+
+    /**
+     * Icon for the "loginButton".
+     */
+    private ImageView loginButtonIcon;
+
+    /**
+     * Icon for the "backButton".
+     */
+    private ImageView backButtonIcon;
+
     /** Service for user management. */
     private final AppUserService appUserService;
 
@@ -66,6 +83,15 @@ public class LoginFXMLController extends FXMLController {
     }
 
     /**
+     * Initializes the view with parameters.
+     * @param params Array of parameters for initialization (not used in this implementation).
+     */
+    @Override
+    public void initWithParams(Object... params) {
+        initializeIcons();
+    }
+
+    /**
      * Updates the size and layout of the components based on the current window size and scale factor.
      */
     @Override
@@ -73,22 +99,25 @@ public class LoginFXMLController extends FXMLController {
         double scaleFactor = stage.getStageScaleFactor();
         String fontSizeStyle = "-fx-font-size: " + (15 * scaleFactor) + "px;";
         String fontSizeLargeStyle = "-fx-font-size: " + (20 * scaleFactor) + "px;";
+        String radiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
 
         loginLabel.setStyle(fontSizeLargeStyle);
         passwordLabel.setStyle(fontSizeLargeStyle);
-        loginField.setStyle(fontSizeStyle);
-        passwordField.setStyle(fontSizeStyle);
-        registerButton.setStyle(fontSizeStyle + " -fx-background-color: blue; -fx-text-fill: white;");
-        loginButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;");
-        backButton.setStyle(fontSizeStyle + " -fx-background-color: gray; -fx-text-fill: white;");
+        loginField.setStyle(fontSizeStyle + radiusStyle);
+        passwordField.setStyle(fontSizeStyle + radiusStyle);
+        registerButton.setStyle(fontSizeStyle + " -fx-background-color: blue; -fx-text-fill: white;" + radiusStyle);
+        loginButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;" + radiusStyle);
+        backButton.setStyle(fontSizeStyle + " -fx-background-color: gray; -fx-text-fill: white;" + radiusStyle);
 
         loginLabel.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
         passwordLabel.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
         loginField.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
         passwordField.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
-        registerButton.setPrefSize(100 * scaleFactor, 40 * scaleFactor);
-        loginButton.setPrefSize(100 * scaleFactor, 40 * scaleFactor);
-        backButton.setPrefSize(100 * scaleFactor, 40 * scaleFactor);
+        registerButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
+        loginButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
+        backButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -113,12 +142,12 @@ public class LoginFXMLController extends FXMLController {
         String password = passwordField.getText().trim();
 
         if (username.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING,translationService.getTranslation("login_view.empty_username"));
+            showWarningAlert(translationService.getTranslation("login_view.empty_username"), translationService, stage);
             return;
         }
 
         if (password.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING,translationService.getTranslation("login_view.empty_password"));
+            showWarningAlert(translationService.getTranslation("login_view.empty_password"), translationService, stage);
             return;
         }
 
@@ -127,7 +156,7 @@ public class LoginFXMLController extends FXMLController {
             stage.setLoggedUser(appUserService.findUserByUsername(username).orElse(null));
             stage.setScene(MainStageScenes.DECKS_SCENE);
         } else {
-            showAlert(Alert.AlertType.WARNING,translationService.getTranslation("login_view.login_failed"));
+            showWarningAlert(translationService.getTranslation("login_view.login_failed"), translationService, stage);
         }
     }
 
@@ -141,12 +170,12 @@ public class LoginFXMLController extends FXMLController {
         String password = passwordField.getText().trim();
 
         if (username.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING,translationService.getTranslation("login_view.empty_username"));
+            showWarningAlert(translationService.getTranslation("login_view.empty_username"), translationService, stage);
             return;
         }
 
         if (password.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING,translationService.getTranslation("login_view.empty_password"));
+            showWarningAlert(translationService.getTranslation("login_view.empty_password"), translationService, stage);
             return;
         }
 
@@ -155,7 +184,7 @@ public class LoginFXMLController extends FXMLController {
             stage.setLoggedUser(appUserService.findUserByUsername(username).orElse(null));
             stage.setScene(MainStageScenes.DECKS_SCENE);
         } else {
-            showAlert(Alert.AlertType.WARNING,translationService.getTranslation("login_view.user_exists"));
+            showWarningAlert(translationService.getTranslation("login_view.user_exists"), translationService, stage);
         }
     }
 
@@ -166,5 +195,28 @@ public class LoginFXMLController extends FXMLController {
     @FXML
     private void handleBack(){
         stage.setScene(MainStageScenes.LANGUAGE_SELECTION_SCENE);
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        loginButtonIcon = ImageUtil.createImageView("/images/icons/success.png");
+        loginButton.setGraphic(loginButtonIcon);
+        registerButtonIcon = ImageUtil.createImageView("/images/icons/register.png");
+        registerButton.setGraphic(registerButtonIcon);
+        backButtonIcon = ImageUtil.createImageView("/images/icons/back.png");
+        backButton.setGraphic(backButtonIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(loginButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(registerButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(backButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

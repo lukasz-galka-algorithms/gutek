@@ -7,9 +7,11 @@ import gutek.gui.controllers.main.TrashFXMLController;
 import gutek.services.DeckService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 
 /**
  * A controller class for managing the display and interactions of a single deck in the trash view.
@@ -39,10 +41,20 @@ public class TrashDeckCellFXMLController extends FXMLController {
     private Button buttonDelete;
 
     /**
+     * Icon for the "buttonDelete" menu item.
+     */
+    private ImageView buttonDeleteIcon;
+
+    /**
      * Button to restore the deck.
      */
     @FXML
     private Button buttonRestore;
+
+    /**
+     * Icon for the "buttonRestore" menu item.
+     */
+    private ImageView buttonRestoreIcon;
 
     /**
      * The deck associated with this controller, representing the data of a single trashed deck.
@@ -89,6 +101,8 @@ public class TrashDeckCellFXMLController extends FXMLController {
 
         buttonDelete.setOnAction(e -> handleDelete());
         buttonRestore.setOnAction(e -> handleRestore());
+
+        initializeIcons();
     }
 
     /**
@@ -140,15 +154,19 @@ public class TrashDeckCellFXMLController extends FXMLController {
         double scaleFactor = stage.getStageScaleFactor();
 
         String fontSizeStyle = "-fx-font-size: " + (12 * scaleFactor) + "px;";
+        String buttonRadiusStyle = "-fx-background-radius: " + (15 * scaleFactor) + "; -fx-border-radius: " + (15 * scaleFactor) + ";";
+
         deckNameLabel.setStyle(fontSizeStyle);
         deckName.setStyle(fontSizeStyle);
-        buttonDelete.setStyle(fontSizeStyle + " -fx-background-color: red; -fx-text-fill: white;");
-        buttonRestore.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;");
+        buttonDelete.setStyle(fontSizeStyle + " -fx-background-color: red; -fx-text-fill: white;" + buttonRadiusStyle);
+        buttonRestore.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;" + buttonRadiusStyle);
 
         deckNameLabel.setPrefSize(150 * scaleFactor, 20 * scaleFactor);
         deckName.setPrefSize(150 * scaleFactor, 20 * scaleFactor);
         buttonDelete.setPrefSize(150 * scaleFactor, 20 * scaleFactor);
         buttonRestore.setPrefSize(150 * scaleFactor, 20 * scaleFactor);
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -167,5 +185,25 @@ public class TrashDeckCellFXMLController extends FXMLController {
         if (this.root == null) {
             this.root = fxmlFileLoader.loadFXML(fxmlFilePath, this);
         }
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        buttonDeleteIcon = ImageUtil.createImageView("/images/icons/delete.png");
+        buttonDelete.setGraphic(buttonDeleteIcon);
+        buttonRestoreIcon = ImageUtil.createImageView("/images/icons/restore.png");
+        buttonRestore.setGraphic(buttonRestoreIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(buttonDeleteIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(buttonRestoreIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

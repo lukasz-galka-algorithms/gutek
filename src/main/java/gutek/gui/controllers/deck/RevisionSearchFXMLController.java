@@ -10,6 +10,7 @@ import gutek.services.CardService;
 import gutek.gui.controls.CardCell;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -19,6 +20,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import lombok.Getter;
@@ -64,6 +66,11 @@ public class RevisionSearchFXMLController extends FXMLController {
      */
     @FXML
     private Button searchButton;
+
+    /**
+     * Icon for the "searchButton".
+     */
+    private ImageView searchButtonIcon;
 
     /**
      * List view displaying the search results, showing cards that match the search terms.
@@ -145,6 +152,8 @@ public class RevisionSearchFXMLController extends FXMLController {
 
         cardListView.setCellFactory(listView ->
                 new CardCell(translationService, stage, fxmlFileLoader, cardService, this));
+
+        initializeIcons();
     }
 
     /**
@@ -159,14 +168,17 @@ public class RevisionSearchFXMLController extends FXMLController {
         double scaleFactor = stage.getStageScaleFactor();
         scaleFactorProperty.set(scaleFactor);
         String fontSizeStyle = "-fx-font-size: " + (12 * scaleFactor) + "px;";
+        String radiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
 
-        frontInCardTextField.setStyle(fontSizeStyle);
-        backInCardTextField.setStyle(fontSizeStyle);
-        searchButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;");
+        frontInCardTextField.setStyle(fontSizeStyle + radiusStyle);
+        backInCardTextField.setStyle(fontSizeStyle + radiusStyle);
+        searchButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;" + radiusStyle);
 
         frontInCardTextField.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
         backInCardTextField.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
-        searchButton.setPrefSize(100 * scaleFactor, 40 * scaleFactor);
+        searchButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -206,5 +218,22 @@ public class RevisionSearchFXMLController extends FXMLController {
      */
     public void removeCardFromListView(CardBase card){
         cardListView.getItems().remove(card);
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        searchButtonIcon = ImageUtil.createImageView("/images/icons/open.png");
+        searchButton.setGraphic(searchButtonIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(searchButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

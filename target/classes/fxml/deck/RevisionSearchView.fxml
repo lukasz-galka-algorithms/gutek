@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
 <BorderPane fx:id="rootPane" xmlns:fx="http://javafx.com/fxml" fx:controller="gutek.gui.controllers.deck.RevisionSearchFXMLController">
     <top>
         <VBox fx:id="menuContainer" />
@@ -15,10 +15,22 @@
             </padding>
 
             <HBox spacing="10" alignment="CENTER">
-                <TextField fx:id="frontInCardTextField" />
-                <TextField fx:id="backInCardTextField" />
+                <TextField fx:id="frontInCardTextField">
+                    <effect>
+                        <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+                    </effect>
+                </TextField>
+                <TextField fx:id="backInCardTextField">
+                    <effect>
+                        <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+                    </effect>
+                </TextField>
             </HBox>
-            <Button fx:id="searchButton"/>
+            <Button fx:id="searchButton">
+                <effect>
+                    <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+                </effect>
+            </Button>
             <ListView fx:id="cardListView"/>
         </VBox>
     </center>

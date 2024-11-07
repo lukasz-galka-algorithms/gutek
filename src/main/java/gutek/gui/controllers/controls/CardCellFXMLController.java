@@ -8,12 +8,15 @@ import gutek.gui.controllers.deck.RevisionSearchFXMLController;
 import gutek.services.CardService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import static gutek.utils.AlertMessageUtil.showAlert;
+import javafx.scene.image.ImageView;
+
+import static gutek.utils.AlertMessageUtil.showInfoAlert;
 
 /**
  * A controller for managing the display and actions of a card within a deck, providing options to edit or delete the card.
@@ -43,10 +46,20 @@ public class CardCellFXMLController extends FXMLController {
     private Button editButton;
 
     /**
+     * Icon for the "editButton".
+     */
+    private ImageView editButtonIcon;
+
+    /**
      * Button for the card deleting.
      */
     @FXML
     private Button deleteButton;
+
+    /**
+     * Icon for the "deleteButton".
+     */
+    private ImageView deleteButtonIcon;
 
     /**
      * The card associated with this cell.
@@ -93,6 +106,8 @@ public class CardCellFXMLController extends FXMLController {
 
         editButton.setOnAction(e -> handleEdit());
         deleteButton.setOnAction(e -> handleDelete());
+
+        initializeIcons();
     }
 
     /**
@@ -119,7 +134,7 @@ public class CardCellFXMLController extends FXMLController {
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 cardService.removeCard(card);
-                showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("deck_view.search_card.delete_success"));
+                showInfoAlert(translationService.getTranslation("deck_view.search_card.delete_success"), translationService, stage);
                 parentController.removeCardFromListView(card);
             }
         });
@@ -141,15 +156,19 @@ public class CardCellFXMLController extends FXMLController {
         double scaleFactor = stage.getStageScaleFactor();
 
         String fontSizeStyle = "-fx-font-size: " + (12 * scaleFactor) + "px;";
+        String buttonRadiusStyle = "-fx-background-radius: " + (15 * scaleFactor) + "; -fx-border-radius: " + (15 * scaleFactor) + ";";
+
         frontLabel.setStyle(fontSizeStyle);
         backLabel.setStyle(fontSizeStyle);
-        editButton.setStyle(fontSizeStyle + " -fx-background-color: blue; -fx-text-fill: white;");
-        deleteButton.setStyle(fontSizeStyle + " -fx-background-color: red; -fx-text-fill: white;");
+        editButton.setStyle(fontSizeStyle + " -fx-background-color: blue; -fx-text-fill: white;" + buttonRadiusStyle);
+        deleteButton.setStyle(fontSizeStyle + " -fx-background-color: red; -fx-text-fill: white;" + buttonRadiusStyle);
 
         frontLabel.setPrefSize(150 * scaleFactor, 20 * scaleFactor);
         backLabel.setPrefSize(150 * scaleFactor, 20 * scaleFactor);
         editButton.setPrefSize(150 * scaleFactor, 20 * scaleFactor);
         deleteButton.setPrefSize(150 * scaleFactor, 20 * scaleFactor);
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -181,5 +200,25 @@ public class CardCellFXMLController extends FXMLController {
         if (this.root == null) {
             this.root = fxmlFileLoader.loadFXML(fxmlFilePath, this);
         }
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        editButtonIcon = ImageUtil.createImageView("/images/icons/edit.png");
+        editButton.setGraphic(editButtonIcon);
+        deleteButtonIcon = ImageUtil.createImageView("/images/icons/delete.png");
+        deleteButton.setGraphic(deleteButtonIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(editButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(deleteButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

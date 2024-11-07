@@ -62,6 +62,11 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
     public abstract void initializeDefaultHiperparameters();
 
     /**
+     * Initializes the GUI components.
+     */
+    public abstract void initializeGUI();
+
+    /**
      * Updates the size for the UI components.
      */
     public abstract void updateSize(double width, double height, double scaleFactor);

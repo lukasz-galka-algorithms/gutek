@@ -12,6 +12,7 @@ gutek/gui/controllers/launch/LoginFXMLController.class
 gutek/entities/users/AppUser.class
 gutek/entities/decks/DeckBase.class
 gutek/entities/cards/CardSuperMemo2.class
+gutek/gui/controllers/launch/LanguageSelectionFXMLController$1.class
 gutek/gui/controllers/deck/RevisionReverseFXMLController.class
 gutek/entities/algorithms/AlgorithmHiperparameter.class
 gutek/gui/charts/RegularRevisionChart.class
@@ -55,6 +56,7 @@ gutek/services/DeckStatisticsService.class
 gutek/gui/charts/AddedNewChart.class
 gutek/services/RevisionAlgorithmService.class
 gutek/gui/charts/AppearanceTimeRegularRevisionChart.class
+gutek/utils/ImageUtil.class
 gutek/gui/controllers/FXMLController.class
 gutek/gui/controllers/controls/DeckCellFXMLController.class
 gutek/services/AppUserService.class

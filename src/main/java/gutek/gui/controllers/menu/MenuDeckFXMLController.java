@@ -6,8 +6,10 @@ import gutek.gui.controllers.MainStage;
 import gutek.gui.controllers.MainStageScenes;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,25 +26,55 @@ public class MenuDeckFXMLController extends FXMLController {
     @FXML
     private Button addCardButton;
 
+    /**
+     * Icon for the "addCardButton" menu item.
+     */
+    private ImageView addCardButtonIcon;
+
     /** Button to browse the deck for existing cards. */
     @FXML
     private Button browseDeckButton;
+
+    /**
+     * Icon for the "browseDeckButton" menu item.
+     */
+    private ImageView browseDeckButtonIcon;
 
     /** Button to start a revision session for the deck. */
     @FXML
     private Button revisionButton;
 
+    /**
+     * Icon for the "revisionButton" menu item.
+     */
+    private ImageView revisionButtonIcon;
+
     /** Button to open the settings of the deck's revision algorithm. */
     @FXML
     private Button settingsButton;
+
+    /**
+     * Icon for the "settingsButton" menu item.
+     */
+    private ImageView settingsButtonIcon;
 
     /** Button to view statistics related to the deck's revision process. */
     @FXML
     private Button statsButton;
 
+    /**
+     * Icon for the "statsButton" menu item.
+     */
+    private ImageView statsButtonIcon;
+
     /** Button to close the menu and return to the decks view. */
     @FXML
     private Button closeButton;
+
+    /**
+     * Icon for the "closeButton" menu item.
+     */
+    private ImageView closeButtonIcon;
 
     /** The deck associated with this menu, allowing context-sensitive actions. */
     private DeckBase deck;
@@ -70,6 +102,7 @@ public class MenuDeckFXMLController extends FXMLController {
             this.deck = deckBase;
         }
         initializeMenuActions();
+        initializeIcons();
     }
 
     /**
@@ -112,13 +145,14 @@ public class MenuDeckFXMLController extends FXMLController {
     public void updateSize() {
         double scaleFactor = stage.getStageScaleFactor();
         String fontSizeStyle = "-fx-font-size: " + (12 * scaleFactor) + "px;";
+        String buttonRadiusStyle = "-fx-background-radius: " + (100 * scaleFactor) + "; -fx-border-radius: " + (100 * scaleFactor) + ";";
 
-        addCardButton.setStyle(fontSizeStyle);
-        browseDeckButton.setStyle(fontSizeStyle);
-        revisionButton.setStyle(fontSizeStyle);
-        settingsButton.setStyle(fontSizeStyle);
-        statsButton.setStyle(fontSizeStyle);
-        closeButton.setStyle(fontSizeStyle);
+        addCardButton.setStyle(fontSizeStyle + buttonRadiusStyle);
+        browseDeckButton.setStyle(fontSizeStyle + buttonRadiusStyle);
+        revisionButton.setStyle(fontSizeStyle + buttonRadiusStyle);
+        settingsButton.setStyle(fontSizeStyle + buttonRadiusStyle);
+        statsButton.setStyle(fontSizeStyle + buttonRadiusStyle);
+        closeButton.setStyle(fontSizeStyle + buttonRadiusStyle);
 
         addCardButton.setPrefSize(stage.getStage().getWidth() / 6, 60 * scaleFactor);
         browseDeckButton.setPrefSize(stage.getStage().getWidth() / 6, 60 * scaleFactor);
@@ -126,6 +160,8 @@ public class MenuDeckFXMLController extends FXMLController {
         settingsButton.setPrefSize(stage.getStage().getWidth() / 6, 60 * scaleFactor);
         statsButton.setPrefSize(stage.getStage().getWidth() / 6, 60 * scaleFactor);
         closeButton.setPrefSize(stage.getStage().getWidth() / 6, 60 * scaleFactor);
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -136,5 +172,37 @@ public class MenuDeckFXMLController extends FXMLController {
         if (this.root == null) {
             this.root = fxmlFileLoader.loadFXML(fxmlFilePath, this);
         }
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        addCardButtonIcon = ImageUtil.createImageView("/images/icons/new.png");
+        addCardButton.setGraphic(addCardButtonIcon);
+        browseDeckButtonIcon = ImageUtil.createImageView("/images/icons/browse.png");
+        browseDeckButton.setGraphic(browseDeckButtonIcon);
+        revisionButtonIcon = ImageUtil.createImageView("/images/icons/revision.png");
+        revisionButton.setGraphic(revisionButtonIcon);
+        settingsButtonIcon = ImageUtil.createImageView("/images/icons/setting.png");
+        settingsButton.setGraphic(settingsButtonIcon);
+        statsButtonIcon = ImageUtil.createImageView("/images/icons/statistics.png");
+        statsButton.setGraphic(statsButtonIcon);
+        closeButtonIcon = ImageUtil.createImageView("/images/icons/back.png");
+        closeButton.setGraphic(closeButtonIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(addCardButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(browseDeckButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(revisionButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(settingsButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(statsButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(closeButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

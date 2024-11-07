@@ -26,6 +26,7 @@
 /home/gutek/IdeaProjects/gutek/src/main/java/gutek/services/TranslationService.java
 /home/gutek/IdeaProjects/gutek/src/main/java/gutek/gui/controllers/controls/DeckCellFXMLController.java
 /home/gutek/IdeaProjects/gutek/src/main/java/gutek/repositories/AppLocaleSettingRepository.java
+/home/gutek/IdeaProjects/gutek/src/main/java/gutek/utils/ImageUtil.java
 /home/gutek/IdeaProjects/gutek/src/main/java/gutek/gui/charts/AppearanceTimeRegularRevisionChart.java
 /home/gutek/IdeaProjects/gutek/src/main/java/gutek/gui/controls/CardCell.java
 /home/gutek/IdeaProjects/gutek/src/main/java/gutek/gui/controllers/controls/TrashDeckCellFXMLController.java

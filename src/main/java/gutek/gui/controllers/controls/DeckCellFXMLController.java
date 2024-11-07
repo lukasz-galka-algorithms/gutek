@@ -9,17 +9,20 @@ import gutek.gui.controllers.main.DecksFXMLController;
 import gutek.services.DeckService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-import static gutek.utils.AlertMessageUtil.showAlert;
+
+import static gutek.utils.AlertMessageUtil.showErrorAlert;
+import static gutek.utils.AlertMessageUtil.showInfoAlert;
 
 /**
  * A controller class for managing the display and interactions of a single deck within the user interface.
@@ -110,16 +113,31 @@ public class DeckCellFXMLController extends FXMLController {
     private Button buttonDelete;
 
     /**
+     * Icon for the "buttonDelete".
+     */
+    private ImageView buttonDeleteIcon;
+
+    /**
      * Button to open the deck.
      */
     @FXML
     private Button buttonOpen;
 
     /**
+     * Icon for the "buttonOpen".
+     */
+    private ImageView buttonOpenIcon;
+
+    /**
      * Button to export the deck data to a file.
      */
     @FXML
     private Button buttonExport;
+
+    /**
+     * Icon for the "buttonExport".
+     */
+    private ImageView buttonExportIcon;
 
     /**
      * The deck associated with this controller.
@@ -167,6 +185,8 @@ public class DeckCellFXMLController extends FXMLController {
         buttonDelete.setOnAction(e -> handleDelete());
         buttonOpen.setOnAction(e -> handleOpen());
         buttonExport.setOnAction(e -> handleExport());
+
+        initializeIcons();
     }
 
     /**
@@ -223,9 +243,9 @@ public class DeckCellFXMLController extends FXMLController {
                     writer.newLine();
                     writer.write(card.getBack());
                 }
-                showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("decks_view.export_success"));
+                showInfoAlert(translationService.getTranslation("decks_view.export_success"), translationService, stage);
             } catch (IOException ex) {
-                showAlert(Alert.AlertType.ERROR, translationService.getTranslation("decks_view.export_fail"));
+                showErrorAlert(translationService.getTranslation("decks_view.export_fail"), translationService, stage);
             }
         }
     }
@@ -256,9 +276,10 @@ public class DeckCellFXMLController extends FXMLController {
 
         String fontSizeStyle = "-fx-font-size: " + (12 * scaleFactor) + "px;";
         String fontSizeAlgorithmStyle = "-fx-font-size: " + (14 * scaleFactor) + "px;";
+        String buttonRadiusStyle = "-fx-background-radius: " + (15 * scaleFactor) + "; -fx-border-radius: " + (15 * scaleFactor) + ";";
 
         double scaledWidth = 110 * scaleFactor;
-        double scaleWidthButtons = 100 * scaleFactor;
+        double scaleWidthButtons = 200 * scaleFactor;
         double scaledHeight = 30 * scaleFactor;
         double scaledHeightLabels = 60 * scaleFactor;
 
@@ -274,9 +295,9 @@ public class DeckCellFXMLController extends FXMLController {
         allCardsNumber.setStyle(fontSizeStyle);
         revisionAlgorithmLabel.setStyle(fontSizeAlgorithmStyle);
         revisionAlgorithm.setStyle(fontSizeAlgorithmStyle);
-        buttonOpen.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;");
-        buttonDelete.setStyle(fontSizeStyle + " -fx-background-color: red; -fx-text-fill: white;");
-        buttonExport.setStyle(fontSizeStyle + " -fx-background-color: blue; -fx-text-fill: white;");
+        buttonOpen.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;" + buttonRadiusStyle);
+        buttonDelete.setStyle(fontSizeStyle + " -fx-background-color: red; -fx-text-fill: white;" + buttonRadiusStyle);
+        buttonExport.setStyle(fontSizeStyle + " -fx-background-color: blue; -fx-text-fill: white;" + buttonRadiusStyle);
 
         deckNameLabel.setPrefSize(scaledWidth,scaledHeightLabels);
         deckName.setPrefSize(scaledWidth,scaledHeight);
@@ -293,6 +314,8 @@ public class DeckCellFXMLController extends FXMLController {
         buttonOpen.setPrefSize(scaleWidthButtons,scaledHeight);
         buttonDelete.setPrefSize(scaleWidthButtons,scaledHeight);
         buttonExport.setPrefSize(scaleWidthButtons,scaledHeight);
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -317,5 +340,28 @@ public class DeckCellFXMLController extends FXMLController {
         if (this.root == null) {
             this.root = fxmlFileLoader.loadFXML(fxmlFilePath, this);
         }
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        buttonDeleteIcon = ImageUtil.createImageView("/images/icons/move.png");
+        buttonDelete.setGraphic(buttonDeleteIcon);
+        buttonOpenIcon = ImageUtil.createImageView("/images/icons/open.png");
+        buttonOpen.setGraphic(buttonOpenIcon);
+        buttonExportIcon = ImageUtil.createImageView("/images/icons/export.png");
+        buttonExport.setGraphic(buttonExportIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(buttonDeleteIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(buttonOpenIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(buttonExportIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

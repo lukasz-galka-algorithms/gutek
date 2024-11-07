@@ -7,7 +7,7 @@ import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.*;
 import org.springframework.stereotype.Component;
 
 /**
@@ -61,7 +61,7 @@ public class AuthorsFXMLController extends FXMLController {
         menuBarFXMLController.updateSize();
 
         double scaleFactor = stage.getStageScaleFactor();
-        String fontSizeStyle = "-fx-font-size: " + (30 * scaleFactor) + "px;";
+        String fontSizeStyle = "-fx-font-size: " + (40 * scaleFactor) + "px; -fx-font-family: 'Comic Sans MS';";
 
         authorLabel.setStyle(fontSizeStyle);
         yearLabel.setStyle(fontSizeStyle);
@@ -81,7 +81,6 @@ public class AuthorsFXMLController extends FXMLController {
      */
     @Override
     public void updateView() {
-        rootPane.setTop(menuBarFXMLController.getRoot());
         menuBarFXMLController.updateView();
     }
 
@@ -93,6 +92,7 @@ public class AuthorsFXMLController extends FXMLController {
      */
     @Override
     public void initWithParams(Object... params) {
+        rootPane.setTop(menuBarFXMLController.getRoot());
         menuBarFXMLController.initWithParams();
     }
 }

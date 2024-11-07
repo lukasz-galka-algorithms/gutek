@@ -10,9 +10,11 @@ import gutek.services.DeckService;
 import gutek.services.RevisionAlgorithmService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import org.springframework.stereotype.Component;
@@ -21,7 +23,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-import static gutek.utils.AlertMessageUtil.showAlert;
+import static gutek.utils.AlertMessageUtil.showErrorAlert;
+import static gutek.utils.AlertMessageUtil.showInfoAlert;
 
 /**
  * Controller for the New Deck view, allowing users to create a new deck or import cards from a file.
@@ -56,9 +59,19 @@ public class NewDeckFXMLController extends FXMLController {
     @FXML
     private Button addButton;
 
+    /**
+     * Icon for the "addButton".
+     */
+    private ImageView addButtonIcon;
+
     /** Button to import a deck from a file. */
     @FXML
     private Button importButton;
+
+    /**
+     * Icon for the "importButton".
+     */
+    private ImageView importButtonIcon;
 
     /**
      * Service for managing revision algorithms.
@@ -105,6 +118,7 @@ public class NewDeckFXMLController extends FXMLController {
         importButton.setOnAction(event -> handleImportDeck());
 
         menuBarFXMLController.initWithParams();
+        initializeIcons();
     }
 
     /**
@@ -116,20 +130,23 @@ public class NewDeckFXMLController extends FXMLController {
 
         double scaleFactor = stage.getStageScaleFactor();
         String fontSizeStyle = "-fx-font-size: " + (14 * scaleFactor) + "px;";
+        String radiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
 
         nameLabel.setStyle(fontSizeStyle);
-        nameField.setStyle(fontSizeStyle);
+        nameField.setStyle(fontSizeStyle + radiusStyle);
         algorithmLabel.setStyle(fontSizeStyle);
-        algorithmComboBox.setStyle(fontSizeStyle);
-        addButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;");
-        importButton.setStyle(fontSizeStyle + " -fx-background-color: blue; -fx-text-fill: white;");
+        algorithmComboBox.setStyle(fontSizeStyle + radiusStyle);
+        addButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;" + radiusStyle);
+        importButton.setStyle(fontSizeStyle + " -fx-background-color: blue; -fx-text-fill: white;" + radiusStyle);
 
         nameLabel.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
         nameField.setPrefSize(300 * scaleFactor, 30 * scaleFactor);
         algorithmLabel.setPrefSize(200 * scaleFactor,30 * scaleFactor);
         algorithmComboBox.setPrefSize(300 * scaleFactor,30 * scaleFactor);
-        addButton.setPrefSize(150 * scaleFactor,40 * scaleFactor);
-        importButton.setPrefSize(150 * scaleFactor,40 * scaleFactor);
+        addButton.setPrefSize(200 * scaleFactor,40 * scaleFactor);
+        importButton.setPrefSize(200 * scaleFactor,40 * scaleFactor);
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -174,13 +191,13 @@ public class NewDeckFXMLController extends FXMLController {
         if (algorithm != null){
             algorithm.setTranslationService(translationService);
             if (deckName.trim().isEmpty()) {
-                showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.deck_name_empty"));
+                showInfoAlert(translationService.getTranslation("new_deck_view.deck_name_empty"), translationService, stage);
             }else{
                 deckService.addNewDeck(stage.getLoggedUser(), algorithm, deckName);
-                showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.deck_added"));
+                showInfoAlert(translationService.getTranslation("new_deck_view.deck_added"), translationService, stage);
             }
         }else{
-            showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.algorithm_empty"));
+            showInfoAlert(translationService.getTranslation("new_deck_view.algorithm_empty"), translationService, stage);
         }
     }
 
@@ -197,7 +214,7 @@ public class NewDeckFXMLController extends FXMLController {
 
         RevisionAlgorithm<?> algorithm = revisionAlgorithmService.createAlgorithmInstance(selectedAlgorithmName);
         if (algorithm == null) {
-            showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.algorithm_invalid"));
+            showInfoAlert(translationService.getTranslation("new_deck_view.algorithm_invalid"), translationService, stage);
             return;
         }
         algorithm.setTranslationService(translationService);
@@ -211,9 +228,9 @@ public class NewDeckFXMLController extends FXMLController {
         boolean importSuccess = importCardsFromFile(selectedFile, algorithm, deckBase);
 
         if (importSuccess) {
-            showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.deck_imported"));
+            showInfoAlert( translationService.getTranslation("new_deck_view.deck_imported"), translationService, stage);
         } else {
-            showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.import_error"));
+            showErrorAlert(translationService.getTranslation("new_deck_view.import_error"), translationService, stage);
         }
     }
 
@@ -226,11 +243,11 @@ public class NewDeckFXMLController extends FXMLController {
      */
     private boolean validateInput(String deckName, String selectedAlgorithmName) {
         if (selectedAlgorithmName == null || selectedAlgorithmName.trim().isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.algorithm_empty"));
+            showInfoAlert(translationService.getTranslation("new_deck_view.algorithm_empty"),translationService,stage);
             return false;
         }
         if (deckName.trim().isEmpty()) {
-            showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.deck_name_empty"));
+            showInfoAlert(translationService.getTranslation("new_deck_view.deck_name_empty"), translationService, stage);
             return false;
         }
         return true;
@@ -271,5 +288,25 @@ public class NewDeckFXMLController extends FXMLController {
         } catch (Exception ex) {
             return false;
         }
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        addButtonIcon = ImageUtil.createImageView("/images/icons/new.png");
+        addButton.setGraphic(addButtonIcon);
+        importButtonIcon = ImageUtil.createImageView("/images/icons/import.png");
+        importButton.setGraphic(importButtonIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(addButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(importButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

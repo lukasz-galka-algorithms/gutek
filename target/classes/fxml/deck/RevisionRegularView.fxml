@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
 <BorderPane fx:id="rootPane" xmlns:fx="http://javafx.com/fxml"
             fx:controller="gutek.gui.controllers.deck.RevisionRegularFXMLController">
@@ -11,6 +12,10 @@
 
     <center>
         <VBox spacing="10" alignment="CENTER">
+            <padding>
+                <Insets top="20" right="10" bottom="20" left="10" />
+            </padding>
+
             <Label fx:id="wordLabel" alignment="CENTER" wrapText="true" />
             <Label fx:id="translationLabel" alignment="CENTER" wrapText="true" />
 

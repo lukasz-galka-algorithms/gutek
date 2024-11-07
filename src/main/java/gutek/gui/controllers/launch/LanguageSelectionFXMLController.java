@@ -5,11 +5,11 @@ import gutek.gui.controllers.MainStage;
 import gutek.gui.controllers.MainStageScenes;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import gutek.utils.StringUtil;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import org.springframework.stereotype.Component;
 import java.util.*;
 import java.util.List;
@@ -29,11 +29,16 @@ public class LanguageSelectionFXMLController extends FXMLController {
 
     /** ComboBox for displaying and selecting available languages. */
     @FXML
-    private ComboBox<String> languageComboBox;
+    private ComboBox<Locale> languageComboBox;
 
     /** Button to confirm the selected language and proceed. */
     @FXML
     private Button confirmButton;
+
+    /**
+     * Icon for the "confirmButton".
+     */
+    private ImageView confirmButtonIcon;
 
     /** List of available locales for language selection. */
     private final List<Locale> availableLocales;
@@ -59,22 +64,76 @@ public class LanguageSelectionFXMLController extends FXMLController {
     @Override
     public void initWithParams(Object... params) {
         languageComboBox.getItems().clear();
-        availableLocales.forEach(locale -> {
-            String languageName = StringUtil.capitalizeFirstLetter(locale.getDisplayLanguage(locale));
-            languageComboBox.getItems().add(languageName);
-        });
+        availableLocales.forEach(locale -> languageComboBox.getItems().add(locale));
 
+        setupLanguageComboBoxCellFactory();
+        setupLanguageComboBoxButtonCell();
+        setupLanguageComboBoxAction();
+
+        initializeIcons();
+    }
+
+    /**
+     * Sets the cell factory for the language ComboBox, configuring each cell
+     * to display a language name along with a flag icon.
+     * This method utilizes `createLocaleListCell` to define how each language
+     * option is rendered in the dropdown list.
+     */
+    private void setupLanguageComboBoxCellFactory() {
+        languageComboBox.setCellFactory(param -> createLocaleListCell());
+    }
+
+    /**
+     * Sets the button cell for the language ComboBox, defining how the selected
+     * language is displayed when the dropdown list is closed.
+     * This method configures the button cell to display the language name and flag
+     * icon of the currently selected language.
+     */
+    private void setupLanguageComboBoxButtonCell() {
+        languageComboBox.setButtonCell(createLocaleListCell());
+    }
+
+    /**
+     * Configures the action for the language ComboBox. When a user selects a language
+     * from the dropdown list, this method updates the application's locale.
+     * It calls `translationService.updateLocale` to apply the selected language,
+     * then updates translations in the current stage and controller.
+     */
+    private void setupLanguageComboBoxAction() {
         languageComboBox.setOnAction(event -> {
-            String selectedLanguage = languageComboBox.getValue();
-            Locale selectedLocale = availableLocales.stream()
-                    .filter(locale -> StringUtil.capitalizeFirstLetter(locale.getDisplayLanguage(locale)).equals(selectedLanguage))
-                    .findFirst()
-                    .orElse(translationService.getCurrentLocale());
-
-            translationService.updateLocale(selectedLocale);
-            updateTranslation();
-            stage.updateTranslation();
+            Locale selectedLocale = languageComboBox.getValue();
+            if (selectedLocale != null) {
+                translationService.updateLocale(selectedLocale);
+                updateTranslation();
+                stage.updateTranslation();
+            }
         });
+    }
+
+    /**
+     * Creates a ListCell that displays the language name and associated flag icon for a given Locale.
+     * This method generates a ListCell used in the ComboBox to display each language option with its
+     * flag icon and formatted language name. It adjusts the flag icon size based on the current scale factor.
+     *
+     * @return a ListCell configured to display the language name and flag icon.
+     */
+    private ListCell<Locale> createLocaleListCell() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(Locale locale, boolean empty) {
+                super.updateItem(locale, empty);
+                if (locale == null || empty) {
+                    setGraphic(null);
+                    setText(null);
+                } else {
+                    ImageView imageView = createFlagIcon(locale);
+                    double scaleFactor = stage.getStageScaleFactor();
+                    ImageUtil.setImageViewSize(imageView, 20 * scaleFactor, 15 * scaleFactor);
+                    setText(StringUtil.capitalizeFirstLetter(locale.getDisplayLanguage(locale)));
+                    setGraphic(imageView);
+                }
+            }
+        };
     }
 
     /**
@@ -87,14 +146,19 @@ public class LanguageSelectionFXMLController extends FXMLController {
 
         String fontSizeStyle = "-fx-font-size: " + (15 * scaleFactor) + "px;";
         String fontSizeLargeStyle = "-fx-font-size: " + (20 * scaleFactor) + "px;";
+        String radiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
 
         selectLanguageLabel.setStyle(fontSizeLargeStyle);
-        languageComboBox.setStyle(fontSizeStyle);
-        confirmButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;");
+        languageComboBox.setStyle(fontSizeStyle + radiusStyle);
+        confirmButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;" + radiusStyle);
 
-        selectLanguageLabel.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
+        selectLanguageLabel.setPrefSize(400 * scaleFactor, 30 * scaleFactor);
         languageComboBox.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
-        confirmButton.setPrefSize(100 * scaleFactor, 40 * scaleFactor);
+        confirmButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
+
+        setupLanguageComboBoxCellFactory();
+        setupLanguageComboBoxButtonCell();
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -113,11 +177,11 @@ public class LanguageSelectionFXMLController extends FXMLController {
      */
     @Override
     public void updateView(){
-        String currentLocaleName = translationService.getCurrentLocale().getDisplayLanguage(translationService.getCurrentLocale());
+        Locale currentLocale = translationService.getCurrentLocale();
+
         availableLocales.forEach(locale -> {
-            String languageName = StringUtil.capitalizeFirstLetter(locale.getDisplayLanguage(locale));
-            if (languageName.equalsIgnoreCase(currentLocaleName)) {
-                languageComboBox.setValue(languageName);
+            if (locale.equals(currentLocale)) {
+                languageComboBox.setValue(locale);
             }
         });
     }
@@ -128,11 +192,40 @@ public class LanguageSelectionFXMLController extends FXMLController {
      */
     @FXML
     private void onConfirmButtonClicked() {
-        int selectedIndex = languageComboBox.getSelectionModel().getSelectedIndex();
-        if (selectedIndex >= 0) {
-            Locale selectedLocale = availableLocales.get(selectedIndex);
+        Locale selectedLocale = languageComboBox.getValue();
+        if (selectedLocale != null) {
             translationService.updateLocale(selectedLocale);
         }
         stage.setScene(MainStageScenes.LOGIN_SCENE);
+    }
+
+    /**
+     * Creates an ImageView containing the flag icon for the specified Locale.
+     * This method uses the IconUtil class to generate an icon based on the country code
+     * from the given Locale. The flag icon is loaded from the resources folder.
+     *
+     * @param locale the Locale object representing the language and country.
+     * @return an ImageView containing the flag icon, or an empty ImageView if the icon is not found.
+     */
+    private ImageView createFlagIcon(Locale locale) {
+        String countryCode = locale.getCountry();
+        return ImageUtil.createImageView("/images/flags/" + countryCode + ".png");
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        confirmButtonIcon = ImageUtil.createImageView("/images/icons/success.png");
+        confirmButton.setGraphic(confirmButtonIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(confirmButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

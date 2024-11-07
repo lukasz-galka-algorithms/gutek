@@ -10,11 +10,12 @@ import gutek.services.CardService;
 import gutek.services.DeckService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -23,7 +24,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.Optional;
-import static gutek.utils.AlertMessageUtil.showAlert;
+
+import static gutek.utils.AlertMessageUtil.*;
 
 /**
  * A controller class for managing the addition of new cards to a deck, either manually or by importing from a file.
@@ -78,10 +80,20 @@ public class RevisionAddCardFXMLController extends FXMLController {
     private Button addButton;
 
     /**
+     * Icon for the "addButton".
+     */
+    private ImageView addButtonIcon;
+
+    /**
      * Button to import cards from a file.
      */
     @FXML
     private Button importButton;
+
+    /**
+     * Icon for the "importButton".
+     */
+    private ImageView importButtonIcon;
 
     /**
      * Service for handling card operations, such as adding new cards.
@@ -150,6 +162,8 @@ public class RevisionAddCardFXMLController extends FXMLController {
 
         addButton.setOnAction(e -> handleAddCard());
         importButton.setOnAction(e -> handleImportCards());
+
+        initializeIcons();
     }
 
     /**
@@ -160,18 +174,18 @@ public class RevisionAddCardFXMLController extends FXMLController {
         String backText = backTextField.getText().trim();
 
         if (frontText.isEmpty() || backText.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, translationService.getTranslation("deck_view.add_card.empty_text"));
+            showWarningAlert(translationService.getTranslation("deck_view.add_card.empty_text"), translationService,stage);
             return;
         }
 
         Optional<CardBase> existingCard = cardService.findCardByFrontAndDeck(frontText, deck);
         if (existingCard.isPresent()) {
-            showAlert(Alert.AlertType.WARNING, translationService.getTranslation("deck_view.add_card.front_unique"));
+            showWarningAlert(translationService.getTranslation("deck_view.add_card.front_unique"), translationService, stage);
             return;
         }
 
         cardService.addNewCard(frontText, backText, deck);
-        showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("deck_view.add_card.add_success"));
+        showInfoAlert(translationService.getTranslation("deck_view.add_card.add_success"), translationService, stage);
 
         frontTextField.clear();
         backTextField.clear();
@@ -192,9 +206,9 @@ public class RevisionAddCardFXMLController extends FXMLController {
                     CardBase card = deck.getRevisionAlgorithm().createNewCard(br.readLine(), br.readLine());
                     deckService.addNewCardToDeck(card, deck);
                 }
-                showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("new_deck_view.deck_imported"));
+                showInfoAlert(translationService.getTranslation("new_deck_view.deck_imported"), translationService, stage);
             } catch (Exception ex) {
-                showAlert(Alert.AlertType.ERROR, translationService.getTranslation("new_deck_view.import_error"));
+                showErrorAlert(translationService.getTranslation("new_deck_view.import_error"), translationService, stage);
             }
         }
     }
@@ -209,20 +223,23 @@ public class RevisionAddCardFXMLController extends FXMLController {
 
         double scaleFactor = stage.getStageScaleFactor();
         String fontSizeStyle = "-fx-font-size: " + (12 * scaleFactor) + "px;";
+        String radiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
 
         frontLabel.setStyle(fontSizeStyle);
         backLabel.setStyle(fontSizeStyle);
-        frontTextField.setStyle(fontSizeStyle);
-        backTextField.setStyle(fontSizeStyle);
-        addButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;");
-        importButton.setStyle(fontSizeStyle + " -fx-background-color: blue; -fx-text-fill: white;");
+        frontTextField.setStyle(fontSizeStyle + radiusStyle);
+        backTextField.setStyle(fontSizeStyle + radiusStyle);
+        addButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;" + radiusStyle);
+        importButton.setStyle(fontSizeStyle + " -fx-background-color: blue; -fx-text-fill: white;" + radiusStyle);
 
         frontLabel.setPrefSize(200 * scaleFactor,40 * scaleFactor);
         backLabel.setPrefSize(200 * scaleFactor,40 * scaleFactor);
         frontTextField.setPrefSize(200 * scaleFactor,40 * scaleFactor);
         backTextField.setPrefSize(200 * scaleFactor,40 * scaleFactor);
-        addButton.setPrefSize(100 * scaleFactor, 40 * scaleFactor);
-        importButton.setPrefSize(100 * scaleFactor, 40 * scaleFactor);
+        addButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
+        importButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -246,5 +263,25 @@ public class RevisionAddCardFXMLController extends FXMLController {
     public void updateView(){
         menuBarFXMLController.updateView();
         menuDeckFXMLController.updateView();
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        addButtonIcon = ImageUtil.createImageView("/images/icons/new.png");
+        addButton.setGraphic(addButtonIcon);
+        importButtonIcon = ImageUtil.createImageView("/images/icons/import.png");
+        importButton.setGraphic(importButtonIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(addButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(importButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

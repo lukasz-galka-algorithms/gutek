@@ -3,10 +3,25 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
 
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.geometry.Insets?>
 <HBox xmlns:fx="http://javafx.com/fxml"
-      spacing="10" alignment="CENTER">
+      spacing="10" alignment="CENTER"
+      style="-fx-border-color: black; -fx-border-width: 2; -fx-border-radius: 5; -fx-padding: 10;">
     <Label fx:id="frontLabel" style="-fx-font-weight: bold;"/>
     <Label fx:id="backLabel"/>
-    <Button fx:id="editButton"/>
-    <Button fx:id="deleteButton"/>
+    <Button fx:id="editButton">
+        <effect>
+            <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+        </effect>
+    </Button>
+    <Button fx:id="deleteButton">
+        <effect>
+            <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+        </effect>
+    </Button>
+
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
 </HBox>

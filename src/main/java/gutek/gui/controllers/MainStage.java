@@ -35,6 +35,12 @@ public class MainStage{
     @Value("${app.window.height}")
     private int defaultHeight;
 
+    /** Base width of the application window */
+    private static final int BASE_WIDTH = 800;
+
+    /** Base height of the application window */
+    private static final int BASE_HEIGHT = 500;
+
     /** The user currently logged into the application. */
     private AppUser loggedUser;
 
@@ -199,6 +205,6 @@ public class MainStage{
      * @return The calculated scaling factor
      */
     public double getStageScaleFactor(){
-        return Math.min(stage.getWidth() / this.getDefaultWidth(), stage.getHeight() / this.getDefaultHeight());
+        return Math.min(stage.getWidth() / BASE_WIDTH, stage.getHeight() / BASE_HEIGHT);
     }
 }

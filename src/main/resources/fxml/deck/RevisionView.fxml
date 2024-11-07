@@ -5,7 +5,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import gutek.gui.controls.NumberTextField?>
 <?import javafx.scene.layout.HBox?>
-
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
 <BorderPane fx:id="rootPane" xmlns:fx="http://javafx.com/fxml"
             fx:controller="gutek.gui.controllers.deck.RevisionFXMLController">
 
@@ -15,6 +16,10 @@
 
     <center>
         <VBox spacing="15" alignment="CENTER">
+            <padding>
+                <Insets top="20" right="10" bottom="20" left="10" />
+            </padding>
+
             <HBox spacing="10" alignment="CENTER">
                 <Label fx:id="newCardsPerDayLabel" alignment="CENTER_RIGHT"/>
                 <NumberTextField fx:id="newCardsPerDayTextField" />
@@ -24,13 +29,21 @@
                 <Label fx:id="regularNewCardsLabel" alignment="CENTER" textFill="blue"/>
                 <Label fx:id="regularOldCardsLabel" alignment="CENTER" textFill="red"/>
             </HBox>
-            <Button fx:id="regularRevisionButton"/>
+            <Button fx:id="regularRevisionButton">
+                <effect>
+                    <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+                </effect>
+            </Button>
 
             <HBox spacing="10" alignment="CENTER">
                 <Label fx:id="reverseNewCardsLabel" alignment="CENTER" textFill="blue"/>
                 <Label fx:id="reverseOldCardsLabel" alignment="CENTER" textFill="red"/>
             </HBox>
-            <Button fx:id="reverseRevisionButton"/>
+            <Button fx:id="reverseRevisionButton">
+                <effect>
+                    <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+                </effect>
+            </Button>
         </VBox>
     </center>
 </BorderPane>

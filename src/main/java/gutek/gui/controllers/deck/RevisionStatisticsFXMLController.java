@@ -157,11 +157,12 @@ public class RevisionStatisticsFXMLController extends FXMLController {
 
         double scaleFactor = stage.getStageScaleFactor();
         String fontSizeStyle = "-fx-font-size: " + (12 * scaleFactor) + "px;";
+        String radiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
 
         chartTypeLabel.setStyle(fontSizeStyle);
         chartRangeLabel.setStyle(fontSizeStyle);
-        chartTypeComboBox.setStyle(fontSizeStyle);
-        timeRangeComboBox.setStyle(fontSizeStyle);
+        chartTypeComboBox.setStyle(fontSizeStyle + radiusStyle);
+        timeRangeComboBox.setStyle(fontSizeStyle + radiusStyle);
 
         chartTypeLabel.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
         chartRangeLabel.setPrefSize(200 * scaleFactor, 40 * scaleFactor);

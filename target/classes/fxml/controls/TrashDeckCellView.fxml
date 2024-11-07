@@ -3,6 +3,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.*?>
 
+<?import javafx.scene.effect.DropShadow?>
 <HBox xmlns:fx="http://javafx.com/fxml"
       spacing="15" alignment="CENTER"
       style="-fx-border-color: black; -fx-border-width: 2; -fx-border-radius: 5; -fx-padding: 10;">
@@ -17,8 +18,16 @@
     </VBox>
 
     <VBox spacing="10" alignment="CENTER">
-        <Button fx:id="buttonDelete" style="-fx-background-color: red; -fx-text-fill: white;"/>
-        <Button fx:id="buttonRestore" style="-fx-background-color: green; -fx-text-fill: white;"/>
+        <Button fx:id="buttonDelete" style="-fx-background-color: red; -fx-text-fill: white;">
+            <effect>
+                <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+            </effect>
+        </Button>
+        <Button fx:id="buttonRestore" style="-fx-background-color: green; -fx-text-fill: white;">
+            <effect>
+                <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+            </effect>
+        </Button>
     </VBox>
 
     <padding>

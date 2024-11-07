@@ -9,16 +9,17 @@ import gutek.gui.controllers.menu.MenuDeckFXMLController;
 import gutek.services.CardService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import org.springframework.stereotype.Component;
 import java.util.Optional;
-import static gutek.utils.AlertMessageUtil.showAlert;
+import static gutek.utils.AlertMessageUtil.*;
 
 /**
  * Controller class for editing existing cards within a deck.
@@ -71,6 +72,11 @@ public class RevisionEditCardFXMLController extends FXMLController {
      */
     @FXML
     private Button saveButton;
+
+    /**
+     * Icon for the "saveButton".
+     */
+    private ImageView saveButtonIcon;
 
     /**
      * Service responsible for managing card-related operations.
@@ -133,6 +139,8 @@ public class RevisionEditCardFXMLController extends FXMLController {
         menuContainer.getChildren().setAll(menuBarFXMLController.getRoot(), menuDeckFXMLController.getRoot());
 
         saveButton.setOnAction(e -> handleSaveCard());
+
+        initializeIcons();
     }
 
     /**
@@ -144,20 +152,20 @@ public class RevisionEditCardFXMLController extends FXMLController {
         String backText = backTextField.getText().trim();
 
         if (frontText.isEmpty() || backText.isEmpty()) {
-            showAlert(Alert.AlertType.WARNING, translationService.getTranslation("deck_view.edit_card.empty_text"));
+            showWarningAlert(translationService.getTranslation("deck_view.edit_card.empty_text"), translationService, stage);
             return;
         }
 
         Optional<CardBase> existingCard = cardService.findCardByFrontAndDeck(frontText, cardToEdit.getDeck());
         if (existingCard.isPresent() && !existingCard.get().getIdCard().equals(cardToEdit.getIdCard())) {
-            showAlert(Alert.AlertType.WARNING, translationService.getTranslation("deck_view.edit_card.front_unique"));
+            showWarningAlert(translationService.getTranslation("deck_view.edit_card.front_unique"), translationService, stage);
             return;
         }
 
         cardToEdit.setFront(frontText);
         cardToEdit.setBack(backText);
         cardService.saveCard(cardToEdit);
-        showAlert(Alert.AlertType.INFORMATION, translationService.getTranslation("deck_view.edit_card.edit_success"));
+        showInfoAlert(translationService.getTranslation("deck_view.edit_card.edit_success"), translationService, stage);
 
         stage.setScene(MainStageScenes.REVISION_SEARCH_SCENE, cardToEdit.getDeck());
     }
@@ -173,18 +181,21 @@ public class RevisionEditCardFXMLController extends FXMLController {
 
         double scaleFactor = stage.getStageScaleFactor();
         String fontSizeStyle = "-fx-font-size: " + (12 * scaleFactor) + "px;";
+        String radiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
 
         frontLabel.setStyle(fontSizeStyle);
         backLabel.setStyle(fontSizeStyle);
-        frontTextField.setStyle(fontSizeStyle);
-        backTextField.setStyle(fontSizeStyle);
-        saveButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;");
+        frontTextField.setStyle(fontSizeStyle + radiusStyle);
+        backTextField.setStyle(fontSizeStyle + radiusStyle);
+        saveButton.setStyle(fontSizeStyle + " -fx-background-color: green; -fx-text-fill: white;" + radiusStyle);
 
         frontLabel.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
         backLabel.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
         frontTextField.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
         backTextField.setPrefSize(200 * scaleFactor, 30 * scaleFactor);
-        saveButton.setPrefSize(100 * scaleFactor, 40 * scaleFactor);
+        saveButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -209,5 +220,22 @@ public class RevisionEditCardFXMLController extends FXMLController {
         this.cardToEdit = card;
         frontTextField.setText(card.getFront());
         backTextField.setText(card.getBack());
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        saveButtonIcon = ImageUtil.createImageView("/images/icons/save.png");
+        saveButton.setGraphic(saveButtonIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(saveButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

@@ -10,11 +10,13 @@ import gutek.gui.controllers.menu.MenuBarFXMLController;
 import gutek.gui.controllers.menu.MenuDeckFXMLController;
 import gutek.services.*;
 import gutek.utils.FXMLFileLoader;
+import gutek.utils.ImageUtil;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -66,9 +68,19 @@ public class RevisionRegularFXMLController extends FXMLController {
     private Button showButton;
 
     /**
+     * Icon for the "showButton".
+     */
+    private ImageView showButtonIcon;
+
+    /**
      * Button to end the revision session.
      */
     private Button endRevisionButton;
+
+    /**
+     * Icon for the "endRevisionButton".
+     */
+    private ImageView endRevisionButtonIcon;
 
     /**
      * Container for revision action buttons.
@@ -183,6 +195,7 @@ public class RevisionRegularFXMLController extends FXMLController {
         endRevisionButton = new Button();
         showButton.setOnAction(e -> showTranslation());
         endRevisionButton.setOnAction(e -> endRevisionSession());
+        initializeIcons();
         handleNextCard();
     }
 
@@ -199,11 +212,12 @@ public class RevisionRegularFXMLController extends FXMLController {
         String fontSizeStyleText = "-fx-border-color: black; -fx-border-width: 5 5 5 5; " +
                 "-fx-font-size: " + (18 * scaleFactor) + "px;";
         String fontSizeStyle = "-fx-font-size: " + (12 * scaleFactor) + "px;";
+        String buttonRadiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
 
         wordLabel.setStyle(fontSizeStyleText);
         translationLabel.setStyle(fontSizeStyleText);
-        showButton.setStyle(fontSizeStyle);
-        endRevisionButton.setStyle(fontSizeStyle);
+        showButton.setStyle(fontSizeStyle + buttonRadiusStyle);
+        endRevisionButton.setStyle(fontSizeStyle + buttonRadiusStyle);
 
         if (currentCard != null) {
             new Timeline(new KeyFrame(Duration.millis(20), e -> {
@@ -224,6 +238,8 @@ public class RevisionRegularFXMLController extends FXMLController {
                 endRevisionButton.setPrefSize(stage.getStage().getWidth(), sectionHeight);
             })).play();
         }
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -337,6 +353,7 @@ public class RevisionRegularFXMLController extends FXMLController {
      */
     private <T extends CardBase> Pane loadAlgorithmButtons() {
         RevisionAlgorithm<T> algorithm = (RevisionAlgorithm<T>) currentCard.getDeck().getRevisionAlgorithm();
+        algorithm.initializeGUI();
         Pane panel = algorithm.getRevisionButtonsPane((T) currentCard);
         algorithm.setTranslationService(translationService);
 
@@ -367,5 +384,25 @@ public class RevisionRegularFXMLController extends FXMLController {
      */
     private void endRevisionSession() {
         stage.setScene(MainStageScenes.REVISION_REVISE_SCENE);
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        showButtonIcon = ImageUtil.createImageView("/images/icons/show.png");
+        showButton.setGraphic(showButtonIcon);
+        endRevisionButtonIcon = ImageUtil.createImageView("/images/icons/complete.png");
+        endRevisionButton.setGraphic(endRevisionButtonIcon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(showButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(endRevisionButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }

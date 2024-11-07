@@ -5,7 +5,8 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
 <BorderPane fx:id="rootPane" xmlns:fx="http://javafx.com/fxml"
             fx:controller="gutek.gui.controllers.deck.RevisionAddCardFXMLController">
 
@@ -15,18 +16,38 @@
 
     <center>
         <VBox spacing="15" alignment="CENTER">
+            <padding>
+                <Insets top="20" right="10" bottom="20" left="10" />
+            </padding>
+
             <HBox spacing="10" alignment="CENTER" style="-fx-border-color: black; -fx-border-width: 1; -fx-padding: 5;">
                 <Label fx:id="frontLabel" alignment="CENTER"/>
-                <TextField fx:id="frontTextField"/>
+                <TextField fx:id="frontTextField">
+                    <effect>
+                        <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+                    </effect>
+                </TextField>
             </HBox>
 
             <HBox spacing="10" alignment="CENTER" style="-fx-border-color: black; -fx-border-width: 1; -fx-padding: 5;">
                 <Label fx:id="backLabel" alignment="CENTER"/>
-                <TextField fx:id="backTextField"/>
+                <TextField fx:id="backTextField">
+                    <effect>
+                        <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+                    </effect>
+                </TextField>
             </HBox>
 
-            <Button fx:id="addButton"/>
-            <Button fx:id="importButton"/>
+            <Button fx:id="addButton">
+                <effect>
+                    <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+                </effect>
+            </Button>
+            <Button fx:id="importButton">
+                <effect>
+                    <DropShadow offsetX="3.0" offsetY="3.0" color="black" />
+                </effect>
+            </Button>
         </VBox>
     </center>
 </BorderPane>

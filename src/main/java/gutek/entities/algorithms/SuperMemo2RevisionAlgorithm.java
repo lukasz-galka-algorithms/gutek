@@ -1,11 +1,13 @@
 package gutek.entities.algorithms;
 
 import gutek.entities.cards.CardSuperMemo2;
+import gutek.utils.ImageUtil;
 import gutek.utils.validation.Min;
 import gutek.utils.validation.NotEmpty;
 import gutek.utils.validation.NotNull;
 import jakarta.persistence.*;
 import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import lombok.Getter;
@@ -40,23 +42,53 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
 
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private final Button buttonGrade1;
+    private Button buttonGrade1;
+
+    /**
+     * Icon for the "buttonGrade1".
+     */
+    @Transient
+    private ImageView buttonGrade1Icon;
 
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private final Button buttonGrade2;
+    private Button buttonGrade2;
+
+    /**
+     * Icon for the "buttonGrade2".
+     */
+    @Transient
+    private ImageView buttonGrade2Icon;
 
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private final Button buttonGrade3;
+    private Button buttonGrade3;
+
+    /**
+     * Icon for the "buttonGrade3".
+     */
+    @Transient
+    private ImageView buttonGrade3Icon;
 
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private final Button buttonGrade4;
+    private Button buttonGrade4;
+
+    /**
+     * Icon for the "buttonGrade4".
+     */
+    @Transient
+    private ImageView buttonGrade4Icon;
 
     /** UI component representing grade button for the normal revision process. */
     @Transient
-    private final Button buttonGrade5;
+    private Button buttonGrade5;
+
+    /**
+     * Icon for the "buttonGrade5".
+     */
+    @Transient
+    private ImageView buttonGrade5Icon;
 
     /** Initial easiness factor for the reverse revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.supermemo2.reverse_easiness_factor")
@@ -74,23 +106,53 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
 
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private final Button reverseButtonGrade1;
+    private Button reverseButtonGrade1;
+
+    /**
+     * Icon for the "reverseButtonGrade1".
+     */
+    @Transient
+    private ImageView reverseButtonGrade1Icon;
 
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private final Button reverseButtonGrade2;
+    private Button reverseButtonGrade2;
+
+    /**
+     * Icon for the "reverseButtonGrade2".
+     */
+    @Transient
+    private ImageView reverseButtonGrade2Icon;
 
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private final Button reverseButtonGrade3;
+    private Button reverseButtonGrade3;
+
+    /**
+     * Icon for the "reverseButtonGrade3".
+     */
+    @Transient
+    private ImageView reverseButtonGrade3Icon;
 
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private final Button reverseButtonGrade4;
+    private Button reverseButtonGrade4;
+
+    /**
+     * Icon for the "reverseButtonGrade4".
+     */
+    @Transient
+    private ImageView reverseButtonGrade4Icon;
 
     /** UI component representing grade button for the reverse revision process. */
     @Transient
-    private final Button reverseButtonGrade5;
+    private Button reverseButtonGrade5;
+
+    /**
+     * Icon for the "reverseButtonGrade5".
+     */
+    @Transient
+    private ImageView reverseButtonGrade5Icon;
 
     /** Translation key for the algorithm's name. */
     @Transient
@@ -101,17 +163,6 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      */
     public SuperMemo2RevisionAlgorithm() {
         super();
-        this.buttonGrade1 = new Button();
-        this.buttonGrade2 = new Button();
-        this.buttonGrade3 = new Button();
-        this.buttonGrade4 = new Button();
-        this.buttonGrade5 = new Button();
-
-        this.reverseButtonGrade1 = new Button();
-        this.reverseButtonGrade2 = new Button();
-        this.reverseButtonGrade3 = new Button();
-        this.reverseButtonGrade4 = new Button();
-        this.reverseButtonGrade5 = new Button();
     }
 
     /**
@@ -123,6 +174,26 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
 
         this.reverseInitialEasinessFactor = 2.5;
         this.reverseIncorrectAnswerThreshold = 3;
+    }
+
+    /**
+     * Initializes the GUI components.
+     */
+    @Override
+    public void initializeGUI(){
+        this.buttonGrade1 = new Button();
+        this.buttonGrade2 = new Button();
+        this.buttonGrade3 = new Button();
+        this.buttonGrade4 = new Button();
+        this.buttonGrade5 = new Button();
+
+        this.reverseButtonGrade1 = new Button();
+        this.reverseButtonGrade2 = new Button();
+        this.reverseButtonGrade3 = new Button();
+        this.reverseButtonGrade4 = new Button();
+        this.reverseButtonGrade5 = new Button();
+
+        initializeIcons();
     }
 
     /**
@@ -150,18 +221,19 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
     public void updateSize(double width, double height, double scaleFactor) {
         double buttonFontSize = 12 * scaleFactor;
         String buttonsStyle = "-fx-font-size: " + buttonFontSize + "px;";
+        String buttonRadiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
 
-        buttonGrade1.setStyle(buttonsStyle);
-        buttonGrade2.setStyle(buttonsStyle);
-        buttonGrade3.setStyle(buttonsStyle);
-        buttonGrade4.setStyle(buttonsStyle);
-        buttonGrade5.setStyle(buttonsStyle);
+        buttonGrade1.setStyle(buttonsStyle + buttonRadiusStyle);
+        buttonGrade2.setStyle(buttonsStyle + buttonRadiusStyle);
+        buttonGrade3.setStyle(buttonsStyle + buttonRadiusStyle);
+        buttonGrade4.setStyle(buttonsStyle + buttonRadiusStyle);
+        buttonGrade5.setStyle(buttonsStyle + buttonRadiusStyle);
 
-        reverseButtonGrade1.setStyle(buttonsStyle);
-        reverseButtonGrade2.setStyle(buttonsStyle);
-        reverseButtonGrade3.setStyle(buttonsStyle);
-        reverseButtonGrade4.setStyle(buttonsStyle);
-        reverseButtonGrade5.setStyle(buttonsStyle);
+        reverseButtonGrade1.setStyle(buttonsStyle + buttonRadiusStyle);
+        reverseButtonGrade2.setStyle(buttonsStyle + buttonRadiusStyle);
+        reverseButtonGrade3.setStyle(buttonsStyle + buttonRadiusStyle);
+        reverseButtonGrade4.setStyle(buttonsStyle + buttonRadiusStyle);
+        reverseButtonGrade5.setStyle(buttonsStyle + buttonRadiusStyle);
 
         buttonGrade1.setPrefSize(width / 5, height);
         buttonGrade2.setPrefSize(width / 5, height);
@@ -174,6 +246,8 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
         reverseButtonGrade3.setPrefSize(width / 5, height);
         reverseButtonGrade4.setPrefSize(width / 5, height);
         reverseButtonGrade5.setPrefSize(width / 5, height);
+
+        updateIcons(scaleFactor);
     }
 
     /**
@@ -324,5 +398,49 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
     @Override
     public CardSuperMemo2 createNewCard(String front, String back) {
         return new CardSuperMemo2(front, back, initialEasinessFactor, reverseInitialEasinessFactor, null);
+    }
+
+    /**
+     * Initializes the icons used in the controller's UI components.
+     */
+    private void initializeIcons() {
+        buttonGrade1Icon = ImageUtil.createImageView("/images/icons/grade1.png");
+        buttonGrade1.setGraphic(buttonGrade1Icon);
+        buttonGrade2Icon = ImageUtil.createImageView("/images/icons/grade2.png");
+        buttonGrade2.setGraphic(buttonGrade2Icon);
+        buttonGrade3Icon = ImageUtil.createImageView("/images/icons/grade3.png");
+        buttonGrade3.setGraphic(buttonGrade3Icon);
+        buttonGrade4Icon = ImageUtil.createImageView("/images/icons/grade4.png");
+        buttonGrade4.setGraphic(buttonGrade4Icon);
+        buttonGrade5Icon = ImageUtil.createImageView("/images/icons/grade5.png");
+        buttonGrade5.setGraphic(buttonGrade5Icon);
+        reverseButtonGrade1Icon = ImageUtil.createImageView("/images/icons/grade1.png");
+        reverseButtonGrade1.setGraphic(reverseButtonGrade1Icon);
+        reverseButtonGrade2Icon = ImageUtil.createImageView("/images/icons/grade2.png");
+        reverseButtonGrade2.setGraphic(reverseButtonGrade2Icon);
+        reverseButtonGrade3Icon = ImageUtil.createImageView("/images/icons/grade3.png");
+        reverseButtonGrade3.setGraphic(reverseButtonGrade3Icon);
+        reverseButtonGrade4Icon = ImageUtil.createImageView("/images/icons/grade4.png");
+        reverseButtonGrade4.setGraphic(reverseButtonGrade4Icon);
+        reverseButtonGrade5Icon = ImageUtil.createImageView("/images/icons/grade5.png");
+        reverseButtonGrade5.setGraphic(reverseButtonGrade5Icon);
+    }
+
+    /**
+     * Updates the size of each icon according to the given scale factor.
+     *
+     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     */
+    private void updateIcons(double scaleFactor) {
+        ImageUtil.setImageViewSize(buttonGrade1Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(buttonGrade2Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(buttonGrade3Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(buttonGrade4Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(buttonGrade5Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(reverseButtonGrade1Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(reverseButtonGrade2Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(reverseButtonGrade3Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(reverseButtonGrade4Icon, 20 * scaleFactor, 20 * scaleFactor);
+        ImageUtil.setImageViewSize(reverseButtonGrade5Icon, 20 * scaleFactor, 20 * scaleFactor);
     }
 }
