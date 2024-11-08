@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -108,23 +110,13 @@ public class TranslationService {
     public List<Locale> getAvailableLocales() {
         List<Locale> availableLocales = new ArrayList<>();
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        Set<String> processedJars = new HashSet<>();
+        Set<String> processedResources = new HashSet<>();
 
         try {
             Enumeration<URL> resources = loader.getResources("");
             while (resources.hasMoreElements()) {
                 URL resourceUrl = resources.nextElement();
-                if (resourceUrl != null) {
-                    String protocol = resourceUrl.getProtocol();
-                    if ("file".equals(protocol)) {
-                        availableLocales.addAll(getLocalesFromFileResource(resourceUrl));
-                    } else if ("jar".equals(protocol)) {
-                        String jarPath = resourceUrl.getPath().substring(5, resourceUrl.getPath().indexOf("!"));
-                        if (processedJars.add(jarPath)) {
-                            availableLocales.addAll(getLocalesFromJarResource(jarPath));
-                        }
-                    }
-                }
+                processResource(resourceUrl, availableLocales, processedResources);
             }
         } catch (IOException | URISyntaxException ignored) {
             //ignore
@@ -132,6 +124,95 @@ public class TranslationService {
 
         availableLocales.sort(Comparator.comparing(Locale::getDisplayLanguage, String.CASE_INSENSITIVE_ORDER));
         return availableLocales;
+    }
+
+    /**
+     * Processes a given resource URL based on its protocol type and adds available locales from it.
+     *
+     * @param resourceUrl        The URL of the resource.
+     * @param availableLocales   The list of available locales to be populated.
+     * @param processedResources The set of resources that have already been processed.
+     * @throws URISyntaxException If the URL syntax is incorrect.
+     */
+    private void processResource(URL resourceUrl, List<Locale> availableLocales, Set<String> processedResources) throws URISyntaxException, IOException {
+        if (resourceUrl != null) {
+            String protocol = resourceUrl.getProtocol();
+
+            switch (protocol) {
+                case "file":
+                    handleFileProtocol(resourceUrl, availableLocales, processedResources);
+                    break;
+
+                case "jar":
+                    handleJarProtocol(resourceUrl, availableLocales, processedResources);
+                    break;
+
+                default:
+                    // No action for unsupported protocols
+            }
+        }
+    }
+
+    /**
+     * Handles resources with the "file" protocol, adding any available locales from file-based resources.
+     *
+     * @param resourceUrl        The URL of the resource.
+     * @param availableLocales   The list of available locales to be populated.
+     * @param processedResources The set of resources that have already been processed.
+     * @throws URISyntaxException If the URL syntax is incorrect.
+     */
+    private void handleFileProtocol(URL resourceUrl, List<Locale> availableLocales, Set<String> processedResources) throws URISyntaxException {
+        String filePath = decodePath(resourceUrl.getPath());
+        if (processedResources.add(filePath)) {
+            availableLocales.addAll(getLocalesFromFileResource(resourceUrl));
+        }
+    }
+
+    /**
+     * Handles resources with the "jar" protocol, distinguishing between nested and standard JARs.
+     *
+     * @param resourceUrl        The URL of the resource.
+     * @param availableLocales   The list of available locales to be populated.
+     * @param processedResources The set of resources that have already been processed.
+     */
+    private void handleJarProtocol(URL resourceUrl, List<Locale> availableLocales, Set<String> processedResources) throws IOException {
+        String fullPath = resourceUrl.getPath();
+        if (fullPath.startsWith("nested:")) {
+            handleNestedJar(fullPath, availableLocales, processedResources);
+        } else if (fullPath.startsWith("file:")) {
+            handleStandardJar(fullPath, availableLocales, processedResources);
+        }
+    }
+
+    /**
+     * Handles nested JAR files, extracting and adding any available locales from the nested JAR resource.
+     *
+     * @param fullPath           The full path of the resource URL.
+     * @param availableLocales   The list of available locales to be populated.
+     * @param processedResources The set of resources that have already been processed.
+     */
+    private void handleNestedJar(String fullPath, List<Locale> availableLocales, Set<String> processedResources) throws IOException {
+        int lastExclamation = fullPath.lastIndexOf("!");
+        String pathUpToFirstExclamation = fullPath.substring(0, lastExclamation);
+        int secondLastExclamation = pathUpToFirstExclamation.lastIndexOf("!");
+        String nestedPath = decodePath(fullPath.substring(7, secondLastExclamation));
+        if (processedResources.add(nestedPath)) {
+            availableLocales.addAll(getLocalesFromJarResource(nestedPath));
+        }
+    }
+
+    /**
+     * Handles standard JAR files, extracting and adding any available locales from the JAR resource.
+     *
+     * @param fullPath           The full path of the resource URL.
+     * @param availableLocales   The list of available locales to be populated.
+     * @param processedResources The set of resources that have already been processed.
+     */
+    private void handleStandardJar(String fullPath, List<Locale> availableLocales, Set<String> processedResources) throws IOException {
+        String jarPath = decodePath(fullPath.substring(5, fullPath.lastIndexOf("!")));
+        if (processedResources.add(jarPath)) {
+            availableLocales.addAll(getLocalesFromJarResource(jarPath));
+        }
     }
 
     /**
@@ -209,5 +290,17 @@ public class TranslationService {
             AppLocaleSetting newSetting = new AppLocaleSetting(null, "en", "US");
             return repository.save(newSetting);
         });
+    }
+
+    /**
+     * Decodes the provided URL-encoded path using UTF-8 encoding.
+     * This method is typically used to handle URL-encoded strings, such as paths that contain
+     * special characters (e.g., spaces encoded as "%20") and converts them back to their original form.
+     *
+     * @param path the URL-encoded path to decode
+     * @return the decoded path as a String
+     */
+    private String decodePath(String path) {
+        return URLDecoder.decode(path, StandardCharsets.UTF_8);
     }
 }
