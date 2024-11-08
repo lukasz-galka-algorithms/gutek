@@ -7,6 +7,7 @@
  *     <li>A class for managing image and icon loading.</li>
  *     <li>The SpringContext class for retrieving beans from the Spring context.</li>
  *     <li>Utilities for String manipulation.</li>
+ *     <li>Utilities for importing/exporting card.</li>
  * </ul>
  */
 package gutek.utils;

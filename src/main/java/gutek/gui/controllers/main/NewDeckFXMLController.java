@@ -9,6 +9,7 @@ import gutek.gui.controllers.menu.MenuBarFXMLController;
 import gutek.services.DeckService;
 import gutek.services.RevisionAlgorithmService;
 import gutek.services.TranslationService;
+import gutek.utils.CsvUtil;
 import gutek.utils.FXMLFileLoader;
 import gutek.utils.ImageUtil;
 import javafx.collections.FXCollections;
@@ -18,10 +19,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.FileChooser;
 import org.springframework.stereotype.Component;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.List;
 
 import static gutek.utils.AlertMessageUtil.showErrorAlert;
 import static gutek.utils.AlertMessageUtil.showInfoAlert;
@@ -273,15 +272,10 @@ public class NewDeckFXMLController extends FXMLController {
      * @return true if the import was successful, false otherwise.
      */
     private boolean importCardsFromFile(File file, RevisionAlgorithm<?> algorithm, DeckBase deck) {
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-            long cardsNumber = Long.parseLong(br.readLine());
-            for (int i = 0; i < cardsNumber; i++) {
-                String front = br.readLine();
-                String back = br.readLine();
-                if (front == null || back == null) {
-                    throw new IOException("Invalid card data at line " + (i * 2 + 2));
-                }
-                CardBase card = algorithm.createNewCard(front, back);
+        try {
+            List<CardBase> cards = CsvUtil.loadFromCsv(file, algorithm);
+
+            for (CardBase card : cards) {
                 deckService.addNewCardToDeck(card, deck);
             }
             return true;

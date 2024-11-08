@@ -9,6 +9,7 @@ import gutek.gui.controllers.menu.MenuDeckFXMLController;
 import gutek.services.CardService;
 import gutek.services.DeckService;
 import gutek.services.TranslationService;
+import gutek.utils.CsvUtil;
 import gutek.utils.FXMLFileLoader;
 import gutek.utils.ImageUtil;
 import javafx.fxml.FXML;
@@ -20,9 +21,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import org.springframework.stereotype.Component;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.util.List;
 import java.util.Optional;
 
 import static gutek.utils.AlertMessageUtil.*;
@@ -200,12 +200,13 @@ public class RevisionAddCardFXMLController extends FXMLController {
 
         File selectedFile = fileChooser.showOpenDialog(stage.getStage());
         if (selectedFile != null) {
-            try (BufferedReader br = new BufferedReader(new FileReader(selectedFile))) {
-                long cardsNumber = Long.parseLong(br.readLine());
-                for (int i = 0; i < cardsNumber; i++) {
-                    CardBase card = deck.getRevisionAlgorithm().createNewCard(br.readLine(), br.readLine());
+            try {
+                List<CardBase> cards = CsvUtil.loadFromCsv(selectedFile, deck.getRevisionAlgorithm());
+
+                for (CardBase card : cards) {
                     deckService.addNewCardToDeck(card, deck);
                 }
+
                 showInfoAlert(translationService.getTranslation("new_deck_view.deck_imported"), translationService, stage);
             } catch (Exception ex) {
                 showErrorAlert(translationService.getTranslation("new_deck_view.import_error"), translationService, stage);

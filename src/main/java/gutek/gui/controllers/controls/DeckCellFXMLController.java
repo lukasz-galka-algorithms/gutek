@@ -1,6 +1,5 @@
 package gutek.gui.controllers.controls;
 
-import gutek.entities.cards.CardBase;
 import gutek.entities.decks.DeckBase;
 import gutek.gui.controllers.FXMLController;
 import gutek.gui.controllers.MainStage;
@@ -8,6 +7,7 @@ import gutek.gui.controllers.MainStageScenes;
 import gutek.gui.controllers.main.DecksFXMLController;
 import gutek.services.DeckService;
 import gutek.services.TranslationService;
+import gutek.utils.CsvUtil;
 import gutek.utils.FXMLFileLoader;
 import gutek.utils.ImageUtil;
 import javafx.fxml.FXML;
@@ -15,11 +15,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
 
 import static gutek.utils.AlertMessageUtil.showErrorAlert;
 import static gutek.utils.AlertMessageUtil.showInfoAlert;
@@ -218,7 +215,7 @@ public class DeckCellFXMLController extends FXMLController {
     }
 
     /**
-     * Handles exporting the deck data to a file.
+     * Handles exporting the deck data to a csv file.
      */
     public void handleExport() {
         FileChooser fileChooser = new FileChooser();
@@ -234,15 +231,8 @@ public class DeckCellFXMLController extends FXMLController {
                 file = new File(file.getAbsolutePath() + ".csv");
             }
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                List<CardBase> allCards = deckService.getAllCards(deck);
-                writer.write(String.valueOf(allCards.size()));
-                for (CardBase card : allCards) {
-                    writer.newLine();
-                    writer.write(card.getFront());
-                    writer.newLine();
-                    writer.write(card.getBack());
-                }
+            try {
+                CsvUtil.writeToCsv(file, deckService.getAllCards(deck));
                 showInfoAlert(translationService.getTranslation("decks_view.export_success"), translationService, stage);
             } catch (IOException ex) {
                 showErrorAlert(translationService.getTranslation("decks_view.export_fail"), translationService, stage);
