@@ -101,7 +101,11 @@ public class FieldValueValidator {
     }
 
     /**
-     * Helper method to retrieve a PropertyDescriptor for a given field name.
+     * Helper method to retrieve a {@link PropertyDescriptor} for a given field name in a specified class.
+     *
+     * @param clazz the class containing the field
+     * @param fieldName the name of the field for which the {@link PropertyDescriptor} is to be retrieved
+     * @return the {@link PropertyDescriptor} for the specified field, or {@code null} if an error occurs during introspection
      */
     private static PropertyDescriptor getPropertyDescriptor(Class<?> clazz, String fieldName) {
         try {
@@ -112,7 +116,11 @@ public class FieldValueValidator {
     }
 
     /**
-     * Helper method to retrieve the field by name.
+     * Helper method to retrieve a {@link Field} by its name from a specified class.
+     *
+     * @param clazz the class containing the field
+     * @param fieldName the name of the field to retrieve
+     * @return the {@link Field} object representing the specified field, or {@code null} if the field is not found
      */
     private static Field getField(Class<?> clazz, String fieldName) {
         try {
@@ -123,7 +131,17 @@ public class FieldValueValidator {
     }
 
     /**
-     * Retrieves the field label, using the translation service if the field has a description key.
+     * Retrieves the label for a specified field, using the translation service if the field has a description key.
+     * <p>
+     * If the field is annotated with {@link AlgorithmHiperparameter}, this method will use the translation key
+     * provided by the annotation to fetch the translated label via the {@link TranslationService}.
+     * If no translation key is found, the method returns the field's name.
+     * </p>
+     *
+     * @param clazz the class containing the field
+     * @param fieldName the name of the field whose label is to be retrieved
+     * @param translationService the translation service used to fetch the translated label
+     * @return the translated label if a description key is present, or the field name if not
      */
     private static String getFieldLabel(Class<?> clazz, String fieldName, TranslationService translationService) {
         Field field = getField(clazz, fieldName);

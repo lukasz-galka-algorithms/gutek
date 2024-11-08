@@ -25,7 +25,7 @@ public class TranslationService {
     private static final String BASE_NAME = "messages";
 
     /**
-     * Pattern used to match locale files in the format 'messages_<language>_<country>.properties'.
+     * Pattern used to match locale files in the format `messages_{language}_{country}.properties`.
      */
     private static final Pattern LOCALE_PATTERN = Pattern.compile(BASE_NAME + "_([a-z]{2})_([A-Z]{2})\\.properties");
 

@@ -30,9 +30,12 @@ public class FXMLFileLoader {
      * <p>
      * This method uses the {@link FXMLLoader} with a controller factory set to retrieve
      * Spring-managed beans for dependency injection into FXML controllers.
+     * If a custom controller is provided, it is set directly; otherwise, the default
+     * Spring context is used to inject dependencies.
      * </p>
      *
-     * @param fxmlPath the path to the FXML file (relative to the resources directory, including ".fxml" extension)
+     * @param fxmlPath the path to the FXML file (relative to the resources directory, including the ".fxml" extension)
+     * @param controller the custom controller to set for the FXML, or {@code null} to use the default controller factory
      * @return the loaded {@link Parent} element representing the UI root, or {@code null} if loading fails
      */
     public Parent loadFXML(String fxmlPath, Object controller) {

@@ -38,8 +38,14 @@ public class RevisionAlgorithmService {
 
     /**
      * Constructor that initializes the service and loads all available revision algorithms.
+     * <p>
+     * This constructor scans for all non-abstract classes that implement the {@link RevisionAlgorithm} interface
+     * within the specified package, using the Reflections library. The found classes are then stored in a set
+     * for further use.
+     * </p>
      *
-     * @param translationService Service used for handling translations.
+     * @param translationService the service used for handling translations within the application
+     * @param revisionAlgorithmRepository the repository used for managing revision algorithm data
      */
     public RevisionAlgorithmService(TranslationService translationService, RevisionAlgorithmRepository revisionAlgorithmRepository) {
         this.translationService = translationService;
@@ -83,8 +89,9 @@ public class RevisionAlgorithmService {
     /**
      * Creates an instance of a revision algorithm by its name.
      *
-     * @param algorithmName The name of the algorithm to instantiate.
-     * @return An instance of the revision algorithm, or {@code null} if not found.
+     * @param <T> the type of card base that the algorithm operates on, extending {@link CardBase}
+     * @param algorithmName the name of the algorithm to instantiate
+     * @return an instance of the revision algorithm, or {@code null} if not found
      */
     public <T extends CardBase> RevisionAlgorithm<T> createAlgorithmInstance(String algorithmName) {
         for (Class<? extends RevisionAlgorithm<? extends CardBase>> algorithmClass : algorithmClasses) {
@@ -105,8 +112,9 @@ public class RevisionAlgorithmService {
     /**
      * Saves a given revision algorithm to the database.
      *
-     * @param algorithm The algorithm to save.
-     * @return The saved algorithm with an assigned ID.
+     * @param <T> the type of the revision algorithm, extending {@link RevisionAlgorithm}
+     * @param algorithm the algorithm to save
+     * @return the saved algorithm with an assigned ID
      */
     public <T extends RevisionAlgorithm<?>> T saveAlgorithm(T algorithm) {
         return revisionAlgorithmRepository.save(algorithm);

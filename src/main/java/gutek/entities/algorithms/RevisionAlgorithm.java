@@ -67,7 +67,11 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
     public abstract void initializeGUI();
 
     /**
-     * Updates the size for the UI components.
+     * Updates the size of UI components based on the provided dimensions and scale factor.
+     *
+     * @param width the new width to set for the components
+     * @param height the new height to set for the components
+     * @param scaleFactor the scale factor to apply to the components, allowing for dynamic resizing
      */
     public abstract void updateSize(double width, double height, double scaleFactor);
 

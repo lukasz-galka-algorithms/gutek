@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gutek Application Overview</title>
+</head>
+<body>
+<h1>Gutek Application Overview</h1>
+<p>
+    Gutek is a Java-based application designed to support intelligent learning through
+    customizable revision algorithms. The application integrates Spring Boot for backend
+    management and JavaFX for the graphical user interface, allowing users to manage
+    language learning, spaced repetition, and memory retention processes.
+</p>
+
+<h2>Main Components</h2>
+<ul>
+    <li><strong>gutek</strong>: The main package, containing the entry point for the application in the {@code Main} class.</li>
+    <li><strong>gutek.gui</strong>: Contains all graphical user interface components, organized in sub-packages for charts, controllers, and custom controls.</li>
+    <li><strong>gutek.services</strong>: Provides business logic and service classes, including translation and revision algorithm management.</li>
+    <li><strong>gutek.entities</strong>: Contains JPA entities representing key data models, such as cards, decks, and users.</li>
+    <li><strong>gutek.repositories</strong>: Spring Data JPA repositories for managing persistence of entities.</li>
+    <li><strong>gutek.utils</strong>: Utility classes that provide common functionality, including validation, alert management, and FXML loading.</li>
+    <li><strong>gutek.config</strong>: Configuration classes for setting up Spring beans and application properties.</li>
+</ul>
+
+<h2>Features</h2>
+<ul>
+    <li>Intelligent revision algorithms with support for bidirectional learning</li>
+    <li>Customizable and extensible framework for adding new algorithms and views</li>
+    <li>Automated database management with Spring Data JPA</li>
+    <li>Statistics and analytics to track learning progress</li>
+</ul>
+
+<h2>Getting Started</h2>
+<p>
+    To run the application, start by initializing the Spring Boot context in the {@code Main} class.
+    This will set up the JavaFX interface and display the main stage for interacting with learning tools and settings.
+</p>
+</body>
+</html>
