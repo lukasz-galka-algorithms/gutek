@@ -110,19 +110,12 @@ public class MenuDeckFXMLController extends FXMLController {
      * adding a card, browsing, revising, accessing settings, viewing statistics, and closing the menu.
      */
     private void initializeMenuActions() {
-        addCardButton.setOnAction(e -> setAddCardScene());
+        addCardButton.setOnAction(e -> stage.setScene(MainStageScenes.REVISION_ADD_NEW_CARD_SCENE, deck));
         browseDeckButton.setOnAction(e -> stage.setScene(MainStageScenes.REVISION_SEARCH_SCENE, deck));
         revisionButton.setOnAction(e -> stage.setScene(MainStageScenes.REVISION_REVISE_SCENE, deck));
         settingsButton.setOnAction(e -> stage.setScene(MainStageScenes.REVISION_SETTINGS_SCENE, deck));
         statsButton.setOnAction(e -> stage.setScene(MainStageScenes.REVISION_STATISTICS_SCENE, deck));
         closeButton.setOnAction(e -> stage.setScene(MainStageScenes.DECKS_SCENE));
-    }
-
-    /**
-     * Switches the scene to the add card view, passing the current deck as context.
-     */
-    private void setAddCardScene() {
-        stage.setScene(MainStageScenes.REVISION_ADD_NEW_CARD_SCENE, deck);
     }
 
     /**

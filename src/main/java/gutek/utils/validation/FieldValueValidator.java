@@ -1,8 +1,7 @@
 package gutek.utils.validation;
 
-import gutek.entities.algorithms.AlgorithmHiperparameter;
+import gutek.domain.algorithms.AlgorithmHiperparameter;
 import gutek.services.TranslationService;
-
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;

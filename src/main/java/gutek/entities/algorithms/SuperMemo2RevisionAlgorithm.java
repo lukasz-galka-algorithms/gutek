@@ -1,5 +1,8 @@
 package gutek.entities.algorithms;
 
+import gutek.domain.revisions.RegularTextModeRevision;
+import gutek.domain.revisions.ReverseTextModeRevision;
+import gutek.domain.algorithms.AlgorithmHiperparameter;
 import gutek.entities.cards.CardSuperMemo2;
 import gutek.utils.ImageUtil;
 import gutek.utils.validation.Min;
@@ -24,7 +27,9 @@ import java.time.LocalDate;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
-public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo2> {
+public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo2>
+        implements RegularTextModeRevision<CardSuperMemo2>,
+        ReverseTextModeRevision<CardSuperMemo2> {
 
     /** Initial easiness factor for the normal revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.supermemo2.easiness_factor")
@@ -257,7 +262,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      * @return a panel with the grade buttons for the normal revision
      */
     @Override
-    public Pane getRevisionButtonsPane(CardSuperMemo2 card) {
+    public Pane getRegularRevisionButtonsPane(CardSuperMemo2 card) {
         HBox buttonBox = new HBox(5);
         buttonBox.getChildren().addAll(buttonGrade1, buttonGrade2, buttonGrade3, buttonGrade4, buttonGrade5);
         return buttonBox;
@@ -271,7 +276,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      * @return true if the revision process is complete, false otherwise
      */
     @Override
-    public boolean reviseCard(Button clickedButton, CardSuperMemo2 card) {
+    public boolean regularReviseCard(Button clickedButton, CardSuperMemo2 card) {
         int grade = 0;
 
         if (clickedButton == buttonGrade1) {

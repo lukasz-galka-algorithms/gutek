@@ -3,8 +3,6 @@ package gutek.entities.algorithms;
 import gutek.entities.cards.CardBase;
 import gutek.services.TranslationService;
 import jakarta.persistence.*;
-import javafx.scene.control.Button;
-import javafx.scene.layout.Pane;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -79,38 +77,4 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
      * Updates the translations for the UI components.
      */
     public abstract void updateTranslation();
-
-    /**
-     * Returns a panel containing the buttons for the normal revision process.
-     *
-     * @param card the card being revised
-     * @return a panel containing the revision buttons
-     */
-    public abstract Pane getRevisionButtonsPane(T card);
-
-    /**
-     * Handles the revision logic when a button is clicked during the normal revision process.
-     *
-     * @param clickedButton the button that was clicked
-     * @param card the card being revised
-     * @return {@code true} if the revision process is complete, {@code false} otherwise
-     */
-    public abstract boolean reviseCard(Button clickedButton, T card);
-
-    /**
-     * Returns a panel containing the buttons for the reverse revision process.
-     *
-     * @param card the card being revised
-     * @return a panel containing the reverse revision buttons
-     */
-    public abstract Pane getReverseRevisionButtonsPane(T card);
-
-    /**
-     * Handles the revision logic when a button is clicked during the reverse revision process.
-     *
-     * @param clickedButton the button that was clicked
-     * @param card the card being revised
-     * @return {@code true} if the reverse revision process is complete, {@code false} otherwise
-     */
-    public abstract boolean reverseReviseCard(Button clickedButton, T card);
 }

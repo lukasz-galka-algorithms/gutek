@@ -1,5 +1,6 @@
 package gutek.gui.controllers.controls;
 
+import gutek.domain.revisions.AvailableRevisions;
 import gutek.entities.decks.DeckBase;
 import gutek.gui.controllers.FXMLController;
 import gutek.gui.controllers.MainStage;
@@ -14,9 +15,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import static gutek.utils.AlertMessageUtil.showErrorAlert;
 import static gutek.utils.AlertMessageUtil.showInfoAlert;
@@ -42,30 +47,6 @@ public class DeckCellFXMLController extends FXMLController {
      */
     @FXML
     private Label deckName;
-
-    /**
-     * Label for the number of regular revision cards header.
-     */
-    @FXML
-    private Label regularRevisionCardsNumberLabel;
-
-    /**
-     * Label to display the number of regular revision cards.
-     */
-    @FXML
-    private Label regularRevisionCardsNumber;
-
-    /**
-     * Label for the number of reverse revision cards header.
-     */
-    @FXML
-    private Label reverseRevisionCardsNumberLabel;
-
-    /**
-     * Label to display the number of reverse revision cards.
-     */
-    @FXML
-    private Label reverseRevisionCardsNumber;
 
     /**
      * Label for the number of new cards header.
@@ -102,6 +83,20 @@ public class DeckCellFXMLController extends FXMLController {
      */
     @FXML
     private Label revisionAlgorithm;
+
+    /**
+     * Container for dynamically generated statistics labels based on revision types.
+     * This container holds labels that display statistics for the deck, where labels
+     * are added based on the revision types supported by the deck's algorithm.
+     */
+    @FXML
+    private VBox dynamicStatsContainer;
+
+    /** Map holding labels for the names of different revision statistics. */
+    private final Map<Class<?>, Label> statNameLabels = new HashMap<>();
+
+    /** Map holding labels for the counts of different revision statistics. */
+    private final Map<Class<?>, Label> statCountLabels = new HashMap<>();
 
     /**
      * Button to delete the deck.
@@ -194,9 +189,39 @@ public class DeckCellFXMLController extends FXMLController {
     public void setDeck(DeckBase deck) {
         this.deck = deck;
         this.deck.getRevisionAlgorithm().setTranslationService(translationService);
+
+        dynamicStatsContainer.getChildren().clear();
+        statNameLabels.clear();
+        statCountLabels.clear();
+
+        for (Map.Entry<Class<?>, AvailableRevisions.RevisionInfo> entry : AvailableRevisions.getAVAILABLE_REVISIONS().entrySet()) {
+            Class<?> revisionInterface = entry.getKey();
+            if (revisionInterface.isInstance(deck.getRevisionAlgorithm())) {
+                addStatisticHBox(revisionInterface);
+            }
+        }
+
         updateView();
         updateSize();
         updateTranslation();
+    }
+
+    /**
+     * Adds a horizontal box (HBox) containing the statistics labels for a given revision type.
+     *
+     * @param revisionInterface The revision type for which statistics are added.
+     */
+    private void addStatisticHBox(Class<?> revisionInterface) {
+        Label nameLabel = new Label();
+        statNameLabels.put(revisionInterface, nameLabel);
+        Label countLabel = new Label();
+        statCountLabels.put(revisionInterface, countLabel);
+
+        HBox statBox = new HBox();
+        statBox.setSpacing(10);
+        statBox.getChildren().addAll(nameLabel, countLabel);
+
+        dynamicStatsContainer.getChildren().add(statBox);
     }
 
     /**
@@ -247,8 +272,18 @@ public class DeckCellFXMLController extends FXMLController {
     public void updateTranslation() {
         revisionAlgorithm.setText(deck.getRevisionAlgorithm().getAlgorithmName());
         deckNameLabel.setText(translationService.getTranslation("decks_view.deck_name"));
-        regularRevisionCardsNumberLabel.setText(translationService.getTranslation("decks_view.regular_cards_number"));
-        reverseRevisionCardsNumberLabel.setText(translationService.getTranslation("decks_view.reverse_cards_number"));
+
+        for (Map.Entry<Class<?>, Label> entry : statNameLabels.entrySet()) {
+            Class<?> revisionInterface = entry.getKey();
+            Label nameLabel = entry.getValue();
+
+            String translationKeySuffix = AvailableRevisions.getAVAILABLE_REVISIONS().get(revisionInterface).translationKey();
+            if (translationKeySuffix != null) {
+                String translationKey = "revision." + translationKeySuffix + ".cards_number";
+                nameLabel.setText(translationService.getTranslation(translationKey));
+            }
+        }
+
         newCardsNumberLabel.setText(translationService.getTranslation("decks_view.new_cards_number"));
         allCardsNumberLabel.setText(translationService.getTranslation("decks_view.all_cards_number"));
         revisionAlgorithmLabel.setText(translationService.getTranslation("decks_view.revision_algorithm"));
@@ -275,10 +310,6 @@ public class DeckCellFXMLController extends FXMLController {
 
         deckNameLabel.setStyle(fontSizeStyle);
         deckName.setStyle(fontSizeStyle);
-        regularRevisionCardsNumberLabel.setStyle(fontSizeStyle);
-        regularRevisionCardsNumber.setStyle(fontSizeStyle);
-        reverseRevisionCardsNumberLabel.setStyle(fontSizeStyle);
-        reverseRevisionCardsNumber.setStyle(fontSizeStyle);
         newCardsNumberLabel.setStyle(fontSizeStyle);
         newCardsNumber.setStyle(fontSizeStyle);
         allCardsNumberLabel.setStyle(fontSizeStyle);
@@ -291,10 +322,6 @@ public class DeckCellFXMLController extends FXMLController {
 
         deckNameLabel.setPrefSize(scaledWidth,scaledHeightLabels);
         deckName.setPrefSize(scaledWidth,scaledHeight);
-        regularRevisionCardsNumberLabel.setPrefSize(scaledWidth,scaledHeightLabels);
-        regularRevisionCardsNumber.setPrefSize(scaledWidth,scaledHeight);
-        reverseRevisionCardsNumberLabel.setPrefSize(scaledWidth,scaledHeightLabels);
-        reverseRevisionCardsNumber.setPrefSize(scaledWidth,scaledHeight);
         newCardsNumberLabel.setPrefSize(scaledWidth,scaledHeightLabels);
         newCardsNumber.setPrefSize(scaledWidth,scaledHeight);
         allCardsNumberLabel.setPrefSize(scaledWidth,scaledHeightLabels);
@@ -304,6 +331,16 @@ public class DeckCellFXMLController extends FXMLController {
         buttonOpen.setPrefSize(scaleWidthButtons,scaledHeight);
         buttonDelete.setPrefSize(scaleWidthButtons,scaledHeight);
         buttonExport.setPrefSize(scaleWidthButtons,scaledHeight);
+
+        for (Label nameLabel : statNameLabels.values()) {
+            nameLabel.setStyle(fontSizeStyle + "-fx-alignment: center-right;");
+            nameLabel.setPrefSize(scaledWidth * 2, scaledHeight);
+        }
+
+        for (Label countLabel : statCountLabels.values()) {
+            countLabel.setStyle(fontSizeStyle + "-fx-alignment: center-left;");
+            countLabel.setPrefSize(scaledWidth, scaledHeight);
+        }
 
         updateIcons(scaleFactor);
     }
@@ -316,10 +353,26 @@ public class DeckCellFXMLController extends FXMLController {
     @Override
     public void updateView() {
         deckName.setText(deck.getName());
-        regularRevisionCardsNumber.setText(String.valueOf(deckService.getRegularRevisionCardsCount(deck)));
-        reverseRevisionCardsNumber.setText(String.valueOf(deckService.getReverseRevisionCardsCount(deck)));
         newCardsNumber.setText(String.valueOf(deckService.getNewCardsCount(deck)));
         allCardsNumber.setText(String.valueOf(deckService.getAllCardsCount(deck)));
+
+        for (Map.Entry<Class<?>, Label> entry : statCountLabels.entrySet()) {
+            Class<?> revisionInterface = entry.getKey();
+            Label countLabel = entry.getValue();
+
+            AvailableRevisions.RevisionInfo revisionInfo = AvailableRevisions.getAVAILABLE_REVISIONS().get(revisionInterface);
+            int updatedCount = revisionInfo.countRevisionCardsFunction().apply(deckService, deck);
+            countLabel.setText(String.valueOf(updatedCount));
+            countLabel.setTextFill(revisionInfo.color());
+        }
+
+        for (Map.Entry<Class<?>, Label> entry : statNameLabels.entrySet()) {
+            Class<?> revisionInterface = entry.getKey();
+            Label nameLabel = entry.getValue();
+
+            AvailableRevisions.RevisionInfo revisionInfo = AvailableRevisions.getAVAILABLE_REVISIONS().get(revisionInterface);
+            nameLabel.setTextFill(revisionInfo.color());
+        }
     }
 
     /**

@@ -125,8 +125,7 @@ public class RevisionStatisticsFXMLController extends FXMLController {
         menuBarFXMLController.initWithParams();
 
         menuContainer.getChildren().setAll(menuBarFXMLController.getRoot(), menuDeckFXMLController.getRoot());
-
-        chartTypeComboBox.getItems().setAll(chartService.getAvailableChartsTitles());
+        chartTypeComboBox.getItems().setAll(chartService.getCompatibleAvailableChartsTitles(deck));
         timeRangeComboBox.getItems().setAll(chartService.getAvailableRanges());
 
         chartTypeComboBox.setOnAction(e -> {
@@ -193,7 +192,7 @@ public class RevisionStatisticsFXMLController extends FXMLController {
         int selectedChartTypeIndex = chartTypeComboBox.getSelectionModel().getSelectedIndex();
         int selectedRangeIndex = timeRangeComboBox.getSelectionModel().getSelectedIndex();
 
-        chartTypeComboBox.getItems().setAll(chartService.getAvailableChartsTitles());
+        chartTypeComboBox.getItems().setAll(chartService.getCompatibleAvailableChartsTitles(deck));
         timeRangeComboBox.getItems().setAll(chartService.getAvailableRanges());
 
         if (selectedChartTypeIndex >= 0 && selectedChartTypeIndex < chartTypeComboBox.getItems().size()) {
@@ -222,7 +221,7 @@ public class RevisionStatisticsFXMLController extends FXMLController {
 
         if (selectedChartTypeIndex >= 0 && selectedChartTypeIndex < chartTypeComboBox.getItems().size()
         && selectedRangeIndex >= 0 && selectedRangeIndex < timeRangeComboBox.getItems().size()) {
-            Chart chart = chartService.getSelectedChart(selectedChartTypeIndex, selectedRangeIndex, deck);
+            Chart chart = chartService.getCompatibleSelectedChart(selectedChartTypeIndex, selectedRangeIndex, deck);
             if(chart != null){
                 chartContainer.getChildren().clear();
                 chartContainer.getChildren().add(chart);

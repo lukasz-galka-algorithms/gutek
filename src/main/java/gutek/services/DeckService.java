@@ -272,4 +272,14 @@ public class DeckService {
     public int getReverseRevisionCardsCount(DeckBase deck) {
         return cardBaseRepository.countByDeckIdDeckAndIsNewCardFalseAndNextReverseRevisionDateLessThanEqual(deck.getIdDeck(),LocalDate.now());
     }
+
+    /**
+     * Retrieves a deck by its unique identifier.
+     *
+     * @param deckId The unique identifier of the deck.
+     * @return An {@link Optional} containing the {@link DeckBase} if found, or empty if no deck with the specified ID exists.
+     */
+    public Optional<DeckBase> findById(Long deckId){
+        return deckBaseRepository.findById(deckId);
+    }
 }

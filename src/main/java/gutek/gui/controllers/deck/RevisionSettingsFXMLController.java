@@ -1,6 +1,6 @@
 package gutek.gui.controllers.deck;
 
-import gutek.entities.algorithms.AlgorithmHiperparameter;
+import gutek.domain.algorithms.AlgorithmHiperparameter;
 import gutek.entities.algorithms.RevisionAlgorithm;
 import gutek.entities.decks.DeckBase;
 import gutek.gui.controllers.FXMLController;
@@ -88,7 +88,6 @@ public class RevisionSettingsFXMLController extends FXMLController {
 
     /**
      * Map storing the hyperparameter fields of the revision algorithm.
-     * Key: Hyperparameter name, Value: TextField for user input.
      */
     private Map<String, TextField> hiperparameterFields;
 

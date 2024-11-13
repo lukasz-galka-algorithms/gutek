@@ -1,4 +1,4 @@
-package gutek.entities.algorithms;
+package gutek.domain.algorithms;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.RetentionPolicy;

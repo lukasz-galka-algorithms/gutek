@@ -4,7 +4,6 @@ import gutek.entities.decks.DeckBase;
 import gutek.entities.decks.DeckBaseStatistics;
 import gutek.gui.controllers.FXMLController;
 import gutek.gui.controllers.MainStage;
-import gutek.gui.controllers.MainStageScenes;
 import gutek.gui.controllers.menu.MenuBarFXMLController;
 import gutek.gui.controllers.menu.MenuDeckFXMLController;
 import gutek.services.DeckService;
@@ -12,15 +11,23 @@ import gutek.services.DeckStatisticsService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
 import gutek.gui.controls.NumberTextField;
+import gutek.domain.revisions.AvailableRevisions;
 import gutek.utils.ImageUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -57,51 +64,31 @@ public class RevisionFXMLController extends FXMLController {
     @FXML
     private NumberTextField newCardsPerDayTextField;
 
-    /**
-     * Button to start a regular revision session.
-     */
+    /** Scroll pane for displaying revision buttons. */
     @FXML
-    private Button regularRevisionButton;
+    private ScrollPane scrollPane;
 
-    /**
-     * Icon for the "regularRevisionButton".
-     */
-    private ImageView regularRevisionButtonIcon;
-
-    /**
-     * Button to start a reverse revision session.
-     */
+    /** Container for holding the revision buttons and statistics. */
     @FXML
-    private Button reverseRevisionButton;
+    private VBox revisionButtonsContainer;
 
-    /**
-     * Icon for the "reverseRevisionButton".
-     */
-    private ImageView reverseRevisionButtonIcon;
+    /** Map storing the buttons associated with each revision type. */
+    private final Map<Class<?>, Button> revisionButtons = new HashMap<>();
 
-    /**
-     * Label displaying the count of new cards available for regular revision.
-     */
-    @FXML
-    private Label regularNewCardsLabel;
+    /** Map storing the icons for each revision button. */
+    private final Map<Class<?>, ImageView> revisionButtonIcons = new HashMap<>();
 
-    /**
-     * Label displaying the count of old cards available for regular revision.
-     */
-    @FXML
-    private Label regularOldCardsLabel;
+    /** Map storing the labels for the names of new cards for each revision type. */
+    private final Map<Class<?>, Label> newCardsNameLabels = new HashMap<>();
 
-    /**
-     * Label displaying the count of new cards available for reverse revision.
-     */
-    @FXML
-    private Label reverseNewCardsLabel;
+    /** Map storing the labels for the counts of new cards for each revision type. */
+    private final Map<Class<?>, Label> newCardsCountLabels = new HashMap<>();
 
-    /**
-     * Label displaying the count of old cards available for reverse revision.
-     */
-    @FXML
-    private Label reverseOldCardsLabel;
+    /** Map storing the labels for the names of old cards for each revision type. */
+    private final Map<Class<?>, Label> cardsNameLabels = new HashMap<>();
+
+    /** Map storing the labels for the counts of old cards for each revision type. */
+    private final Map<Class<?>, Label> cardsCountLabels = new HashMap<>();
 
     /**
      * Listener for changes in the "new cards per day" field to update the value in the deck statistics.
@@ -161,22 +148,6 @@ public class RevisionFXMLController extends FXMLController {
     }
 
     /**
-     * Handles initiating a regular revision session.
-     * Switches the scene to the regular revision view.
-     */
-    private void handleRegularRevision() {
-        stage.setScene(MainStageScenes.REVISION_REGULAR_SCENE, deck);
-    }
-
-    /**
-     * Handles initiating a reverse revision session.
-     * Switches the scene to the reverse revision view.
-     */
-    private void handleReverseRevision() {
-        stage.setScene(MainStageScenes.REVISION_REVERSE_SCENE, deck);
-    }
-
-    /**
      * Initializes the view with the provided deck parameter.
      * Configures menu components, sets up button actions, and binds the new cards per day listener.
      *
@@ -187,21 +158,17 @@ public class RevisionFXMLController extends FXMLController {
         if (params != null && params.length > 0 && params[0] instanceof DeckBase deckBase) {
             this.deck = deckBase;
             if (deck.getDeckBaseStatistics() != null) {
-                newCardsPerDayTextField.setText(deck.getDeckBaseStatistics().getNewCardsPerDay().toString());
+                Optional<DeckBaseStatistics> statistics = deckStatisticsService.loadDeckStatistics(deck.getDeckBaseStatistics().getIdDeckStatistics());
+                statistics.ifPresent(deckBaseStatistics -> newCardsPerDayTextField.setText(String.valueOf(deckBaseStatistics.getNewCardsPerDay())));
             }
             this.menuDeckFXMLController.initWithParams(this.deck);
         }
         menuBarFXMLController.initWithParams();
 
         menuContainer.getChildren().setAll(menuBarFXMLController.getRoot(), menuDeckFXMLController.getRoot());
-
-        regularRevisionButton.setOnAction(e -> handleRegularRevision());
-        reverseRevisionButton.setOnAction(e -> handleReverseRevision());
-
         newCardsPerDayTextField.textProperty().removeListener(newCardsPerDayListener);
         newCardsPerDayTextField.textProperty().addListener(newCardsPerDayListener);
-
-        initializeIcons();
+        loadRevisions();
     }
 
     /**
@@ -216,28 +183,47 @@ public class RevisionFXMLController extends FXMLController {
         double scaleFactor = stage.getStageScaleFactor();
         String fontSizeStyle = "-fx-font-size: " + (12 * scaleFactor) + "px;";
         String radiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
-        double labelWidth = 150 * scaleFactor;
+        String borderStyle = "-fx-border-color: gray; -fx-border-width: 2; " + radiusStyle + "-fx-padding: " + (10 * scaleFactor) + ";";
+        double labelWidth = 50 * scaleFactor;
         double labelHeight = 30 * scaleFactor;
 
         newCardsPerDayLabel.setStyle(fontSizeStyle);
-        regularNewCardsLabel.setStyle(fontSizeStyle);
-        regularOldCardsLabel.setStyle(fontSizeStyle);
-        reverseNewCardsLabel.setStyle(fontSizeStyle);
-        reverseOldCardsLabel.setStyle(fontSizeStyle);
         newCardsPerDayTextField.setStyle(fontSizeStyle + radiusStyle);
-        regularRevisionButton.setStyle(fontSizeStyle + radiusStyle);
-        reverseRevisionButton.setStyle(fontSizeStyle + radiusStyle);
-
         newCardsPerDayTextField.setPrefSize(150 * scaleFactor, 30 * scaleFactor);
-        regularRevisionButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
-        reverseRevisionButton.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
-        newCardsPerDayLabel.setPrefSize(labelWidth, labelHeight);
-        regularNewCardsLabel.setPrefSize(labelWidth, labelHeight);
-        regularOldCardsLabel.setPrefSize(labelWidth, labelHeight);
-        reverseNewCardsLabel.setPrefSize(labelWidth, labelHeight);
-        reverseOldCardsLabel.setPrefSize(labelWidth, labelHeight);
+        newCardsPerDayLabel.setPrefSize(labelWidth * 3, labelHeight);
 
-        updateIcons(scaleFactor);
+        newCardsNameLabels.values().forEach(label -> {
+            label.setStyle(fontSizeStyle);
+            label.setPrefSize(labelWidth * 2, labelHeight);
+        });
+
+        newCardsCountLabels.values().forEach(label -> {
+            label.setStyle(fontSizeStyle);
+            label.setPrefSize(labelWidth, labelHeight);
+        });
+
+        cardsNameLabels.values().forEach(label -> {
+            label.setStyle(fontSizeStyle);
+            label.setPrefSize(labelWidth * 2, labelHeight);
+        });
+
+        cardsCountLabels.values().forEach(label -> {
+            label.setStyle(fontSizeStyle);
+            label.setPrefSize(labelWidth, labelHeight);
+        });
+
+        revisionButtons.values().forEach(button -> {
+            button.setStyle(fontSizeStyle + radiusStyle);
+            button.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
+        });
+
+        revisionButtonIcons.forEach((revisionType, icon) -> ImageUtil.setImageViewSize(icon, 20 * scaleFactor, 20 * scaleFactor));
+
+        revisionButtonsContainer.getChildren().forEach(node -> {
+            if (node instanceof VBox revisionBox) {
+                revisionBox.setStyle(borderStyle);
+            }
+        });
     }
 
     /**
@@ -250,17 +236,22 @@ public class RevisionFXMLController extends FXMLController {
         menuDeckFXMLController.updateTranslation();
 
         newCardsPerDayLabel.setText(translationService.getTranslation("deck_view.revise.new_cards_per_day"));
-        regularNewCardsLabel.setText(translationService.getTranslation("deck_view.revise.new_cards_regular") + ": " +
-                deckStatisticsService.getNewCardsForToday(deck.getDeckBaseStatistics().getIdDeckStatistics()));
-        regularOldCardsLabel.setText(translationService.getTranslation("deck_view.revise.old_cards_regular") + ": " +
-                deckService.getRegularRevisionCards(deck).size());
-        regularRevisionButton.setText(translationService.getTranslation("deck_view.revise.regular_button"));
+        String revisionString = "revision.";
 
-        reverseNewCardsLabel.setText(translationService.getTranslation("deck_view.revise.new_cards_reverse") + ": " +
-                deckStatisticsService.getNewCardsForToday(deck.getDeckBaseStatistics().getIdDeckStatistics()));
-        reverseOldCardsLabel.setText(translationService.getTranslation("deck_view.revise.old_cards_reverse") + ": " +
-                deckService.getReverseRevisionCards(deck).size());
-        reverseRevisionButton.setText(translationService.getTranslation("deck_view.revise.reverse_button"));
+        newCardsNameLabels.forEach((revisionType, nameLabel) -> {
+            String translationKey = revisionString + AvailableRevisions.getAVAILABLE_REVISIONS().get(revisionType).translationKey() + ".new_cards";
+            nameLabel.setText(translationService.getTranslation(translationKey) + ": ");
+        });
+
+        cardsNameLabels.forEach((revisionType, nameLabel) -> {
+            String translationKey = revisionString + AvailableRevisions.getAVAILABLE_REVISIONS().get(revisionType).translationKey() + ".old_cards";
+            nameLabel.setText(translationService.getTranslation(translationKey) + ": ");
+        });
+
+        revisionButtons.forEach((revisionType, button) -> {
+            String translationKey = revisionString + AvailableRevisions.getAVAILABLE_REVISIONS().get(revisionType).translationKey() + ".revision_button";
+            button.setText(translationService.getTranslation(translationKey));
+        });
     }
 
     /**
@@ -276,32 +267,81 @@ public class RevisionFXMLController extends FXMLController {
                 stat.setNewCardsPerDay(newCardsPerDay);
                 deckStatisticsService.saveDeckStatistics(stat);
             }
-            regularNewCardsLabel.setText(translationService.getTranslation("deck_view.revise.new_cards_regular") + ": " +
-                    deckStatisticsService.getNewCardsForToday(deck.getDeckBaseStatistics().getIdDeckStatistics()));
-            reverseNewCardsLabel.setText(translationService.getTranslation("deck_view.revise.new_cards_reverse") + ": " +
-                    deckStatisticsService.getNewCardsForToday(deck.getDeckBaseStatistics().getIdDeckStatistics()));
+
+            String revisionNewCardsCounts = String.valueOf(deckStatisticsService.getNewCardsForToday(deck.getDeckBaseStatistics().getIdDeckStatistics()));
+
+            newCardsCountLabels.forEach((revisionType, countLabel) -> countLabel.setText(revisionNewCardsCounts));
         } catch (NumberFormatException ignored) {
             // ignore
         }
     }
 
     /**
-     * Initializes the icons used in the controller's UI components.
+     * Updates the revision statistics displayed in the view.
      */
-    private void initializeIcons() {
-        regularRevisionButtonIcon = ImageUtil.createImageView("/images/icons/revision.png");
-        regularRevisionButton.setGraphic(regularRevisionButtonIcon);
-        reverseRevisionButtonIcon = ImageUtil.createImageView("/images/icons/revision.png");
-        reverseRevisionButton.setGraphic(reverseRevisionButtonIcon);
+    @Override
+    public void updateView() {
+        updateNewCardsPerDay();
+
+        for (Map.Entry<Class<?>, Label> entry : cardsCountLabels.entrySet()) {
+            Class<?> revisionInterface = entry.getKey();
+            Label countLabel = entry.getValue();
+
+            AvailableRevisions.RevisionInfo revisionInfo = AvailableRevisions.getAVAILABLE_REVISIONS().get(revisionInterface);
+            int updatedCount = revisionInfo.countRevisionCardsFunction().apply(deckService, deck);
+            countLabel.setText(String.valueOf(updatedCount));
+        }
     }
 
     /**
-     * Updates the size of each icon according to the given scale factor.
-     *
-     * @param scaleFactor the scale factor used to adjust the size of each icon.
+     * Loads the revision buttons and statistics display for each revision type supported by the deck.
      */
-    private void updateIcons(double scaleFactor) {
-        ImageUtil.setImageViewSize(regularRevisionButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
-        ImageUtil.setImageViewSize(reverseRevisionButtonIcon, 20 * scaleFactor, 20 * scaleFactor);
+    private void loadRevisions() {
+        revisionButtonsContainer.getChildren().clear();
+        revisionButtonsContainer.setAlignment(Pos.CENTER);
+
+        revisionButtons.clear();
+        revisionButtonIcons.clear();
+        newCardsNameLabels.clear();
+        newCardsCountLabels.clear();
+        cardsNameLabels.clear();
+        cardsCountLabels.clear();
+
+        AvailableRevisions.getAVAILABLE_REVISIONS().forEach((revisionType, revisionInfo) -> {
+            if (revisionType.isInstance(deck.getRevisionAlgorithm())) {
+                Button revisionButton = new Button();
+                revisionButton.setOnAction(e -> stage.setScene(revisionInfo.scene(), deck));
+                revisionButton.setTextFill(revisionInfo.color());
+                revisionButtons.put(revisionType, revisionButton);
+
+                ImageView buttonIcon = ImageUtil.createImageView("/images/icons/revision.png");
+                revisionButton.setGraphic(buttonIcon);
+                revisionButtonIcons.put(revisionType, buttonIcon);
+
+                Label newCardsNameLabel = new Label();
+                newCardsNameLabel.setTextFill(Color.BLUE);
+                newCardsNameLabel.setAlignment(Pos.CENTER_RIGHT);
+                Label newCardsCountLabel = new Label();
+                newCardsCountLabel.setTextFill(Color.BLUE);
+                newCardsNameLabels.put(revisionType, newCardsNameLabel);
+                newCardsCountLabels.put(revisionType, newCardsCountLabel);
+                Label cardsNameLabel = new Label();
+                cardsNameLabel.setTextFill(revisionInfo.color());
+                cardsNameLabel.setAlignment(Pos.CENTER_RIGHT);
+                Label cardsCountLabel = new Label();
+                cardsCountLabel.setTextFill(revisionInfo.color());
+                cardsNameLabels.put(revisionType, cardsNameLabel);
+                cardsCountLabels.put(revisionType, cardsCountLabel);
+
+                HBox revisionStatBox = new HBox(newCardsNameLabel, newCardsCountLabel, cardsNameLabel, cardsCountLabel);
+                revisionStatBox.setAlignment(Pos.CENTER);
+                VBox revisionBox = new VBox(revisionStatBox, revisionButton);
+                revisionBox.setAlignment(Pos.CENTER);
+                revisionButtonsContainer.getChildren().add(revisionBox);
+            }
+        });
+
+        scrollPane.setContent(revisionButtonsContainer);
+        scrollPane.setFitToWidth(true);
     }
 }

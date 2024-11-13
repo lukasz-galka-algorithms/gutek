@@ -32,4 +32,30 @@ public abstract class StatisticsChart {
      * @return the translated title of the chart
      */
     public abstract String getChartTitle();
+
+    /**
+     * Indicates whether the chart is independent of the revision type.
+     *
+     * @return {@code true} if the chart is revision type-independent; {@code false} otherwise
+     */
+    public boolean isRevisionTypeIndependent(){
+        return true;
+    }
+
+    /**
+     * Specifies the supported revision type for the chart, if any.
+     *
+     * <p>This method should be overridden in subclasses when {@link #isRevisionTypeIndependent()}
+     * returns {@code false}. If called when the chart is revision type-independent,
+     * it throws {@link UnsupportedOperationException}.
+     *
+     * @return the supported revision type's {@link Class}, or {@code null} if independent of revision type
+     * @throws UnsupportedOperationException if the chart is revision type-independent
+     */
+    public Class<?> getSupportedRevisionType() throws UnsupportedOperationException {
+        if (isRevisionTypeIndependent()) {
+            throw new UnsupportedOperationException("This chart is revision type-independent.");
+        }
+        return null;
+    }
 }

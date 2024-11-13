@@ -1,5 +1,7 @@
 package gutek.gui.charts;
 
+import gutek.domain.revisions.AvailableRevisions;
+import gutek.domain.revisions.ReverseTextModeRevision;
 import gutek.entities.cards.CardBase;
 import gutek.entities.decks.DeckBase;
 import gutek.services.DeckService;
@@ -102,6 +104,26 @@ public class AppearanceTimeReverseRevisionChart extends StatisticsChart {
      */
     @Override
     public String getChartTitle() {
-        return translationService.getTranslation("deck_view.statistics.reverse_revision_appearance_title");
+        return translationService.getTranslation("revision." + AvailableRevisions.getAVAILABLE_REVISIONS().get(getSupportedRevisionType()).translationKey() + ".statistics_appearance_title");
+    }
+
+    /**
+     * Indicates that this chart is not revision type-independent and is specific to reverse revision mode.
+     *
+     * @return {@code false} since this chart is specific to regular revisions
+     */
+    @Override
+    public boolean isRevisionTypeIndependent(){
+        return false;
+    }
+
+    /**
+     * Specifies the supported revision type for this chart.
+     *
+     * @return the {@link Class} representing {@link ReverseTextModeRevision}
+     */
+    @Override
+    public Class<?> getSupportedRevisionType(){
+        return ReverseTextModeRevision.class;
     }
 }

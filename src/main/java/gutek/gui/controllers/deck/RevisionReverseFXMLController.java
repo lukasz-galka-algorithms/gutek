@@ -1,5 +1,6 @@
 package gutek.gui.controllers.deck;
 
+import gutek.domain.revisions.ReverseTextModeRevision;
 import gutek.entities.algorithms.RevisionAlgorithm;
 import gutek.entities.cards.CardBase;
 import gutek.entities.decks.DeckBase;
@@ -365,35 +366,40 @@ public class RevisionReverseFXMLController extends FXMLController {
      * @param <T> the type of card being revised
      * @return the panel containing the algorithm-specific buttons
      */
+    @SuppressWarnings("unchecked")
     private <T extends CardBase> Pane loadAlgorithmButtons() {
         RevisionAlgorithm<T> algorithm = (RevisionAlgorithm<T>) currentCard.getDeck().getRevisionAlgorithm();
         algorithm.initializeGUI();
-        Pane panel = algorithm.getReverseRevisionButtonsPane((T) currentCard);
-        algorithm.setTranslationService(translationService);
-        updateSize();
-        updateTranslation();
+        if(algorithm instanceof ReverseTextModeRevision){
+            ReverseTextModeRevision<T> reverseTextModeRevision = (ReverseTextModeRevision<T>) algorithm;
+            Pane panel = reverseTextModeRevision.getReverseRevisionButtonsPane((T) currentCard);
+            algorithm.setTranslationService(translationService);
+            updateSize();
+            updateTranslation();
 
-        panel.getChildren().forEach(node -> {
-            if (node instanceof Button button) {
-                button.setOnAction(e -> {
-                    cardRevisionService.reviseReverse(currentCard, algorithmButtonContainer.getChildren().indexOf(button));
-                    if (currentCard.isNewCard()) {
-                        deckStatisticsService.newCardRevised(currentCard.getDeck().getDeckBaseStatistics().getIdDeckStatistics());
-                    }
-                    boolean cardRevisionFinished = algorithm.reverseReviseCard(button, (T) currentCard);
-                    if (cardRevisionFinished) {
-                        newCardsList.remove(currentCard);
-                        oldCardsList.remove(currentCard);
-                        deckStatisticsService.cardRevisedReverse(currentCard.getDeck().getDeckBaseStatistics().getIdDeckStatistics());
-                    }
-                    currentCard.setNewCard(false);
-                    cardService.saveCard(currentCard);
+            panel.getChildren().forEach(node -> {
+                if (node instanceof Button button) {
+                    button.setOnAction(e -> {
+                        cardRevisionService.reviseReverse(currentCard, algorithmButtonContainer.getChildren().indexOf(button));
+                        if (currentCard.isNewCard()) {
+                            deckStatisticsService.newCardRevised(currentCard.getDeck().getDeckBaseStatistics().getIdDeckStatistics());
+                        }
+                        boolean cardRevisionFinished = reverseTextModeRevision.reverseReviseCard(button, (T) currentCard);
+                        if (cardRevisionFinished) {
+                            newCardsList.remove(currentCard);
+                            oldCardsList.remove(currentCard);
+                            deckStatisticsService.cardRevisedReverse(currentCard.getDeck().getDeckBaseStatistics().getIdDeckStatistics());
+                        }
+                        currentCard.setNewCard(false);
+                        cardService.saveCard(currentCard);
 
-                    handleNextCard();
-                });
-            }
-        });
-        return panel;
+                        handleNextCard();
+                    });
+                }
+            });
+            return panel;
+        }
+       return null;
     }
 
     /**

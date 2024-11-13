@@ -2,7 +2,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.*?>
-
 <?import javafx.scene.effect.DropShadow?>
 <HBox xmlns:fx="http://javafx.com/fxml"
       spacing="15" alignment="CENTER"
@@ -14,20 +13,10 @@
             <Label fx:id="revisionAlgorithm" textFill="#CC6600" wrapText="true"/>
         </HBox>
 
-        <HBox spacing="10" alignment="CENTER_LEFT">
+        <HBox spacing="10" alignment="CENTER">
             <VBox spacing="10" alignment="CENTER_LEFT">
                 <Label fx:id="deckNameLabel" textFill="black" wrapText="true" alignment="BOTTOM_CENTER"/>
                 <Label fx:id="deckName" textFill="black" wrapText="true" alignment="TOP_CENTER"/>
-            </VBox>
-
-            <VBox spacing="10" alignment="CENTER">
-                <Label fx:id="regularRevisionCardsNumberLabel" textFill="red" wrapText="true" alignment="BOTTOM_CENTER"/>
-                <Label fx:id="regularRevisionCardsNumber" textFill="red" wrapText="true" alignment="TOP_CENTER"/>
-            </VBox>
-
-            <VBox spacing="10" alignment="CENTER">
-                <Label fx:id="reverseRevisionCardsNumberLabel" textFill="magenta" wrapText="true" alignment="BOTTOM_CENTER"/>
-                <Label fx:id="reverseRevisionCardsNumber" textFill="magenta" wrapText="true" alignment="TOP_CENTER"/>
             </VBox>
 
             <VBox spacing="10" alignment="CENTER">
@@ -40,6 +29,8 @@
                 <Label fx:id="allCardsNumber" textFill="#006400" wrapText="true" alignment="TOP_CENTER"/>
             </VBox>
         </HBox>
+
+        <VBox fx:id="dynamicStatsContainer" />
     </VBox>
 
     <VBox spacing="10" alignment="CENTER">

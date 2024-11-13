@@ -2,7 +2,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.*?>
-
 <?import javafx.scene.effect.DropShadow?>
 <HBox xmlns:fx="http://javafx.com/fxml"
       spacing="15" alignment="CENTER"

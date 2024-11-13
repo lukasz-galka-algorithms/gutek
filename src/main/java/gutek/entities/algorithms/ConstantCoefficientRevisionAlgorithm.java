@@ -1,5 +1,8 @@
 package gutek.entities.algorithms;
 
+import gutek.domain.revisions.RegularTextModeRevision;
+import gutek.domain.algorithms.AlgorithmHiperparameter;
+import gutek.domain.revisions.ReverseTextModeRevision;
 import gutek.entities.cards.CardConstantCoefficient;
 import gutek.utils.ImageUtil;
 import gutek.utils.validation.Min;
@@ -16,54 +19,65 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 /**
- * Represents a revision algorithm that uses constant coefficients to adjust
- * the revision time and track the number of incorrect answers.
- * This class is annotated as a JPA entity and uses the {@link InheritanceType#TABLE_PER_CLASS}
- * strategy for inheritance. It handles both normal and reverse revision processes.
- * The coefficients are used to calculate the next revision time based on the current
- * base revision time and the number of incorrect answers.
+ * A revision algorithm based on the Constant Coefficients method for spaced repetition.
+ * This class defines both normal and reverse revision processes, using the Constant Coefficients algorithm
+ * to calculate intervals and adjust the easiness factor based on user performance.
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
-public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<CardConstantCoefficient>{
-    /** Coefficient used in the normal revision process. */
+public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<CardConstantCoefficient>
+        implements RegularTextModeRevision<CardConstantCoefficient>,
+        ReverseTextModeRevision<CardConstantCoefficient> {
+    /**
+     * Coefficient used in the normal revision process.
+     */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.normal_coeff_1")
     @NotNull
     @NotEmpty
     @Min(value = 0.001)
     private Double coefficient1;
 
-    /** Coefficient used in the normal revision process. */
+    /**
+     * Coefficient used in the normal revision process.
+     */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.normal_coeff_2")
     @NotNull
     @NotEmpty
     @Min(value = 0.001)
     private Double coefficient2;
 
-    /** Coefficient used in the normal revision process. */
+    /**
+     * Coefficient used in the normal revision process.
+     */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.normal_coeff_3")
     @NotNull
     @NotEmpty
     @Min(value = 0.001)
     private Double coefficient3;
 
-    /** Coefficient used in the normal revision process. */
+    /**
+     * Coefficient used in the normal revision process.
+     */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.normal_coeff_4")
     @NotNull
     @NotEmpty
     @Min(value = 0.001)
     private Double coefficient4;
 
-    /** Threshold for the number of incorrect answers before resetting the card's revision status. */
+    /**
+     * Threshold for the number of incorrect answers before resetting the card's revision status.
+     */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.normal_incorrect")
     @NotNull
     @NotEmpty
     @Min(value = 1)
     private Integer incorrectAnswerThreshold;
 
-    /** UI component for the first button in the normal revision process. */
+    /**
+     * UI component for the first button in the normal revision process.
+     */
     @Transient
     private Button button1;
 
@@ -73,7 +87,9 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     @Transient
     private ImageView button1Icon;
 
-    /** UI component for the second button in the normal revision process. */
+    /**
+     * UI component for the second button in the normal revision process.
+     */
     @Transient
     private Button button2;
 
@@ -83,7 +99,9 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     @Transient
     private ImageView button2Icon;
 
-    /** UI component for the third button in the normal revision process. */
+    /**
+     * UI component for the third button in the normal revision process.
+     */
     @Transient
     private Button button3;
 
@@ -93,7 +111,9 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     @Transient
     private ImageView button3Icon;
 
-    /** UI component for the fourth button in the normal revision process. */
+    /**
+     * UI component for the fourth button in the normal revision process.
+     */
     @Transient
     private Button button4;
 
@@ -103,28 +123,36 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     @Transient
     private ImageView button4Icon;
 
-    /** Coefficient used in the reverse revision process. */
+    /**
+     * Coefficient used in the reverse revision process.
+     */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.reverse_coeff_1")
     @NotNull
     @NotEmpty
     @Min(value = 0.001)
     private Double reverseCoefficient1;
 
-    /** Coefficient used in the reverse revision process. */
+    /**
+     * Coefficient used in the reverse revision process.
+     */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.reverse_coeff_2")
     @NotNull
     @NotEmpty
     @Min(value = 0.001)
     private Double reverseCoefficient2;
 
-    /** Threshold for the number of incorrect answers before resetting the card's reverse revision status. */
+    /**
+     * Threshold for the number of incorrect answers before resetting the card's reverse revision status.
+     */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.reverse_incorrect")
     @NotNull
     @NotEmpty
     @Min(value = 1)
     private Integer reverseIncorrectAnswerThreshold;
 
-    /** UI component for the first button in the reverse revision process. */
+    /**
+     * UI component for the first button in the reverse revision process.
+     */
     @Transient
     private Button reverseButton1;
 
@@ -134,7 +162,9 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     @Transient
     private ImageView reverseButton1Icon;
 
-    /** UI component for the second button in the reverse revision process. */
+    /**
+     * UI component for the second button in the reverse revision process.
+     */
     @Transient
     private Button reverseButton2;
 
@@ -144,7 +174,9 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     @Transient
     private ImageView reverseButton2Icon;
 
-    /** Translation key for the algorithm name. */
+    /**
+     * Translation key for the algorithm name.
+     */
     @Transient
     protected static final String ALGORITHM_NAME_KEY = "revision_algorithm.const_coeff.algorithm_name";
 
@@ -174,7 +206,7 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * Initializes the GUI components.
      */
     @Override
-    public void initializeGUI(){
+    public void initializeGUI() {
         this.button1 = new Button();
         this.button2 = new Button();
         this.button3 = new Button();
@@ -203,7 +235,7 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * Updates the button size and style.
      */
     @Override
-    public void updateSize(double width, double height, double scaleFactor){
+    public void updateSize(double width, double height, double scaleFactor) {
         double buttonFontSize = 12 * scaleFactor;
         String buttonsStyle = "-fx-font-size: " + buttonFontSize + "px;";
         String buttonRadiusStyle = "-fx-background-radius: " + (20 * scaleFactor) + "; -fx-border-radius: " + (20 * scaleFactor) + ";";
@@ -234,7 +266,7 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * @return a panel containing the revision buttons
      */
     @Override
-    public Pane getRevisionButtonsPane(CardConstantCoefficient card) {
+    public Pane getRegularRevisionButtonsPane(CardConstantCoefficient card) {
         HBox buttonBox = new HBox(4);
         buttonBox.getChildren().addAll(button1, button2, button3, button4);
         return buttonBox;
@@ -244,18 +276,18 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * Handles the revision logic when a button is clicked in the normal revision process.
      *
      * @param clickedButton the button that was clicked
-     * @param card the card being revised
+     * @param card          the card being revised
      * @return true if the revision process for the card is finished, false otherwise
      */
     @Override
-    public boolean reviseCard(Button clickedButton, CardConstantCoefficient card) {
+    public boolean regularReviseCard(Button clickedButton, CardConstantCoefficient card) {
         boolean cardRevisionFinished = false;
         double baseRevisionTime = card.getBaseRevisionTime();
         int incorrectCounter = card.getIncorrectCounter();
         if (clickedButton == button1) {
             card.setBaseRevisionTime(coefficient1 * baseRevisionTime);
             card.setIncorrectCounter(incorrectCounter + 1);
-            if(card.getIncorrectCounter() >= incorrectAnswerThreshold){
+            if (card.getIncorrectCounter() >= incorrectAnswerThreshold) {
                 card.setRevisionDefault();
             }
             card.setNextRegularRevisionDate(LocalDate.now());
@@ -295,7 +327,7 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * Handles the revision logic when a button is clicked in the reverse revision process.
      *
      * @param clickedButton the button that was clicked
-     * @param card the card being revised
+     * @param card          the card being revised
      * @return true if the revision process for the card is finished, false otherwise
      */
     @Override
@@ -306,7 +338,7 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
         if (clickedButton == reverseButton1) {
             card.setBaseReverseRevisionTime(reverseCoefficient1 * baseReverseRevisionTime);
             card.setReverseIncorrectCounter(reverseIncorrectCounter + 1);
-            if(card.getReverseIncorrectCounter() >= reverseIncorrectAnswerThreshold){
+            if (card.getReverseIncorrectCounter() >= reverseIncorrectAnswerThreshold) {
                 card.setReverseRevisionDefault();
             }
             card.setNextReverseRevisionDate(LocalDate.now());
@@ -333,7 +365,7 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * Creates a new card with the given front and back values.
      *
      * @param front the front text of the card
-     * @param back the back text of the card
+     * @param back  the back text of the card
      * @return a new instance of {@link CardConstantCoefficient}
      */
     @Override

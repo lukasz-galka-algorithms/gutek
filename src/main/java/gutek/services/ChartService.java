@@ -1,5 +1,7 @@
 package gutek.services;
 
+import gutek.domain.revisions.AvailableRevisions;
+import gutek.entities.algorithms.RevisionAlgorithm;
 import gutek.entities.decks.DeckBase;
 import gutek.gui.charts.StatisticsChart;
 import javafx.scene.chart.Chart;
@@ -60,24 +62,26 @@ public class ChartService {
     }
 
     /**
-     * Retrieves the selected chart based on the provided type index and time range index.
+     * Retrieves a compatible chart based on the provided type index and time range index.
      *
-     * @param typeIndex  The index of the chart type.
+     * @param typeIndex  The index of the chart type in the list of compatible charts.
      * @param rangeIndex The index of the time range.
      * @param deck       The deck for which the chart is generated.
      * @return The generated {@link Chart} for the specified parameters.
      */
-    public Chart getSelectedChart(int typeIndex, int rangeIndex, DeckBase deck){
-        return availableCharts.get(typeIndex).getChart(AVAILABLE_RANGES[rangeIndex], deck);
+    public Chart getCompatibleSelectedChart(int typeIndex, int rangeIndex, DeckBase deck) {
+        List<StatisticsChart> compatibleCharts = getCompatibleCharts(deck);
+        return compatibleCharts.get(typeIndex).getChart(AVAILABLE_RANGES[rangeIndex], deck);
     }
 
     /**
-     * Provides the titles of available charts for display.
+     * Provides the titles of available charts compatible with the specified deck.
      *
+     * @param deck The deck to filter compatible chart titles for.
      * @return An array of chart titles as {@link String}.
      */
-    public String[] getAvailableChartsTitles() {
-        return availableCharts.stream()
+    public String[] getCompatibleAvailableChartsTitles(DeckBase deck) {
+        return getCompatibleCharts(deck).stream()
                 .map(StatisticsChart::getChartTitle)
                 .toArray(String[]::new);
     }
@@ -91,5 +95,25 @@ public class ChartService {
         return Arrays.stream(AVAILABLE_RANGES_TRANSLATION_KEYS)
                 .map(translationService::getTranslation)
                 .toArray(String[]::new);
+    }
+
+    /**
+     * Filters the available charts based on the deck's revision algorithm.
+     *
+     * @param deck The deck for which compatible charts are needed.
+     * @return A list of compatible {@link StatisticsChart} objects.
+     */
+    private List<StatisticsChart> getCompatibleCharts(DeckBase deck) {
+        RevisionAlgorithm<?> revisionAlgorithm = deck.getRevisionAlgorithm();
+        return availableCharts.stream()
+                .filter(chart -> {
+                    if (chart.isRevisionTypeIndependent()) {
+                        return true;
+                    }
+                    return AvailableRevisions.getAVAILABLE_REVISIONS().entrySet().stream()
+                            .anyMatch(entry -> entry.getKey().isInstance(revisionAlgorithm)
+                                    && chart.getSupportedRevisionType().equals(entry.getKey()));
+                })
+                .toList();
     }
 }
