@@ -8,6 +8,7 @@
  *     <li>The SpringContext class for retrieving beans from the Spring context.</li>
  *     <li>Utilities for String manipulation.</li>
  *     <li>Utilities for importing/exporting card.</li>
+ *     <li>Utilities for finding classes or interfaces.</li>
  * </ul>
  */
 package gutek.utils;

@@ -1,4 +1,4 @@
-package gutek.gui.charts;
+package gutek.domain.charts.charts;
 
 import gutek.entities.decks.DeckBase;
 import gutek.services.DeckStatisticsService;
@@ -29,14 +29,15 @@ public class RevisedForTheFirstTimeChart extends StatisticsChart{
     }
 
     /**
-     * Creates a bar chart showing the number of cards revised for the first time over a specified range of days.
+     * Generates a bar chart displaying the number of cards revised for the first time over the specified range of days.
      *
-     * @param range the number of days to display in the chart
+     * @param range the number of days to display on the chart
      * @param deck the deck for which the chart is generated
-     * @return a {@link Chart} object representing the chart
+     * @param revisionStrategyIndex unused parameter as this chart is revision strategy-independent
+     * @return a {@link BarChart} representing the distribution of first-time card revisions over time
      */
     @Override
-    public Chart getChart(int range, DeckBase deck) {
+    public Chart getChart(int range, DeckBase deck, Integer revisionStrategyIndex) {
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel(translationService.getTranslation("deck_view.statistics.day"));
 
@@ -44,7 +45,7 @@ public class RevisedForTheFirstTimeChart extends StatisticsChart{
         yAxis.setLabel(translationService.getTranslation("deck_view.statistics.cards_number"));
 
         BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
-        barChart.setTitle(getChartTitle());
+        barChart.setTitle(getChartTitle(deck, revisionStrategyIndex));
 
         int[] revisedForTheFirstTime = deckStatisticsService.getReviseForTheFirstTimeCounts(deck.getDeckBaseStatistics().getIdDeckStatistics());
         XYChart.Series<String, Number> dataSeries = new XYChart.Series<>();
@@ -59,12 +60,28 @@ public class RevisedForTheFirstTimeChart extends StatisticsChart{
     }
 
     /**
-     * Retrieves the title for the chart.
+     * Provides the title of the chart, localized to the current language setting.
      *
-     * @return the translated chart title
+     * @param deck the deck for which the chart is generated
+     * @param revisionStrategyIndex unused parameter as this chart is revision strategy-independent
+     * @return the localized title of the chart
      */
     @Override
-    public String getChartTitle() {
+    public String getChartTitle(DeckBase deck, Integer revisionStrategyIndex) {
         return translationService.getTranslation("deck_view.statistics.revised_first_time_title");
+    }
+
+    /**
+     * Indicates whether the chart is independent of the revision strategy.
+     * <p>
+     * For this chart, the data displayed does not depend on any specific revision strategy,
+     * and the {@code revisionStrategyIndex} parameter is not used.
+     * </p>
+     *
+     * @return {@code true} as this chart is revision strategy-independent
+     */
+    @Override
+    public boolean isRevisionStrategyIndependent() {
+        return true;
     }
 }

@@ -1,8 +1,9 @@
 package gutek.entities.algorithms;
 
-import gutek.domain.revisions.RegularTextModeRevision;
-import gutek.domain.revisions.ReverseTextModeRevision;
+import gutek.domain.revisions.RegularTextModeRevisionStrategy;
+import gutek.domain.revisions.ReverseTextModeRevisionStrategy;
 import gutek.domain.algorithms.AlgorithmHiperparameter;
+import gutek.domain.revisions.RevisionStrategy;
 import gutek.entities.cards.CardSuperMemo2;
 import gutek.utils.ImageUtil;
 import gutek.utils.validation.Min;
@@ -27,9 +28,7 @@ import java.time.LocalDate;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
-public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo2>
-        implements RegularTextModeRevision<CardSuperMemo2>,
-        ReverseTextModeRevision<CardSuperMemo2> {
+public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo2> {
 
     /** Initial easiness factor for the normal revision process. */
     @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.supermemo2.easiness_factor")
@@ -182,10 +181,14 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
     }
 
     /**
-     * Initializes the GUI components.
+     * Initializes the graphical user interface (GUI) for the revision strategy.
+     *
+     * @param width       The width of the available area for the GUI components.
+     * @param height      The height of the available area for the GUI components.
+     * @param scaleFactor A scaling factor used to adjust the size of the components dynamically.
      */
     @Override
-    public void initializeGUI(){
+    public void initializeGUI(double width, double height, double scaleFactor){
         this.buttonGrade1 = new Button();
         this.buttonGrade2 = new Button();
         this.buttonGrade3 = new Button();
@@ -199,6 +202,8 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
         this.reverseButtonGrade5 = new Button();
 
         initializeIcons();
+        updateSize(width, height, scaleFactor);
+        updateTranslation();
     }
 
     /**
@@ -261,7 +266,6 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      * @param card the card being revised
      * @return a panel with the grade buttons for the normal revision
      */
-    @Override
     public Pane getRegularRevisionButtonsPane(CardSuperMemo2 card) {
         HBox buttonBox = new HBox(5);
         buttonBox.getChildren().addAll(buttonGrade1, buttonGrade2, buttonGrade3, buttonGrade4, buttonGrade5);
@@ -275,7 +279,6 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      * @param card the card being revised
      * @return true if the revision process is complete, false otherwise
      */
-    @Override
     public boolean regularReviseCard(Button clickedButton, CardSuperMemo2 card) {
         int grade = 0;
 
@@ -325,7 +328,6 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      * @param card the card being revised
      * @return a panel with the grade buttons for the reverse revision
      */
-    @Override
     public Pane getReverseRevisionButtonsPane(CardSuperMemo2 card) {
         HBox buttonBox = new HBox(5);
         buttonBox.getChildren().addAll(reverseButtonGrade1, reverseButtonGrade2, reverseButtonGrade3, reverseButtonGrade4, reverseButtonGrade5);
@@ -339,7 +341,6 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
      * @param card the card being revised
      * @return true if the reverse revision process is complete, false otherwise
      */
-    @Override
     public boolean reverseReviseCard(Button clickedButton, CardSuperMemo2 card) {
         int grade = 0;
 
@@ -447,5 +448,17 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
         ImageUtil.setImageViewSize(reverseButtonGrade3Icon, 20 * scaleFactor, 20 * scaleFactor);
         ImageUtil.setImageViewSize(reverseButtonGrade4Icon, 20 * scaleFactor, 20 * scaleFactor);
         ImageUtil.setImageViewSize(reverseButtonGrade5Icon, 20 * scaleFactor, 20 * scaleFactor);
+    }
+
+    /**
+     * Initializes the default revision strategies for the algorithm.
+     */
+    @Override
+    public void initializeDefaultRevisionStrategies() {
+        revisionStrategies.clear();
+        RevisionStrategy<CardSuperMemo2> regularStrategy = new RegularTextModeRevisionStrategy<>(this::getRegularRevisionButtonsPane, this::regularReviseCard);
+        revisionStrategies.add(regularStrategy);
+        RevisionStrategy<CardSuperMemo2> reverseStrategy = new ReverseTextModeRevisionStrategy<>(this::getReverseRevisionButtonsPane, this::reverseReviseCard);
+        revisionStrategies.add(reverseStrategy);
     }
 }

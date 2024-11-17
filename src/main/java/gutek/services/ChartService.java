@@ -1,13 +1,15 @@
 package gutek.services;
 
-import gutek.domain.revisions.AvailableRevisions;
+import gutek.domain.charts.ChartEntry;
+import gutek.domain.revisions.RevisionStrategy;
 import gutek.entities.algorithms.RevisionAlgorithm;
 import gutek.entities.decks.DeckBase;
-import gutek.gui.charts.StatisticsChart;
+import gutek.domain.charts.charts.StatisticsChart;
 import javafx.scene.chart.Chart;
 import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Service class responsible for managing chart generation and translation of available ranges and chart types.
@@ -62,28 +64,39 @@ public class ChartService {
     }
 
     /**
-     * Retrieves a compatible chart based on the provided type index and time range index.
+     * Retrieves a selected chart that is compatible with the given deck.
      *
-     * @param typeIndex  The index of the chart type in the list of compatible charts.
-     * @param rangeIndex The index of the time range.
-     * @param deck       The deck for which the chart is generated.
-     * @return The generated {@link Chart} for the specified parameters.
+     * @param typeIndex          The index of the chart type to select.
+     * @param rangeIndex         The index of the time range to use for the chart.
+     * @param deck               The deck for which the chart is generated.
+     * @return A {@link Chart} object representing the selected chart.
      */
-    public Chart getCompatibleSelectedChart(int typeIndex, int rangeIndex, DeckBase deck) {
-        List<StatisticsChart> compatibleCharts = getCompatibleCharts(deck);
-        return compatibleCharts.get(typeIndex).getChart(AVAILABLE_RANGES[rangeIndex], deck);
+    public Chart getDeckCompatibleSelectedChart(int typeIndex, int rangeIndex, DeckBase deck) {
+        List<ChartEntry> compatibleCharts = getDeckCompatibleCharts(deck);
+        ChartEntry selectedEntry = compatibleCharts.get(typeIndex);
+        StatisticsChart selectedChart = selectedEntry.chart();
+        Integer revisionStrategyIndex = selectedEntry.revisionStrategyIndex();
+
+        return selectedChart.getChart(AVAILABLE_RANGES[rangeIndex], deck, revisionStrategyIndex);
     }
 
     /**
-     * Provides the titles of available charts compatible with the specified deck.
+     * Retrieves the titles of all charts compatible with the given deck, translated into the current locale.
      *
-     * @param deck The deck to filter compatible chart titles for.
-     * @return An array of chart titles as {@link String}.
+     * @param deck The deck for which the chart titles are retrieved.
+     * @return An array of translated chart titles as {@link String}.
      */
-    public String[] getCompatibleAvailableChartsTitles(DeckBase deck) {
-        return getCompatibleCharts(deck).stream()
-                .map(StatisticsChart::getChartTitle)
-                .toArray(String[]::new);
+    public String[] getDeckCompatibleAvailableChartsTitles(DeckBase deck) {
+        List<ChartEntry> compatibleCharts = getDeckCompatibleCharts(deck);
+        List<String> chartTitles = new ArrayList<>();
+
+        for (ChartEntry entry : compatibleCharts) {
+            StatisticsChart chart = entry.chart();
+            Integer revisionStrategyIndex = entry.revisionStrategyIndex();
+            chartTitles.add(chart.getChartTitle(deck, revisionStrategyIndex));
+        }
+
+        return chartTitles.toArray(new String[0]);
     }
 
     /**
@@ -98,22 +111,30 @@ public class ChartService {
     }
 
     /**
-     * Filters the available charts based on the deck's revision algorithm.
+     * Retrieves all charts that are compatible with the given deck.
+     * <p>
+     * Charts can be either independent of revision strategies or associated with specific revision strategies.
+     * </p>
      *
-     * @param deck The deck for which compatible charts are needed.
-     * @return A list of compatible {@link StatisticsChart} objects.
+     * @param deck The deck for which compatible charts are retrieved.
+     * @return A {@link List} of {@link ChartEntry} objects representing compatible charts.
      */
-    private List<StatisticsChart> getCompatibleCharts(DeckBase deck) {
+    private List<ChartEntry> getDeckCompatibleCharts(DeckBase deck) {
         RevisionAlgorithm<?> revisionAlgorithm = deck.getRevisionAlgorithm();
-        return availableCharts.stream()
-                .filter(chart -> {
-                    if (chart.isRevisionTypeIndependent()) {
-                        return true;
-                    }
-                    return AvailableRevisions.getAVAILABLE_REVISIONS().entrySet().stream()
-                            .anyMatch(entry -> entry.getKey().isInstance(revisionAlgorithm)
-                                    && chart.getSupportedRevisionType().equals(entry.getKey()));
-                })
-                .toList();
+        List<? extends RevisionStrategy<?>> revisionStrategies = revisionAlgorithm.getAvailableRevisionStrategies();
+
+        List<ChartEntry> compatibleCharts = new ArrayList<>();
+
+        for (StatisticsChart chart : availableCharts) {
+            if (chart.isRevisionStrategyIndependent()) {
+                compatibleCharts.add(new ChartEntry(chart, null));
+            } else {
+                for (int i = 0; i < revisionStrategies.size(); i++) {
+                    compatibleCharts.add(new ChartEntry(chart, i));
+                }
+            }
+        }
+
+        return compatibleCharts;
     }
 }

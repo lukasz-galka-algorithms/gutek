@@ -1,6 +1,7 @@
 package gutek.gui.controllers.deck;
 
-import gutek.domain.revisions.RegularTextModeRevision;
+import gutek.domain.revisions.RegularTextModeRevisionStrategy;
+import gutek.domain.revisions.RevisionStrategy;
 import gutek.entities.algorithms.RevisionAlgorithm;
 import gutek.entities.cards.CardBase;
 import gutek.entities.decks.DeckBase;
@@ -147,15 +148,15 @@ public class RevisionRegularFXMLController extends FXMLController {
     /**
      * Constructs a new `RevisionRegularFXMLController` for facilitating the regular revision of cards.
      *
-     * @param stage                 The main stage of the application.
-     * @param fxmlFileLoader        Utility for loading FXML files associated with this scene.
-     * @param translationService    Service for retrieving translations for the UI.
-     * @param menuBarFXMLController Controller for the main menu bar.
+     * @param stage                  The main stage of the application.
+     * @param fxmlFileLoader         Utility for loading FXML files associated with this scene.
+     * @param translationService     Service for retrieving translations for the UI.
+     * @param menuBarFXMLController  Controller for the main menu bar.
      * @param menuDeckFXMLController Controller for deck-specific menu actions.
-     * @param cardService           Service for managing cards.
-     * @param deckStatisticsService Service for managing deck statistics.
-     * @param cardRevisionService   Service for handling card revisions.
-     * @param deckService           Service for managing deck-related operations.
+     * @param cardService            Service for managing cards.
+     * @param deckStatisticsService  Service for managing deck statistics.
+     * @param cardRevisionService    Service for handling card revisions.
+     * @param deckService            Service for managing deck-related operations.
      */
     public RevisionRegularFXMLController(MainStage stage,
                                          FXMLFileLoader fxmlFileLoader,
@@ -231,7 +232,7 @@ public class RevisionRegularFXMLController extends FXMLController {
                     currentCard.getDeck().getRevisionAlgorithm().updateSize(stage.getStage().getWidth(), sectionHeight, scaleFactor);
                 }
             })).play();
-        }else{
+        } else {
             new Timeline(new KeyFrame(Duration.millis(20), e -> {
                 double sectionHeight = rootPane.getCenter().getBoundsInLocal().getHeight() / 3;
                 wordLabel.setPrefSize(stage.getStage().getWidth(), sectionHeight);
@@ -355,34 +356,66 @@ public class RevisionRegularFXMLController extends FXMLController {
     @SuppressWarnings("unchecked")
     private <T extends CardBase> Pane loadAlgorithmButtons() {
         RevisionAlgorithm<T> algorithm = (RevisionAlgorithm<T>) currentCard.getDeck().getRevisionAlgorithm();
-        algorithm.initializeGUI();
-        if(algorithm instanceof RegularTextModeRevision){
-            RegularTextModeRevision<T> regularTextModeRevision = (RegularTextModeRevision<T>) algorithm;
-            Pane panel = regularTextModeRevision.getRegularRevisionButtonsPane((T) currentCard);
-            algorithm.setTranslationService(translationService);
+        algorithm.setTranslationService(translationService);
+        algorithm.initializeGUI(stage.getStage().getWidth(), rootPane.getCenter().getBoundsInLocal().getHeight() / 3, stage.getStageScaleFactor());
 
-            panel.getChildren().forEach(node -> {
-                if (node instanceof Button button) {
-                    button.setOnAction(e -> {
-                        cardRevisionService.reviseRegular(currentCard, algorithmButtonContainer.getChildren().indexOf(button));
-                        if (currentCard.isNewCard()) {
-                            deckStatisticsService.newCardRevised(currentCard.getDeck().getDeckBaseStatistics().getIdDeckStatistics());
-                        }
-                        boolean cardRevisionFinished = regularTextModeRevision.regularReviseCard(button, (T) currentCard);
-                        if (cardRevisionFinished) {
-                            newCardsList.remove(currentCard);
-                            oldCardsList.remove(currentCard);
-                            deckStatisticsService.cardRevisedRegular(currentCard.getDeck().getDeckBaseStatistics().getIdDeckStatistics());
-                        }
-                        currentCard.setNewCard(false);
-                        cardService.saveCard(currentCard);
-                        handleNextCard();
-                    });
-                }
-            });
-            return panel;
+        List<RevisionStrategy<T>> strategies = algorithm.getAvailableRevisionStrategies();
+        for (RevisionStrategy<T> strategy : strategies) {
+            if (strategy instanceof RegularTextModeRevisionStrategy<T> regularStrategy) {
+                Pane panel = regularStrategy.getRevisionButtonsPane((T) currentCard);
+                setupButtonActions(panel, regularStrategy, (T) currentCard);
+                return panel;
+            }
         }
         return null;
+    }
+
+    /**
+     * Sets up action listeners for the buttons generated by the regular text mode revision strategy.
+     *
+     * @param panel           The panel containing the buttons.
+     * @param regularStrategy The regular text mode revision strategy.
+     * @param currentCard     The card currently being revised.
+     * @param <T>             The type of the card.
+     */
+    private <T extends CardBase> void setupButtonActions(Pane panel, RegularTextModeRevisionStrategy<T> regularStrategy, T currentCard) {
+        panel.getChildren().forEach(node -> {
+            if (node instanceof Button button) {
+                button.setOnAction(e -> handleButtonClick(button, regularStrategy, panel, currentCard));
+            }
+        });
+    }
+
+    /**
+     * Handles the button click event during the revision session.
+     * Updates the card revision state and loads the next card.
+     *
+     * @param button          The button that was clicked.
+     * @param regularStrategy The regular text mode revision strategy.
+     * @param panel           The panel containing the buttons.
+     * @param currentCard     The card currently being revised.
+     * @param <T>             The type of the card.
+     */
+    private <T extends CardBase> void handleButtonClick(Button button, RegularTextModeRevisionStrategy<T> regularStrategy, Pane panel, T currentCard) {
+        int buttonIndex = panel.getChildren().indexOf(button);
+        cardRevisionService.revise(currentCard, buttonIndex, regularStrategy);
+
+        if (currentCard.isNewCard()) {
+            deckStatisticsService.newCardRevised(currentCard.getDeck().getDeckBaseStatistics().getIdDeckStatistics());
+        }
+
+        boolean cardRevisionFinished = regularStrategy.reviseCard(button, currentCard);
+
+        if (cardRevisionFinished) {
+            newCardsList.remove(currentCard);
+            oldCardsList.remove(currentCard);
+            int strategyIndex = currentCard.getDeck().getRevisionAlgorithm().getRevisionStrategies().indexOf(regularStrategy);
+            deckStatisticsService.cardRevised(currentCard.getDeck().getDeckBaseStatistics().getIdDeckStatistics(), strategyIndex);
+        }
+
+        currentCard.setNewCard(false);
+        cardService.saveCard(currentCard);
+        handleNextCard();
     }
 
     /**

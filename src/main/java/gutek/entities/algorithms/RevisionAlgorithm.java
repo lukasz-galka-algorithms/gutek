@@ -1,10 +1,14 @@
 package gutek.entities.algorithms;
 
+import gutek.domain.revisions.RevisionStrategy;
 import gutek.entities.cards.CardBase;
 import gutek.services.TranslationService;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract class representing a revision algorithm for cards.
@@ -31,11 +35,16 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
     @Transient
     protected TranslationService translationService;
 
+    /** List of available revision strategies for this algorithm. */
+    @Transient
+    protected final List<RevisionStrategy<T>> revisionStrategies = new ArrayList<>();
+
     /**
-     * Default constructor that initializes default hyperparameters for the algorithm.
+     * Default constructor that initializes default hyperparameters and default revision strategies for the algorithm.
      */
     protected RevisionAlgorithm() {
         initializeDefaultHiperparameters();
+        initializeDefaultRevisionStrategies();
     }
 
     /**
@@ -60,9 +69,13 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
     public abstract void initializeDefaultHiperparameters();
 
     /**
-     * Initializes the GUI components.
+     * Initializes the graphical user interface (GUI) for the revision strategy.
+     *
+     * @param width       The width of the available area for the GUI components.
+     * @param height      The height of the available area for the GUI components.
+     * @param scaleFactor A scaling factor used to adjust the size of the components dynamically.
      */
-    public abstract void initializeGUI();
+    public abstract void initializeGUI(double width, double height, double scaleFactor);
 
     /**
      * Updates the size of UI components based on the provided dimensions and scale factor.
@@ -77,4 +90,18 @@ public abstract class RevisionAlgorithm<T extends CardBase>{
      * Updates the translations for the UI components.
      */
     public abstract void updateTranslation();
+
+    /**
+     * Returns the list of available revision strategies.
+     *
+     * @return a list of revision strategies
+     */
+    public List<RevisionStrategy<T>> getAvailableRevisionStrategies() {
+        return revisionStrategies;
+    }
+
+    /**
+     * Initializes the default revision strategies for the algorithm.
+     */
+    public abstract void initializeDefaultRevisionStrategies();
 }

@@ -1,5 +1,6 @@
 package gutek.gui.controllers.deck;
 
+import gutek.domain.revisions.RevisionStrategy;
 import gutek.entities.decks.DeckBase;
 import gutek.entities.decks.DeckBaseStatistics;
 import gutek.gui.controllers.FXMLController;
@@ -11,7 +12,6 @@ import gutek.services.DeckStatisticsService;
 import gutek.services.TranslationService;
 import gutek.utils.FXMLFileLoader;
 import gutek.gui.controls.NumberTextField;
-import gutek.domain.revisions.AvailableRevisions;
 import gutek.utils.ImageUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -64,31 +64,47 @@ public class RevisionFXMLController extends FXMLController {
     @FXML
     private NumberTextField newCardsPerDayTextField;
 
-    /** Scroll pane for displaying revision buttons. */
+    /**
+     * Scroll pane for displaying revision buttons.
+     */
     @FXML
     private ScrollPane scrollPane;
 
-    /** Container for holding the revision buttons and statistics. */
+    /**
+     * Container for holding the revision buttons and statistics.
+     */
     @FXML
     private VBox revisionButtonsContainer;
 
-    /** Map storing the buttons associated with each revision type. */
-    private final Map<Class<?>, Button> revisionButtons = new HashMap<>();
+    /**
+     * Map storing the buttons associated with each revision type.
+     */
+    private final Map<RevisionStrategy<?>, Button> revisionButtons = new HashMap<>();
 
-    /** Map storing the icons for each revision button. */
-    private final Map<Class<?>, ImageView> revisionButtonIcons = new HashMap<>();
+    /**
+     * Map storing the icons for each revision button.
+     */
+    private final Map<RevisionStrategy<?>, ImageView> revisionButtonIcons = new HashMap<>();
 
-    /** Map storing the labels for the names of new cards for each revision type. */
-    private final Map<Class<?>, Label> newCardsNameLabels = new HashMap<>();
+    /**
+     * Map storing the labels for the names of new cards for each revision type.
+     */
+    private final Map<RevisionStrategy<?>, Label> newCardsNameLabels = new HashMap<>();
 
-    /** Map storing the labels for the counts of new cards for each revision type. */
-    private final Map<Class<?>, Label> newCardsCountLabels = new HashMap<>();
+    /**
+     * Map storing the labels for the counts of new cards for each revision type.
+     */
+    private final Map<RevisionStrategy<?>, Label> newCardsCountLabels = new HashMap<>();
 
-    /** Map storing the labels for the names of old cards for each revision type. */
-    private final Map<Class<?>, Label> cardsNameLabels = new HashMap<>();
+    /**
+     * Map storing the labels for the names of old cards for each revision type.
+     */
+    private final Map<RevisionStrategy<?>, Label> cardsNameLabels = new HashMap<>();
 
-    /** Map storing the labels for the counts of old cards for each revision type. */
-    private final Map<Class<?>, Label> cardsCountLabels = new HashMap<>();
+    /**
+     * Map storing the labels for the counts of old cards for each revision type.
+     */
+    private final Map<RevisionStrategy<?>, Label> cardsCountLabels = new HashMap<>();
 
     /**
      * Listener for changes in the "new cards per day" field to update the value in the deck statistics.
@@ -123,13 +139,13 @@ public class RevisionFXMLController extends FXMLController {
     /**
      * Constructs a new `RevisionFXMLController` for managing card revisions in a deck.
      *
-     * @param stage               The main application stage.
-     * @param fxmlFileLoader      Utility for loading FXML files.
-     * @param translationService  Service for handling translations within this view.
-     * @param menuBarFXMLController Controller for the main menu bar.
+     * @param stage                  The main application stage.
+     * @param fxmlFileLoader         Utility for loading FXML files.
+     * @param translationService     Service for handling translations within this view.
+     * @param menuBarFXMLController  Controller for the main menu bar.
      * @param menuDeckFXMLController Controller for deck-specific menu actions.
-     * @param deckService         Service for managing decks.
-     * @param deckStatisticsService Service for managing deck statistics.
+     * @param deckService            Service for managing decks.
+     * @param deckStatisticsService  Service for managing deck statistics.
      */
     protected RevisionFXMLController(MainStage stage,
                                      FXMLFileLoader fxmlFileLoader,
@@ -217,7 +233,7 @@ public class RevisionFXMLController extends FXMLController {
             button.setPrefSize(200 * scaleFactor, 40 * scaleFactor);
         });
 
-        revisionButtonIcons.forEach((revisionType, icon) -> ImageUtil.setImageViewSize(icon, 20 * scaleFactor, 20 * scaleFactor));
+        revisionButtonIcons.values().forEach(icon -> ImageUtil.setImageViewSize(icon, 20 * scaleFactor, 20 * scaleFactor));
 
         revisionButtonsContainer.getChildren().forEach(node -> {
             if (node instanceof VBox revisionBox) {
@@ -238,18 +254,18 @@ public class RevisionFXMLController extends FXMLController {
         newCardsPerDayLabel.setText(translationService.getTranslation("deck_view.revise.new_cards_per_day"));
         String revisionString = "revision.";
 
-        newCardsNameLabels.forEach((revisionType, nameLabel) -> {
-            String translationKey = revisionString + AvailableRevisions.getAVAILABLE_REVISIONS().get(revisionType).translationKey() + ".new_cards";
+        newCardsNameLabels.forEach((revisionStrategy, nameLabel) -> {
+            String translationKey = revisionString + revisionStrategy.getRevisionStrategyTranslationKey() + ".new_cards";
             nameLabel.setText(translationService.getTranslation(translationKey) + ": ");
         });
 
-        cardsNameLabels.forEach((revisionType, nameLabel) -> {
-            String translationKey = revisionString + AvailableRevisions.getAVAILABLE_REVISIONS().get(revisionType).translationKey() + ".old_cards";
+        cardsNameLabels.forEach((revisionStrategy, nameLabel) -> {
+            String translationKey = revisionString + revisionStrategy.getRevisionStrategyTranslationKey() + ".old_cards";
             nameLabel.setText(translationService.getTranslation(translationKey) + ": ");
         });
 
-        revisionButtons.forEach((revisionType, button) -> {
-            String translationKey = revisionString + AvailableRevisions.getAVAILABLE_REVISIONS().get(revisionType).translationKey() + ".revision_button";
+        revisionButtons.forEach((revisionStrategy, button) -> {
+            String translationKey = revisionString + revisionStrategy.getRevisionStrategyTranslationKey() + ".revision_button";
             button.setText(translationService.getTranslation(translationKey));
         });
     }
@@ -262,7 +278,7 @@ public class RevisionFXMLController extends FXMLController {
         try {
             int newCardsPerDay = Integer.parseInt(newCardsPerDayTextField.getText());
             Optional<DeckBaseStatistics> statOpt = deckStatisticsService.loadDeckStatistics(deck.getDeckBaseStatistics().getIdDeckStatistics());
-            if(statOpt.isPresent()){
+            if (statOpt.isPresent()) {
                 DeckBaseStatistics stat = statOpt.get();
                 stat.setNewCardsPerDay(newCardsPerDay);
                 deckStatisticsService.saveDeckStatistics(stat);
@@ -283,13 +299,9 @@ public class RevisionFXMLController extends FXMLController {
     public void updateView() {
         updateNewCardsPerDay();
 
-        for (Map.Entry<Class<?>, Label> entry : cardsCountLabels.entrySet()) {
-            Class<?> revisionInterface = entry.getKey();
-            Label countLabel = entry.getValue();
-
-            AvailableRevisions.RevisionInfo revisionInfo = AvailableRevisions.getAVAILABLE_REVISIONS().get(revisionInterface);
-            int updatedCount = revisionInfo.countRevisionCardsFunction().apply(deckService, deck);
-            countLabel.setText(String.valueOf(updatedCount));
+        for (Map.Entry<RevisionStrategy<?>, Label> entry : cardsCountLabels.entrySet()) {
+            int updatedCount = entry.getKey().getRevisionStrategyCardsCount(deckService, deck);
+            entry.getValue().setText(String.valueOf(updatedCount));
         }
     }
 
@@ -307,38 +319,36 @@ public class RevisionFXMLController extends FXMLController {
         cardsNameLabels.clear();
         cardsCountLabels.clear();
 
-        AvailableRevisions.getAVAILABLE_REVISIONS().forEach((revisionType, revisionInfo) -> {
-            if (revisionType.isInstance(deck.getRevisionAlgorithm())) {
-                Button revisionButton = new Button();
-                revisionButton.setOnAction(e -> stage.setScene(revisionInfo.scene(), deck));
-                revisionButton.setTextFill(revisionInfo.color());
-                revisionButtons.put(revisionType, revisionButton);
+        deck.getRevisionAlgorithm().getAvailableRevisionStrategies().forEach(revisionStrategy -> {
+            Button revisionButton = new Button();
+            revisionButton.setOnAction(e -> stage.setScene(revisionStrategy.getRevisionStrategyScene(), deck));
+            revisionButton.setTextFill(revisionStrategy.getRevisionStrategyColor());
+            revisionButtons.put(revisionStrategy, revisionButton);
 
-                ImageView buttonIcon = ImageUtil.createImageView("/images/icons/revision.png");
-                revisionButton.setGraphic(buttonIcon);
-                revisionButtonIcons.put(revisionType, buttonIcon);
+            ImageView buttonIcon = ImageUtil.createImageView("/images/icons/revision.png");
+            revisionButton.setGraphic(buttonIcon);
+            revisionButtonIcons.put(revisionStrategy, buttonIcon);
 
-                Label newCardsNameLabel = new Label();
-                newCardsNameLabel.setTextFill(Color.BLUE);
-                newCardsNameLabel.setAlignment(Pos.CENTER_RIGHT);
-                Label newCardsCountLabel = new Label();
-                newCardsCountLabel.setTextFill(Color.BLUE);
-                newCardsNameLabels.put(revisionType, newCardsNameLabel);
-                newCardsCountLabels.put(revisionType, newCardsCountLabel);
-                Label cardsNameLabel = new Label();
-                cardsNameLabel.setTextFill(revisionInfo.color());
-                cardsNameLabel.setAlignment(Pos.CENTER_RIGHT);
-                Label cardsCountLabel = new Label();
-                cardsCountLabel.setTextFill(revisionInfo.color());
-                cardsNameLabels.put(revisionType, cardsNameLabel);
-                cardsCountLabels.put(revisionType, cardsCountLabel);
+            Label newCardsNameLabel = new Label();
+            newCardsNameLabel.setTextFill(Color.BLUE);
+            newCardsNameLabel.setAlignment(Pos.CENTER_RIGHT);
+            Label newCardsCountLabel = new Label();
+            newCardsCountLabel.setTextFill(Color.BLUE);
+            newCardsNameLabels.put(revisionStrategy, newCardsNameLabel);
+            newCardsCountLabels.put(revisionStrategy, newCardsCountLabel);
+            Label cardsNameLabel = new Label();
+            cardsNameLabel.setTextFill(revisionStrategy.getRevisionStrategyColor());
+            cardsNameLabel.setAlignment(Pos.CENTER_RIGHT);
+            Label cardsCountLabel = new Label();
+            cardsCountLabel.setTextFill(revisionStrategy.getRevisionStrategyColor());
+            cardsNameLabels.put(revisionStrategy, cardsNameLabel);
+            cardsCountLabels.put(revisionStrategy, cardsCountLabel);
 
-                HBox revisionStatBox = new HBox(newCardsNameLabel, newCardsCountLabel, cardsNameLabel, cardsCountLabel);
-                revisionStatBox.setAlignment(Pos.CENTER);
-                VBox revisionBox = new VBox(revisionStatBox, revisionButton);
-                revisionBox.setAlignment(Pos.CENTER);
-                revisionButtonsContainer.getChildren().add(revisionBox);
-            }
+            HBox revisionStatBox = new HBox(newCardsNameLabel, newCardsCountLabel, cardsNameLabel, cardsCountLabel);
+            revisionStatBox.setAlignment(Pos.CENTER);
+            VBox revisionBox = new VBox(revisionStatBox, revisionButton);
+            revisionBox.setAlignment(Pos.CENTER);
+            revisionButtonsContainer.getChildren().add(revisionBox);
         });
 
         scrollPane.setContent(revisionButtonsContainer);

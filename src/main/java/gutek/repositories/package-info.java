@@ -8,6 +8,7 @@
  *     <li>Deck repository.</li>
  *     <li>Deck statistics repository.</li>
  *     <li>Revision algorithms repository.</li>
+ *     <li>Revision statistics counts repository.</li>
  * </ul>
  */
 package gutek.repositories;

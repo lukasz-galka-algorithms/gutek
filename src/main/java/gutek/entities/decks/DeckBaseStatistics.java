@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import static gutek.services.ChartService.MAX_RANGE;
 
@@ -38,11 +40,14 @@ public class DeckBaseStatistics {
     @Lob
     private int[] revisedForTheFirstTime = new int[MAX_RANGE];
 
-    /** Array tracking the number of regular revisions over time. */
-    @Lob
-    private int[] regularRevision = new int[MAX_RANGE];
-
-    /** Array tracking the number of reverse revisions over time. */
-    @Lob
-    private int[] reverseRevision = new int[MAX_RANGE];
+    /**
+     * A map that stores the revision counts for different revision strategies associated with this deck's statistics.
+     * <p>
+     * Each entry in the map corresponds to a specific revision strategy, identified by its index
+     * (key in the map), and holds the associated {@link RevisionCounts} object.
+     * </p>
+     */
+    @OneToMany(mappedBy = "deckBaseStatistics", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @MapKey(name = "strategyIndex")
+    private Map<Integer, RevisionCounts> revisionCounts = new HashMap<>();
 }

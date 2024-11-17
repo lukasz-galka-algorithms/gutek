@@ -1,8 +1,9 @@
 package gutek.entities.algorithms;
 
-import gutek.domain.revisions.RegularTextModeRevision;
+import gutek.domain.revisions.RegularTextModeRevisionStrategy;
 import gutek.domain.algorithms.AlgorithmHiperparameter;
-import gutek.domain.revisions.ReverseTextModeRevision;
+import gutek.domain.revisions.ReverseTextModeRevisionStrategy;
+import gutek.domain.revisions.RevisionStrategy;
 import gutek.entities.cards.CardConstantCoefficient;
 import gutek.utils.ImageUtil;
 import gutek.utils.validation.Min;
@@ -27,9 +28,7 @@ import java.time.LocalDate;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
-public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<CardConstantCoefficient>
-        implements RegularTextModeRevision<CardConstantCoefficient>,
-        ReverseTextModeRevision<CardConstantCoefficient> {
+public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<CardConstantCoefficient>{
     /**
      * Coefficient used in the normal revision process.
      */
@@ -203,10 +202,14 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     }
 
     /**
-     * Initializes the GUI components.
+     * Initializes the graphical user interface (GUI) for the revision strategy.
+     *
+     * @param width       The width of the available area for the GUI components.
+     * @param height      The height of the available area for the GUI components.
+     * @param scaleFactor A scaling factor used to adjust the size of the components dynamically.
      */
     @Override
-    public void initializeGUI() {
+    public void initializeGUI(double width, double height, double scaleFactor) {
         this.button1 = new Button();
         this.button2 = new Button();
         this.button3 = new Button();
@@ -216,6 +219,8 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
         this.reverseButton2 = new Button();
 
         initializeIcons();
+        updateSize(width, height, scaleFactor);
+        updateTranslation();
     }
 
     /**
@@ -265,7 +270,6 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * @param card the card being revised
      * @return a panel containing the revision buttons
      */
-    @Override
     public Pane getRegularRevisionButtonsPane(CardConstantCoefficient card) {
         HBox buttonBox = new HBox(4);
         buttonBox.getChildren().addAll(button1, button2, button3, button4);
@@ -279,7 +283,6 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * @param card          the card being revised
      * @return true if the revision process for the card is finished, false otherwise
      */
-    @Override
     public boolean regularReviseCard(Button clickedButton, CardConstantCoefficient card) {
         boolean cardRevisionFinished = false;
         double baseRevisionTime = card.getBaseRevisionTime();
@@ -316,7 +319,6 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * @param card the card being revised
      * @return a panel containing the reverse revision buttons
      */
-    @Override
     public Pane getReverseRevisionButtonsPane(CardConstantCoefficient card) {
         HBox buttonBox = new HBox(2);
         buttonBox.getChildren().addAll(reverseButton1, reverseButton2);
@@ -330,7 +332,6 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
      * @param card          the card being revised
      * @return true if the revision process for the card is finished, false otherwise
      */
-    @Override
     public boolean reverseReviseCard(Button clickedButton, CardConstantCoefficient card) {
         boolean cardRevisionFinished = false;
         double baseReverseRevisionTime = card.getBaseReverseRevisionTime();
@@ -403,5 +404,17 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
         ImageUtil.setImageViewSize(button4Icon, 20 * scaleFactor, 20 * scaleFactor);
         ImageUtil.setImageViewSize(reverseButton1Icon, 20 * scaleFactor, 20 * scaleFactor);
         ImageUtil.setImageViewSize(reverseButton2Icon, 20 * scaleFactor, 20 * scaleFactor);
+    }
+
+    /**
+     * Initializes the default revision strategies for the algorithm.
+     */
+    @Override
+    public void initializeDefaultRevisionStrategies() {
+        revisionStrategies.clear();
+        RevisionStrategy<CardConstantCoefficient> regularStrategy = new RegularTextModeRevisionStrategy<>(this::getRegularRevisionButtonsPane, this::regularReviseCard);
+        revisionStrategies.add(regularStrategy);
+        RevisionStrategy<CardConstantCoefficient> reverseStrategy = new ReverseTextModeRevisionStrategy<>(this::getReverseRevisionButtonsPane, this::reverseReviseCard);
+        revisionStrategies.add(reverseStrategy);
     }
 }

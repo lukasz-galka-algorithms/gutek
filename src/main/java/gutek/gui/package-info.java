@@ -1,7 +1,6 @@
 /**
  * This package contains the main graphical user interface (GUI) components, organized into several sub-packages:
  * <ul>
- *     <li>charts - Classes for creating and managing charts used in the application.</li>
  *     <li>controllers - Controllers for handling various JavaFX controls, including:
  *         <ul>
  *             <li>Controllers for ListView JavaFX controls.</li>

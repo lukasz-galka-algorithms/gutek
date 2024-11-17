@@ -5,4 +5,4 @@
  *     <li>Each specific chart class inherits from StatisticsChart and represents a distinct type of chart displayed in the application.</li>
  * </ul>
  */
-package gutek.gui.charts;
+package gutek.domain.charts.charts;

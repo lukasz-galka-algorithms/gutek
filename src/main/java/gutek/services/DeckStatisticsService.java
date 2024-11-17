@@ -1,8 +1,10 @@
 package gutek.services;
 
 import gutek.entities.decks.DeckBaseStatistics;
+import gutek.entities.decks.RevisionCounts;
 import gutek.repositories.CardBaseRepository;
 import gutek.repositories.DeckBaseStatisticsRepository;
+import gutek.repositories.RevisionCountsRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -25,6 +27,11 @@ public class DeckStatisticsService {
      * Repository for accessing deck statistics.
      */
     private final DeckBaseStatisticsRepository deckBaseStatisticsRepository;
+
+    /**
+     * Repository for managing revision counts.
+     */
+    private final RevisionCountsRepository revisionCountsRepository;
 
     /**
      * Updates the statistics for the given deck if they are not up-to-date.
@@ -53,32 +60,40 @@ public class DeckStatisticsService {
      */
     private void shiftStatistics(DeckBaseStatistics statistics, int daysBetween) {
         int[] revisedForTheFirstTime = statistics.getRevisedForTheFirstTime();
-        int[] regularRevision = statistics.getRegularRevision();
-        int[] reverseRevision = statistics.getReverseRevision();
         int range = MAX_RANGE;
 
+        shiftArray(revisedForTheFirstTime, daysBetween, range);
+        statistics.setRevisedForTheFirstTime(revisedForTheFirstTime);
+
+        for (RevisionCounts revisionCount : statistics.getRevisionCounts().values()) {
+            int[] counts = revisionCount.getCounts();
+            shiftArray(counts, daysBetween, range);
+            revisionCount.setCounts(counts);
+            revisionCountsRepository.save(revisionCount);
+        }
+    }
+
+    /**
+     * Shifts the contents of an array forward by the specified number of days.
+     * Older values are discarded, and new slots are filled with zeros.
+     *
+     * @param array The array to shift.
+     * @param daysBetween The number of days to shift.
+     * @param range The range of the array.
+     */
+    private void shiftArray(int[] array, int daysBetween, int range) {
         if (daysBetween >= range) {
             for (int i = 0; i < range; i++) {
-                revisedForTheFirstTime[i] = 0;
-                regularRevision[i] = 0;
-                reverseRevision[i] = 0;
+                array[i] = 0;
             }
         } else {
             for (int i = range - 1; i >= daysBetween; i--) {
-                revisedForTheFirstTime[i] = revisedForTheFirstTime[i - daysBetween];
-                regularRevision[i] = regularRevision[i - daysBetween];
-                reverseRevision[i] = reverseRevision[i - daysBetween];
+                array[i] = array[i - daysBetween];
             }
             for (int i = 0; i < daysBetween; i++) {
-                revisedForTheFirstTime[i] = 0;
-                regularRevision[i] = 0;
-                reverseRevision[i] = 0;
+                array[i] = 0;
             }
         }
-
-        statistics.setRevisedForTheFirstTime(revisedForTheFirstTime);
-        statistics.setRegularRevision(regularRevision);
-        statistics.setReverseRevision(reverseRevision);
     }
 
     /**
@@ -111,27 +126,33 @@ public class DeckStatisticsService {
     }
 
     /**
-     * Returns the counts of cards that underwent regular revision.
+     * Returns the revision counts for a specific revision strategy in a given deck.
      *
      * @param idDeckStatistics ID of the deck statistics.
-     * @return Array of counts for regular revision.
+     * @param strategyIndex    The index of the revision strategy.
+     * @return An array of revision counts for the specified strategy.
      */
-    public int[] getRegularRevisionCounts(Long idDeckStatistics){
+    public int[] getRevisionCounts(Long idDeckStatistics, Integer strategyIndex){
         updateStatisticsForToday(idDeckStatistics);
         Optional<DeckBaseStatistics> updatedStatistics = deckBaseStatisticsRepository.findById(idDeckStatistics);
-        return updatedStatistics.map(DeckBaseStatistics::getRegularRevision).orElse(null);
-    }
+        if (updatedStatistics.isPresent()){
+            DeckBaseStatistics stat = updatedStatistics.get();
+            if (strategyIndex < 0 || strategyIndex >= stat.getDeck().getRevisionAlgorithm().getAvailableRevisionStrategies().size()) {
+                throw new IllegalArgumentException("Strategy index " + strategyIndex + " is not supported by the deck.");
+            }
 
-    /**
-     * Returns the counts of cards that underwent reverse revision.
-     *
-     * @param idDeckStatistics ID of the deck statistics.
-     * @return Array of counts for reverse revision.
-     */
-    public int[] getReverseRevisionCounts(Long idDeckStatistics){
-        updateStatisticsForToday(idDeckStatistics);
-        Optional<DeckBaseStatistics> updatedStatistics = deckBaseStatisticsRepository.findById(idDeckStatistics);
-        return updatedStatistics.map(DeckBaseStatistics::getReverseRevision).orElse(null);
+            RevisionCounts revisionCount = stat.getRevisionCounts().computeIfAbsent(strategyIndex, k -> {
+                RevisionCounts rc = new RevisionCounts();
+                rc.setStrategyIndex(strategyIndex);
+                rc.setDeckBaseStatistics(stat);
+                rc.setCounts(new int[MAX_RANGE]);
+                revisionCountsRepository.save(rc);
+                return rc;
+            });
+
+            return revisionCount.getCounts();
+        }
+        return new int[0];
     }
 
     /**
@@ -150,32 +171,28 @@ public class DeckStatisticsService {
     }
 
     /**
-     * Increments the count of regular revision for today.
+     * Updates the statistics for a card revision for a specific strategy.
      *
      * @param idDeckStatistics ID of the deck statistics.
+     * @param strategyIndex    The index of the revision strategy.
      */
-    public void cardRevisedRegular(Long idDeckStatistics){
+    public void cardRevised(Long idDeckStatistics, int strategyIndex){
         updateStatisticsForToday(idDeckStatistics);
         Optional<DeckBaseStatistics> updatedStatistics = deckBaseStatisticsRepository.findById(idDeckStatistics);
         if (updatedStatistics.isPresent()){
             DeckBaseStatistics stat = updatedStatistics.get();
-            stat.getRegularRevision()[0]++;
-            saveDeckStatistics(stat);
-        }
-    }
-
-    /**
-     * Increments the count of reverse revision for today.
-     *
-     * @param idDeckStatistics ID of the deck statistics.
-     */
-    public void cardRevisedReverse(Long idDeckStatistics){
-        updateStatisticsForToday(idDeckStatistics);
-        Optional<DeckBaseStatistics> updatedStatistics = deckBaseStatisticsRepository.findById(idDeckStatistics);
-        if (updatedStatistics.isPresent()){
-            DeckBaseStatistics stat = updatedStatistics.get();
-            stat.getReverseRevision()[0]++;
-            saveDeckStatistics(stat);
+            if (strategyIndex < 0 || strategyIndex >= stat.getDeck().getRevisionAlgorithm().getAvailableRevisionStrategies().size()) {
+                throw new IllegalArgumentException("Strategy index " + strategyIndex + " is not supported by the deck.");
+            }
+            RevisionCounts revisionCount = stat.getRevisionCounts().computeIfAbsent(strategyIndex, k -> {
+                RevisionCounts rc = new RevisionCounts();
+                rc.setStrategyIndex(strategyIndex);
+                rc.setDeckBaseStatistics(stat);
+                rc.setCounts(new int[MAX_RANGE]);
+                return rc;
+            });
+            revisionCount.getCounts()[0]++;
+            revisionCountsRepository.save(revisionCount);
         }
     }
 

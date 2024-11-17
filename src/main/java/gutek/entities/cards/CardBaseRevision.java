@@ -30,9 +30,8 @@ public class CardBaseRevision {
     /** The index of the button pressed during the revision. */
     protected Integer pressedButtonIndex;
 
-    /** The type of revision (e.g., normal or reverse). */
-    @Enumerated(EnumType.STRING)
-    protected CardRevisionType cardRevisionType;
+    /** The class name of the revision strategy that handled the revision.*/
+    protected String strategyClassName;
 
     /** The card that was revised during this revision event. */
     @ManyToOne
