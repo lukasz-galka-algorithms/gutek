@@ -1,5 +1,10 @@
 gutek
 gutek.config
+gutek.domain
+gutek.domain.algorithms
+gutek.domain.charts
+gutek.domain.charts.charts
+gutek.domain.revisions
 gutek.entities
 gutek.entities.algorithms
 gutek.entities.cards
@@ -7,7 +12,6 @@ gutek.entities.decks
 gutek.entities.languages
 gutek.entities.users
 gutek.gui
-gutek.gui.charts
 gutek.gui.controllers
 gutek.gui.controllers.controls
 gutek.gui.controllers.deck

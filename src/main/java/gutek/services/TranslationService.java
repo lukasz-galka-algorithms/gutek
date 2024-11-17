@@ -133,6 +133,7 @@ public class TranslationService {
      * @param availableLocales   The list of available locales to be populated.
      * @param processedResources The set of resources that have already been processed.
      * @throws URISyntaxException If the URL syntax is incorrect.
+     * @throws IOException        If an I/O error occurs while accessing the resource.
      */
     private void processResource(URL resourceUrl, List<Locale> availableLocales, Set<String> processedResources) throws URISyntaxException, IOException {
         if (resourceUrl != null) {
@@ -174,6 +175,7 @@ public class TranslationService {
      * @param resourceUrl        The URL of the resource.
      * @param availableLocales   The list of available locales to be populated.
      * @param processedResources The set of resources that have already been processed.
+     * @throws IOException        If an I/O error occurs while accessing the resource.
      */
     private void handleJarProtocol(URL resourceUrl, List<Locale> availableLocales, Set<String> processedResources) throws IOException {
         String fullPath = resourceUrl.getPath();
@@ -190,6 +192,7 @@ public class TranslationService {
      * @param fullPath           The full path of the resource URL.
      * @param availableLocales   The list of available locales to be populated.
      * @param processedResources The set of resources that have already been processed.
+     * @throws IOException        If an I/O error occurs while accessing the resource.
      */
     private void handleNestedJar(String fullPath, List<Locale> availableLocales, Set<String> processedResources) throws IOException {
         int lastExclamation = fullPath.lastIndexOf("!");
@@ -207,6 +210,7 @@ public class TranslationService {
      * @param fullPath           The full path of the resource URL.
      * @param availableLocales   The list of available locales to be populated.
      * @param processedResources The set of resources that have already been processed.
+     * @throws IOException        If an I/O error occurs while accessing the resource.
      */
     private void handleStandardJar(String fullPath, List<Locale> availableLocales, Set<String> processedResources) throws IOException {
         String jarPath = decodePath(fullPath.substring(5, fullPath.lastIndexOf("!")));
