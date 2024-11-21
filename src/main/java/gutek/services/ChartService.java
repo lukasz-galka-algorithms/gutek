@@ -6,6 +6,7 @@ import gutek.entities.algorithms.RevisionAlgorithm;
 import gutek.entities.decks.DeckBase;
 import gutek.domain.charts.charts.StatisticsChart;
 import javafx.scene.chart.Chart;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +21,7 @@ public class ChartService {
     /**
      * Array of available time ranges for generating charts, in days.
      */
+    @Getter
     private static final Integer[] AVAILABLE_RANGES = new Integer[]{
             31, 91, 181, 361, 721, 1081
     };

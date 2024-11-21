@@ -74,13 +74,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- H2 database for tests -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>test</scope>
-        </dependency>
-
         <!-- AssertJ -->
         <dependency>
             <groupId>org.assertj</groupId>

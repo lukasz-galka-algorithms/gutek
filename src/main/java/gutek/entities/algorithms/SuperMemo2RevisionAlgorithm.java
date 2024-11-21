@@ -344,15 +344,15 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
     public boolean reverseReviseCard(Button clickedButton, CardSuperMemo2 card) {
         int grade = 0;
 
-        if (clickedButton == buttonGrade1) {
+        if (clickedButton == reverseButtonGrade1) {
             grade = 1;
-        } else if (clickedButton == buttonGrade2) {
+        } else if (clickedButton == reverseButtonGrade2) {
             grade = 2;
-        } else if (clickedButton == buttonGrade3) {
+        } else if (clickedButton == reverseButtonGrade3) {
             grade = 3;
-        } else if (clickedButton == buttonGrade4) {
+        } else if (clickedButton == reverseButtonGrade4) {
             grade = 4;
-        } else if (clickedButton == buttonGrade5) {
+        } else if (clickedButton == reverseButtonGrade5) {
             grade = 5;
         }
 
