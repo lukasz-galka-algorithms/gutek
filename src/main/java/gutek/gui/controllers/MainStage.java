@@ -161,7 +161,7 @@ public class MainStage{
             stage.getScene().setRoot(new javafx.scene.Group());
         }
 
-        this.stage.setScene(new Scene(controller.root));
+        this.stage.setScene(new Scene(controller.getRoot()));
 
         Platform.runLater(() -> {
             this.stage.setX(currentX);

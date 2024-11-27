@@ -12,7 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import org.springframework.stereotype.Component;
 import java.util.*;
-import java.util.List;
 
 /**
  * Controller for selecting the application's language.

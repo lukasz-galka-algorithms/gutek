@@ -25,7 +25,7 @@ public class CardSuperMemo2 extends CardBase {
     protected int reverseRepetition;
 
     /** Interval (in days) for the next regular revision. */
-    protected int interval;
+    protected int regularInterval;
 
     /** Interval (in days) for the next reverse revision. */
     protected int reverseInterval;
@@ -68,7 +68,7 @@ public class CardSuperMemo2 extends CardBase {
      */
     public void setRevisionDefault(double easinessFactor){
         this.repetition = 0;
-        this.interval = 1;
+        this.regularInterval = 1;
         this.incorrectCounter = 0;
         this.easinessFactor = easinessFactor;
     }
@@ -124,10 +124,10 @@ public class CardSuperMemo2 extends CardBase {
     /**
      * Sets the interval (in days) for the next regular revision, ensuring it is at least 1 day.
      *
-     * @param interval the interval in days
+     * @param regularInterval the interval in days
      */
-    public void setInterval(int interval) {
-        this.interval = Math.max(interval, 1);
+    public void setRegularInterval(int regularInterval) {
+        this.regularInterval = Math.max(regularInterval, 1);
     }
 
     /**

@@ -14,7 +14,6 @@ import java.lang.annotation.Target;
 public @interface NotEmpty {
     /**
      * The key for the translation message to be used when the field is empty.
-     *
      * The default message key is "validation.not_empty".
      *
      * @return the message translation key.

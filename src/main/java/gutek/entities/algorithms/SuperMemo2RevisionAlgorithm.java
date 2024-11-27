@@ -298,18 +298,18 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
             card.setRepetition(card.getRepetition() + 1);
 
             if (card.getRepetition() == 1) {
-                card.setInterval(1);
+                card.setRegularInterval(1);
             } else if (card.getRepetition() == 2) {
-                card.setInterval(6);
+                card.setRegularInterval(6);
             } else {
-                double newInterval = card.getInterval() * card.getEasinessFactor();
-                card.setInterval((int) Math.round(newInterval));
+                double newInterval = card.getRegularInterval() * card.getEasinessFactor();
+                card.setRegularInterval((int) Math.round(newInterval));
             }
 
             double newEasinessFactor = card.getEasinessFactor() + (0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02));
             card.setEasinessFactor(newEasinessFactor);
 
-            card.setNextRegularRevisionDate(LocalDate.now().plusDays(card.getInterval()));
+            card.setNextRegularRevisionDate(LocalDate.now().plusDays(card.getRegularInterval()));
         } else {
             card.setIncorrectCounter(card.getIncorrectCounter() + 1);
 

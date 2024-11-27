@@ -14,7 +14,6 @@ import java.lang.annotation.Target;
 public @interface NotNull {
     /**
      * The key for the translation message to be used when the field is null.
-     *
      * The default message key is "validation.not_null".
      *
      * @return the message translation key.

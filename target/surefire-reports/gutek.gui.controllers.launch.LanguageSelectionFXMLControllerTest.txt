@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: gutek.gui.controllers.launch.LanguageSelectionFXMLControllerTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.563 s -- in gutek.gui.controllers.launch.LanguageSelectionFXMLControllerTest

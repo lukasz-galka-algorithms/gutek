@@ -79,6 +79,7 @@ public class AppearanceTimeRevisionChart extends StatisticsChart {
      * @param <T> the type of the cards being revised, extending {@link CardBase}
      * @return an array where each index represents the number of cards scheduled for revision on a specific day
      */
+    @SuppressWarnings("unchecked")
     private <T extends CardBase> int[] countRevisionCardsPerDay(int range, DeckBase deck, Integer revisionStrategyIndex) {
         int[] cardsPerDay = new int[range];
 

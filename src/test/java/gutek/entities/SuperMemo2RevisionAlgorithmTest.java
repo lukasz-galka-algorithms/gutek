@@ -98,7 +98,7 @@ class SuperMemo2RevisionAlgorithmTest {
     void testRegularReviseCard_GoodGrade() {
         // Arrange
         when(mockCard.getRepetition()).thenReturn(2);
-        when(mockCard.getInterval()).thenReturn(6);
+        when(mockCard.getRegularInterval()).thenReturn(6);
         when(mockCard.getEasinessFactor()).thenReturn(2.5);
 
         // Act
@@ -107,7 +107,7 @@ class SuperMemo2RevisionAlgorithmTest {
         // Assert
         assertTrue(result);
         verify(mockCard).setRepetition(3);
-        verify(mockCard).setInterval(6);
+        verify(mockCard).setRegularInterval(6);
         verify(mockCard).setEasinessFactor(2.5);
         verify(mockCard).setNextRegularRevisionDate(LocalDate.now().plusDays(6));
     }
