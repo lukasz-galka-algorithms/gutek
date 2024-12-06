@@ -32,6 +32,8 @@ To build and run this application, you will need the following tools installed o
 
 4. **Lombok Plugin**: If you plan to develop using an IDE, ensure the `Lombok` plugin is installed to support Lombok annotations.
 
+5. **JavaFX Plugin**: The project uses JavaFX for building the graphical user interface. If your IDE does not natively support JavaFX, you may need to install appropriate plugins.
+
 ## How to Use
 
 1. **Clone the repository**:
