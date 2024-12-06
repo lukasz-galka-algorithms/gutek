@@ -30,6 +30,8 @@ To build and run this application, you will need the following tools installed o
 3. **Java Development Kit (JDK)**: Required to compile and run the application.
     - Recommended version: `JDK 21` or newer (Java 21+ is supported)
 
+4. **Lombok Plugin**: If you plan to develop using an IDE, ensure the `Lombok` plugin is installed to support Lombok annotations.
+
 ## How to Use
 
 1. **Clone the repository**:
@@ -41,8 +43,17 @@ To build and run this application, you will need the following tools installed o
     mvn package
 3. **Run the application**: To run the application, use the following command in the terminal:
     ```bash
-   java -jar target/gutek-1.0-exec.jar
-
+   java -jar target/gutek-1.0.jar
+4. **Precompiled releases**:
+    - Precompiled versions of the application are available in the `releases` directory of the repository.
+    - To run a precompiled version:
+      - Download the desired release from the `releases` directory.
+      - Navigate to the directory containing the downloaded `.jar` file.
+      - Run the application using
+      ```bash
+      java -jar gutek.jar
+      ```
+      
 ## Documentation
 
 The documentation for the framework is organized as follows:
