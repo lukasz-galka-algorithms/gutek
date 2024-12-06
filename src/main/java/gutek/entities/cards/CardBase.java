@@ -17,6 +17,13 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
+@Table(
+        indexes = {
+                @Index(name = "idx_front", columnList = "front"),
+                @Index(name = "idx_deck", columnList = "deck_idDeck"),
+                @Index(name = "idx_front_deck", columnList = "front, deck_idDeck")
+        }
+)
 public class CardBase{
 
     /** Unique identifier for the card. */

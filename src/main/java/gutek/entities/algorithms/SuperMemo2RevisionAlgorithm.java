@@ -172,6 +172,7 @@ public class SuperMemo2RevisionAlgorithm extends RevisionAlgorithm<CardSuperMemo
     /**
      * Initializes default values for the algorithm's hyperparameters.
      */
+    @Override
     public void initializeDefaultHiperparameters() {
         this.initialEasinessFactor = 2.5;
         this.incorrectAnswerThreshold = 3;

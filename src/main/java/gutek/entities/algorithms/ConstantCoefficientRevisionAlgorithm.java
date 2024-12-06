@@ -189,6 +189,7 @@ public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<Card
     /**
      * Initializes the default values for the algorithm's hyperparameters.
      */
+    @Override
     public void initializeDefaultHiperparameters() {
         this.coefficient1 = 0.25;
         this.coefficient2 = 0.5;

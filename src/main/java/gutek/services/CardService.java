@@ -79,6 +79,18 @@ public class CardService {
     }
 
     /**
+     * Saves a list of cards to the database.
+     *
+     * @param cardsToSave the list of cards to be saved.
+     */
+    public void saveCards(List<CardBase> cardsToSave) {
+        if (cardsToSave == null || cardsToSave.isEmpty()) {
+            return;
+        }
+        cardBaseRepository.saveAll(cardsToSave);
+    }
+
+    /**
      * Finds cards belonging to a specific deck that match the given search criteria.
      *
      * @param phraseInFront the front text search phrase.

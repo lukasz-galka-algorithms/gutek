@@ -6,6 +6,7 @@ import gutek.entities.decks.DeckBase;
 import gutek.gui.controllers.FXMLController;
 import gutek.gui.controllers.MainStage;
 import gutek.gui.controllers.menu.MenuBarFXMLController;
+import gutek.services.CardService;
 import gutek.services.DeckService;
 import gutek.services.RevisionAlgorithmService;
 import gutek.services.TranslationService;
@@ -81,6 +82,11 @@ public class NewDeckFXMLController extends FXMLController {
      */
     private final DeckService deckService;
 
+    /**
+     * Service for managing cards.
+     */
+    private final CardService cardService;
+
     /** Controller for the menu bar at the top of the view. */
     private final MenuBarFXMLController menuBarFXMLController;
 
@@ -99,10 +105,12 @@ public class NewDeckFXMLController extends FXMLController {
                                  TranslationService translationService,
                                  MenuBarFXMLController menuBarFXMLController,
                                  RevisionAlgorithmService revisionAlgorithmService,
-                                 DeckService deckService) {
+                                 DeckService deckService,
+                                 CardService cardService) {
         super(stage, fxmlFileLoader, "/fxml/main/NewDeckView.fxml", translationService);
         this.revisionAlgorithmService = revisionAlgorithmService;
         this.deckService = deckService;
+        this.cardService = cardService;
         this.menuBarFXMLController = menuBarFXMLController;
     }
 
@@ -275,8 +283,12 @@ public class NewDeckFXMLController extends FXMLController {
         try {
             List<CardBase> cards = CsvUtil.loadFromCsv(file, algorithm);
 
-            for (CardBase card : cards) {
-                deckService.addNewCardToDeck(card, deck);
+            cards.forEach(card -> card.setDeck(deck));
+
+            if (!cards.isEmpty()) {
+                cardService.saveCards(cards);
+                deck.getCards().addAll(cards);
+                deckService.saveDeck(deck);
             }
             return true;
         } catch (Exception ex) {

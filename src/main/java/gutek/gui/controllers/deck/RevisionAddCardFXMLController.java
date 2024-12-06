@@ -24,6 +24,8 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static gutek.utils.AlertMessageUtil.*;
 
@@ -201,10 +203,24 @@ public class RevisionAddCardFXMLController extends FXMLController {
         File selectedFile = fileChooser.showOpenDialog(stage.getStage());
         if (selectedFile != null) {
             try {
-                List<CardBase> cards = CsvUtil.loadFromCsv(selectedFile, deck.getRevisionAlgorithm());
+                List<CardBase> importedCards = CsvUtil.loadFromCsv(selectedFile, deck.getRevisionAlgorithm());
 
-                for (CardBase card : cards) {
-                    deckService.addNewCardToDeck(card, deck);
+                List<CardBase> existingCards = deckService.getAllCards(deck);
+
+                Set<String> existingFronts = existingCards.stream()
+                        .map(CardBase::getFront)
+                        .collect(Collectors.toSet());
+
+                List<CardBase> uniqueCards = importedCards.stream()
+                        .filter(card -> !existingFronts.contains(card.getFront()))
+                        .toList();
+
+                uniqueCards.forEach(card -> card.setDeck(deck));
+
+                if (!uniqueCards.isEmpty()) {
+                    cardService.saveCards(uniqueCards);
+                    deck.getCards().addAll(uniqueCards);
+                    deckService.saveDeck(deck);
                 }
 
                 showInfoAlert(translationService.getTranslation("new_deck_view.deck_imported"), translationService, stage);

@@ -3,6 +3,7 @@ package gutek.gui.controllers.main;
 import gutek.entities.algorithms.RevisionAlgorithm;
 import gutek.gui.controllers.MainStage;
 import gutek.gui.controllers.menu.MenuBarFXMLController;
+import gutek.services.CardService;
 import gutek.services.DeckService;
 import gutek.services.RevisionAlgorithmService;
 import gutek.services.TranslationService;
@@ -28,6 +29,7 @@ class NewDeckFXMLControllerTest extends ApplicationTest {
     private NewDeckFXMLController controller;
     private RevisionAlgorithmService mockRevisionAlgorithmService;
     private DeckService mockDeckService;
+    private CardService mockCardService;
     private MainStage mockStage;
 
     @BeforeEach
@@ -36,6 +38,7 @@ class NewDeckFXMLControllerTest extends ApplicationTest {
         TranslationService mockTranslationService = mock(TranslationService.class);
         mockRevisionAlgorithmService = mock(RevisionAlgorithmService.class);
         mockDeckService = mock(DeckService.class);
+        mockCardService = mock(CardService.class);
         MenuBarFXMLController mockMenuBarFXMLController = mock(MenuBarFXMLController.class);
         mockStage = mock(MainStage.class);
 
@@ -48,7 +51,8 @@ class NewDeckFXMLControllerTest extends ApplicationTest {
                 mockTranslationService,
                 mockMenuBarFXMLController,
                 mockRevisionAlgorithmService,
-                mockDeckService
+                mockDeckService,
+                mockCardService
         );
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/main/NewDeckView.fxml"));

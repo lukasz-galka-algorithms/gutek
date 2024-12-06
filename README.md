@@ -28,7 +28,7 @@ To build and run this application, you will need the following tools installed o
     - Recommended version: `>= 3.6.0`
 
 3. **Java Development Kit (JDK)**: Required to compile and run the application.
-    - Recommended version: `JDK 17` or newer (Java 17+ is supported)
+    - Recommended version: `JDK 21` or newer (Java 21+ is supported)
 
 ## How to Use
 
@@ -43,80 +43,9 @@ To build and run this application, you will need the following tools installed o
     ```bash
    java -jar target/gutek-1.0-exec.jar
 
-## Developing New Algorithms
+## Documentation
 
-Gutek provides an automated interface for adding new revision algorithms. The entire framework is designed to automatically detect and integrate newly implemented algorithms, adjusting all graphical components to meet the specific requirements of your custom solution. This means that, as a developer, you only need to focus on implementing the logic of your algorithm, while the rest of the application—including UI components and database storage—will adapt accordingly.
-To add your custom algorithm, follow these steps:
-
-1. **Create a new class:**:
-    * Place the class in the gutek.entities.algorithms package.
-    * The class must extend the RevisionAlgorithm base class.
-    * To ensure the class is stored in the database, annotate it with @Entity and @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS).
-2. **Specify the Card Type (Generics)**:
-    * When extending RevisionAlgorithm, you need to specify the type of card the algorithm will work with using generics. This type must extend CardBase. For example, if your algorithm is designed for CardConstantCoefficient cards, declare the class as RevisionAlgorithm\<CardConstantCoefficient\>.
-    Example:
-    ```java
-    @Entity
-    @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-    public class ConstantCoefficientRevisionAlgorithm extends RevisionAlgorithm<CardConstantCoefficient> {
-        // Class implementation here...
-    }
-3. **Define Hyperparameters**:
-   * You can define revision algorithm hyperparameters using custom annotations like @AlgorithmHiperparameter. Additionally, use validation annotations such as @NotNull, @NotEmpty, @AllowedValues, @Max, and @Min to enforce constraints on these parameters.
-   Example:
-   ```java
-    @AlgorithmHiperparameter(descriptionTranslationKey = "revision_algorithm.const_coeff.normal_coeff_1")
-    @NotNull
-    @NotEmpty
-    @Min(value = 0.001)
-    private Double coefficient1;
-4. **Implement Required Methods**:
-
-   Override the necessary methods to define the revision logic, such as:
-   * getAlgorithmName
-   * createNewCard
-   * initializeDefaultHiperparameters
-   * reviseCard
-   * reversReviseCard
-
-   Override the methods for handling the user interface, including:
-   * updateSize
-   * updateTranslation
-   * getRevisionButtonsPanel
-   * getReverseRevisionButtonsPanel
-
-5. **Developing New Card Types** (optional):
-   * If your algorithm requires custom card types, create a new class representing your card.
-   * Place the card class in the gutek.entities.cards package.
-   * The class must extend the CardBase base class.
-   * To ensure it is stored in the database, annotate the class with @Entity and @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS).
-   Example:
-    ```java
-    @Entity
-    @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-    public class CardConstantCoefficient extends CardBase {
-        // Class implementation here...
-    }
-
-## Language Support
-
-The application's available languages and all translations can be freely customized to suit your preferences. Adding support for a new language is automated—simply add a translation file in the format messages_{language_code}_{country_code}.properties to the src/main/resources directory with proper translations. The framework will automatically detect and add the new language settings.
-
-## Source Code Documentation
-
-The documentation is generated using Javadoc and is located in the `docs` folder. You can access the documentation by running in a browser the file docs/index.html.
-
-## Database Settings
-
-The framework uses Spring Data JPA with Hibernate to handle database connectivity, allowing seamless integration with any Spring Data JPA-compatible database such as MySQL, PostgreSQL, Oracle, or SQL Server. By default, Gutek is configured with an SQLite file-based database.
-
-To configure the database, refer to the `src/main/resources/application.properties` file. The current settings are for SQLite, but you can switch to any other database by modifying the connection parameters in this file.
-
-Additionally, to use a different database, you must add the appropriate JDBC driver dependency to the `pom.xml` file. For example, if you are using MySQL, include the following dependency:
-
-```xml
-<dependency>
-    <groupId>mysql</groupId>
-    <artifactId>mysql-connector-java</artifactId>
-    <version>8.0.28</version>
-</dependency>
+The documentation for the framework is organized as follows:
+   - **User Manual**: Located in `docs/user/USER_MANUAL.md`. This guide provides instructions for end-users on how to use the application effectively.
+   - **Developer Manual**: Located in `docs/dev/DEVELOPER_MANUAL.md`. This guide provides details for developers on extending and maintaining the application.
+   - **Javadoc Documentation**: Generated API documentation is available in `docs/dev/javadoc`. To view it, open `docs/dev/javadoc/index.html` in your web browser.
