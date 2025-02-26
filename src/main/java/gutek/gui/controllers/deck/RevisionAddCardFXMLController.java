@@ -286,10 +286,12 @@ public class RevisionAddCardFXMLController extends FXMLController {
      * Initializes the icons used in the controller's UI components.
      */
     private void initializeIcons() {
+        double scaleFactor = stage.getStageScaleFactor();
         addButtonIcon = ImageUtil.createImageView("/images/icons/new.png");
         addButton.setGraphic(addButtonIcon);
         importButtonIcon = ImageUtil.createImageView("/images/icons/import.png");
         importButton.setGraphic(importButtonIcon);
+        updateIcons(scaleFactor);
     }
 
     /**

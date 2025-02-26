@@ -224,8 +224,10 @@ public class RevisionSearchFXMLController extends FXMLController {
      * Initializes the icons used in the controller's UI components.
      */
     private void initializeIcons() {
+        double scaleFactor = stage.getStageScaleFactor();
         searchButtonIcon = ImageUtil.createImageView("/images/icons/open.png");
         searchButton.setGraphic(searchButtonIcon);
+        updateIcons(scaleFactor);
     }
 
     /**

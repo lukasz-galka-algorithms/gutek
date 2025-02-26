@@ -171,6 +171,7 @@ public class MenuDeckFXMLController extends FXMLController {
      * Initializes the icons used in the controller's UI components.
      */
     private void initializeIcons() {
+        double scaleFactor = stage.getStageScaleFactor();
         addCardButtonIcon = ImageUtil.createImageView("/images/icons/new.png");
         addCardButton.setGraphic(addCardButtonIcon);
         browseDeckButtonIcon = ImageUtil.createImageView("/images/icons/browse.png");
@@ -183,6 +184,7 @@ public class MenuDeckFXMLController extends FXMLController {
         statsButton.setGraphic(statsButtonIcon);
         closeButtonIcon = ImageUtil.createImageView("/images/icons/back.png");
         closeButton.setGraphic(closeButtonIcon);
+        updateIcons(scaleFactor);
     }
 
     /**

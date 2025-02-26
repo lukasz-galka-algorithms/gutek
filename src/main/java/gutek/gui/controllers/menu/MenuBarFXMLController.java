@@ -254,6 +254,7 @@ public class MenuBarFXMLController extends FXMLController {
      * so they can be resized later.
      */
     private void initializeMenuIcons() {
+        double scaleFactor = stage.getStageScaleFactor();
         fileMenuIcon = ImageUtil.createImageView("/images/icons/home.png");
         fileMenu.setGraphic(fileMenuIcon);
         decksIcon = ImageUtil.createImageView("/images/icons/browse.png");
@@ -270,6 +271,7 @@ public class MenuBarFXMLController extends FXMLController {
         logoutMenu.setGraphic(logoutMenuIcon);
         logoutIcon = ImageUtil.createImageView("/images/icons/logout.png");
         logoutMenuItem.setGraphic(logoutIcon);
+        updateFileMenuIcons(scaleFactor);
     }
 
     /**

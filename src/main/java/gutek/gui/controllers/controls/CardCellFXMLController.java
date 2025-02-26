@@ -206,10 +206,12 @@ public class CardCellFXMLController extends FXMLController {
      * Initializes the icons used in the controller's UI components.
      */
     private void initializeIcons() {
+        double scaleFactor = stage.getStageScaleFactor();
         editButtonIcon = ImageUtil.createImageView("/images/icons/edit.png");
         editButton.setGraphic(editButtonIcon);
         deleteButtonIcon = ImageUtil.createImageView("/images/icons/delete.png");
         deleteButton.setGraphic(deleteButtonIcon);
+        updateIcons(scaleFactor);
     }
 
     /**

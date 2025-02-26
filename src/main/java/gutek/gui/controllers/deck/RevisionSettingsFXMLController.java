@@ -295,8 +295,10 @@ public class RevisionSettingsFXMLController extends FXMLController {
      * Initializes the icons used in the controller's UI components.
      */
     private void initializeIcons() {
+        double scaleFactor = stage.getStageScaleFactor();
         saveButtonIcon = ImageUtil.createImageView("/images/icons/save.png");
         saveButton.setGraphic(saveButtonIcon);
+        updateIcons(scaleFactor);
     }
 
     /**

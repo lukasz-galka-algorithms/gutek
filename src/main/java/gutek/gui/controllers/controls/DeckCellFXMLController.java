@@ -376,12 +376,14 @@ public class DeckCellFXMLController extends FXMLController {
      * Initializes the icons used in the controller's UI components.
      */
     private void initializeIcons() {
+        double scaleFactor = stage.getStageScaleFactor();
         buttonDeleteIcon = ImageUtil.createImageView("/images/icons/move.png");
         buttonDelete.setGraphic(buttonDeleteIcon);
         buttonOpenIcon = ImageUtil.createImageView("/images/icons/open.png");
         buttonOpen.setGraphic(buttonOpenIcon);
         buttonExportIcon = ImageUtil.createImageView("/images/icons/export.png");
         buttonExport.setGraphic(buttonExportIcon);
+        updateIcons(scaleFactor);
     }
 
     /**

@@ -429,10 +429,12 @@ public class RevisionRegularFXMLController extends FXMLController {
      * Initializes the icons used in the controller's UI components.
      */
     private void initializeIcons() {
+        double scaleFactor = stage.getStageScaleFactor();
         showButtonIcon = ImageUtil.createImageView("/images/icons/show.png");
         showButton.setGraphic(showButtonIcon);
         endRevisionButtonIcon = ImageUtil.createImageView("/images/icons/complete.png");
         endRevisionButton.setGraphic(endRevisionButtonIcon);
+        updateIcons(scaleFactor);
     }
 
     /**

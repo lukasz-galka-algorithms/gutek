@@ -191,10 +191,12 @@ public class TrashDeckCellFXMLController extends FXMLController {
      * Initializes the icons used in the controller's UI components.
      */
     private void initializeIcons() {
+        double scaleFactor = stage.getStageScaleFactor();
         buttonDeleteIcon = ImageUtil.createImageView("/images/icons/delete.png");
         buttonDelete.setGraphic(buttonDeleteIcon);
         buttonRestoreIcon = ImageUtil.createImageView("/images/icons/restore.png");
         buttonRestore.setGraphic(buttonRestoreIcon);
+        updateIcons(scaleFactor);
     }
 
     /**
