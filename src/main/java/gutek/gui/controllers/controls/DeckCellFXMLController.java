@@ -269,7 +269,9 @@ public class DeckCellFXMLController extends FXMLController {
      */
     @Override
     public void updateTranslation() {
-        revisionAlgorithm.setText(deck.getRevisionAlgorithm().getAlgorithmName());
+        if(deck != null){
+            revisionAlgorithm.setText(deck.getRevisionAlgorithm().getAlgorithmName());
+        }
         deckNameLabel.setText(translationService.getTranslation("decks_view.deck_name"));
 
         for (Map.Entry<RevisionStrategy<?>, Label> entry : statNameLabels.entrySet()) {
