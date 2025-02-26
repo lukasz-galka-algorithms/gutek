@@ -215,8 +215,12 @@ public class LanguageSelectionFXMLController extends FXMLController {
      * Initializes the icons used in the controller's UI components.
      */
     private void initializeIcons() {
+        double scaleFactor = stage.getStageScaleFactor();
+
         confirmButtonIcon = ImageUtil.createImageView("/images/icons/success.png");
         confirmButton.setGraphic(confirmButtonIcon);
+
+        updateIcons(scaleFactor);
     }
 
     /**

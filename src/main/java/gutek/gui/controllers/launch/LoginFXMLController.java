@@ -201,12 +201,16 @@ public class LoginFXMLController extends FXMLController {
      * Initializes the icons used in the controller's UI components.
      */
     private void initializeIcons() {
+        double scaleFactor = stage.getStageScaleFactor();
+
         loginButtonIcon = ImageUtil.createImageView("/images/icons/success.png");
         loginButton.setGraphic(loginButtonIcon);
         registerButtonIcon = ImageUtil.createImageView("/images/icons/register.png");
         registerButton.setGraphic(registerButtonIcon);
         backButtonIcon = ImageUtil.createImageView("/images/icons/back.png");
         backButton.setGraphic(backButtonIcon);
+
+        updateIcons(scaleFactor);
     }
 
     /**
