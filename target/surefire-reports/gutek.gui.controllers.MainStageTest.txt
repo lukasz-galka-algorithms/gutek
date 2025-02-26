@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: gutek.gui.controllers.MainStageTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.553 s -- in gutek.gui.controllers.MainStageTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.482 s -- in gutek.gui.controllers.MainStageTest

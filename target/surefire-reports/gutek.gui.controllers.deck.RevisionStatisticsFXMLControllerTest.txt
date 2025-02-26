@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: gutek.gui.controllers.deck.RevisionStatisticsFXMLControllerTest
 -------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.112 s -- in gutek.gui.controllers.deck.RevisionStatisticsFXMLControllerTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.171 s -- in gutek.gui.controllers.deck.RevisionStatisticsFXMLControllerTest
