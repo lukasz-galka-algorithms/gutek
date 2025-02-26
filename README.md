@@ -45,7 +45,7 @@ To build and run this application, you will need the following tools installed o
     mvn package
 3. **Run the application**: To run the application, use the following command in the terminal:
     ```bash
-   java -jar target/gutek-1.0.jar
+   java -jar target/gutek-1.0.1.jar
 4. **Precompiled releases**:
     - Precompiled versions of the application are available in the `releases` directory of the repository.
     - To run a precompiled version:
