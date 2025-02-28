@@ -26,7 +26,7 @@ class CardRevisionServiceTest {
     private CardBaseRevisionRepository cardBaseRevisionRepository;
 
     @Mock
-    private RevisionStrategy revisionStrategy;
+    private RevisionStrategy<?> revisionStrategy;
 
     private CardRevisionService cardRevisionService;
 

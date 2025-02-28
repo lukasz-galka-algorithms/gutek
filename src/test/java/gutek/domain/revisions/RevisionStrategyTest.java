@@ -134,10 +134,11 @@ class RevisionStrategyTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void testGetRevisionCounts() {
         // Arrange
-        RevisionAlgorithm mockAlgorithm = mock(RevisionAlgorithm.class);
-        when(mockDeck.getRevisionAlgorithm()).thenReturn(mockAlgorithm);
+        RevisionAlgorithm<CardBase> mockAlgorithm = mock(RevisionAlgorithm.class);
+        when(mockDeck.getRevisionAlgorithm()).thenReturn((RevisionAlgorithm) mockAlgorithm);
         when(mockAlgorithm.getRevisionStrategies()).thenReturn(List.of(mockRevisionStrategy));
         when(mockDeck.getDeckBaseStatistics()).thenReturn(mock(DeckBaseStatistics.class));
         when(mockDeck.getDeckBaseStatistics().getIdDeckStatistics()).thenReturn(1L);

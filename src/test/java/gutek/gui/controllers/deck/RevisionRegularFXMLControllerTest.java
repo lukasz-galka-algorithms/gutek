@@ -90,7 +90,7 @@ class RevisionRegularFXMLControllerTest extends ApplicationTest {
         when(mockDeck.getDeckBaseStatistics()).thenReturn(deckBaseStatistics);
         RevisionAlgorithm mockAlgorithm = mock(RevisionAlgorithm.class);
         when(mockDeck.getRevisionAlgorithm()).thenReturn(mockAlgorithm);
-        RegularTextModeRevisionStrategy mockRevisionStrategy = mock(RegularTextModeRevisionStrategy.class);
+        RegularTextModeRevisionStrategy<?> mockRevisionStrategy = mock(RegularTextModeRevisionStrategy.class);
         when(mockAlgorithm.getAvailableRevisionStrategies()).thenReturn(List.of(mockRevisionStrategy));
         Pane mockPane = new HBox();
         Button mockButton = new Button("Mock Button");

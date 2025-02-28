@@ -92,7 +92,7 @@ class RevisionReverseFXMLControllerTest extends ApplicationTest {
         when(mockDeck.getDeckBaseStatistics()).thenReturn(deckBaseStatistics);
         RevisionAlgorithm mockAlgorithm = mock(RevisionAlgorithm.class);
         when(mockDeck.getRevisionAlgorithm()).thenReturn(mockAlgorithm);
-        ReverseTextModeRevisionStrategy mockRevisionStrategy = mock(ReverseTextModeRevisionStrategy.class);
+        ReverseTextModeRevisionStrategy<?> mockRevisionStrategy = mock(ReverseTextModeRevisionStrategy.class);
         when(mockAlgorithm.getAvailableRevisionStrategies()).thenReturn(List.of(mockRevisionStrategy));
         Pane mockPane = new HBox();
         Button mockButton = new Button("Mock Button");
