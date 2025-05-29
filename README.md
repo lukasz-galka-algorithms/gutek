@@ -2,6 +2,20 @@
 
 Gutek is a low-code framework for implementing and deploying intelligent revision algorithms. It provides a unified graphical interface and allows for the quick, easy, and low-code implementation of solutions to determine the optimal timing for revisions. Additionally, it is a ready-to-use solution for users who want to practice and repeat content, especially in language learning or memorization scenarios.
 
+**Citation**: If you find this framework useful in your research or application, please cite the following publication:
+```bibtex
+@article{galka2025gutek,
+  author={Ga{\l}ka, {\L}ukasz},
+  journal={IEEE Access}, 
+  title={Gutek: Intelligent Revision Algorithms}, 
+  year={2025},
+  volume={13},
+  number={},
+  pages={86732--86745},
+  doi={10.1109/ACCESS.2025.3570624}
+}
+```
+
 ### Key Features:
 - **Standard Revision Interface**: Users are presented with a word, and they must recall its translation.
 - **Reverse Revision Interface**: A novel feature where users are given the translation and must recall the original word.
